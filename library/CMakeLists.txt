@@ -19,6 +19,7 @@ set(PROJECT_SOURCES
   cmake/FindAssimp.cmake
   cmake/FindFMOD.cmake
   cmake/FindFreeImage.cmake
+  cmake/FindFreeImagePlus.cmake
   cmake/FindOpenVR.cmake
   cmake/FindOptix.cmake
   cmake/FindSDL2.cmake
@@ -49,33 +50,6 @@ set(PROJECT_SOURCES
   include/makina/core/entity_component_system/entity.hpp
   include/makina/core/entity_component_system/scene.hpp
   include/makina/core/entity_component_system/system.hpp
-  include/makina/core/rendering/backends/opengl/auxiliary/glm_uniforms.hpp
-  include/makina/core/rendering/backends/opengl/all.hpp
-  include/makina/core/rendering/backends/opengl/buffer.hpp
-  include/makina/core/rendering/backends/opengl/command_execution.hpp
-  include/makina/core/rendering/backends/opengl/compute.hpp
-  include/makina/core/rendering/backends/opengl/debug.hpp
-  include/makina/core/rendering/backends/opengl/draw_commands.hpp
-  include/makina/core/rendering/backends/opengl/framebuffer.hpp
-  include/makina/core/rendering/backends/opengl/opengl.hpp
-  include/makina/core/rendering/backends/opengl/per_fragment_ops.hpp
-  include/makina/core/rendering/backends/opengl/pipeline.hpp
-  include/makina/core/rendering/backends/opengl/program.hpp
-  include/makina/core/rendering/backends/opengl/query.hpp
-  include/makina/core/rendering/backends/opengl/rasterization.hpp
-  include/makina/core/rendering/backends/opengl/renderbuffer.hpp
-  include/makina/core/rendering/backends/opengl/sampler.hpp
-  include/makina/core/rendering/backends/opengl/shader.hpp
-  include/makina/core/rendering/backends/opengl/state.hpp
-  include/makina/core/rendering/backends/opengl/sync.hpp
-  include/makina/core/rendering/backends/opengl/tessellation.hpp
-  include/makina/core/rendering/backends/opengl/texture.hpp
-  include/makina/core/rendering/backends/opengl/texture_view.hpp
-  include/makina/core/rendering/backends/opengl/transform_feedback.hpp
-  include/makina/core/rendering/backends/opengl/unmanaged.hpp
-  include/makina/core/rendering/backends/opengl/vertex_array.hpp
-  include/makina/core/rendering/backends/opengl/vertex_post_processing_ops.hpp
-  include/makina/core/rendering/backends/opengl/viewport.hpp
   include/makina/core/rendering/framegraph/framegraph.hpp
   include/makina/core/rendering/framegraph/render_pass.hpp
   include/makina/core/rendering/framegraph/render_pass_resources.hpp
@@ -141,30 +115,6 @@ set(PROJECT_SOURCES
   source/core/entity_component_system/entity.cpp
   source/core/entity_component_system/scene.cpp
   source/core/entity_component_system/system.cpp
-  source/core/rendering/backends/opengl/buffer.cpp
-  source/core/rendering/backends/opengl/command_execution.cpp
-  source/core/rendering/backends/opengl/compute.cpp
-  source/core/rendering/backends/opengl/debug.cpp
-  source/core/rendering/backends/opengl/draw_commands.cpp
-  source/core/rendering/backends/opengl/framebuffer.cpp
-  source/core/rendering/backends/opengl/opengl.cpp
-  source/core/rendering/backends/opengl/per_fragment_ops.cpp
-  source/core/rendering/backends/opengl/pipeline.cpp
-  source/core/rendering/backends/opengl/program.cpp
-  source/core/rendering/backends/opengl/query.cpp
-  source/core/rendering/backends/opengl/rasterization.cpp
-  source/core/rendering/backends/opengl/renderbuffer.cpp
-  source/core/rendering/backends/opengl/sampler.cpp
-  source/core/rendering/backends/opengl/shader.cpp
-  source/core/rendering/backends/opengl/state.cpp
-  source/core/rendering/backends/opengl/sync.cpp
-  source/core/rendering/backends/opengl/tessellation.cpp
-  source/core/rendering/backends/opengl/texture.cpp
-  source/core/rendering/backends/opengl/texture_view.cpp
-  source/core/rendering/backends/opengl/transform_feedback.cpp
-  source/core/rendering/backends/opengl/vertex_array.cpp
-  source/core/rendering/backends/opengl/vertex_post_processing_ops.cpp
-  source/core/rendering/backends/opengl/viewport.cpp
   source/core/rendering/framegraph/framegraph.cpp
   source/core/rendering/framegraph/render_pass.cpp
   source/core/rendering/framegraph/render_pass_resources.cpp
@@ -218,10 +168,10 @@ source_group("include\\${PROJECT_NAME}" FILES ${EXPORT_HEADER})
 include(import_library)
 
 find_package  (Assimp REQUIRED)
-import_library(assimp ASSIMP_INCLUDE_DIR ASSIMP_LIBRARY_DEBUG ASSIMP_LIBRARY_RELEASE)
+import_library(ASSIMP_INCLUDE_DIR ASSIMP_LIBRARY_DEBUG ASSIMP_LIBRARY_RELEASE)
 
 find_package  (Boost REQUIRED)
-import_library(boost Boost_INCLUDE_DIRS)
+import_library(Boost_INCLUDE_DIRS)
 
 find_package  (Bullet REQUIRED)
 set(BULLET_LIBRARIES_DEBUG 
@@ -234,7 +184,7 @@ set(BULLET_LIBRARIES_RELEASE
   ${BULLET_COLLISION_LIBRARY}
   ${BULLET_MATH_LIBRARY}
   ${BULLET_SOFTBODY_LIBRARY})
-import_library(bullet BULLET_INCLUDE_DIRS BULLET_LIBRARIES_DEBUG BULLET_LIBRARIES_RELEASE)
+import_library(BULLET_INCLUDE_DIRS BULLET_LIBRARIES_DEBUG BULLET_LIBRARIES_RELEASE)
 
 find_package (Cuda REQUIRED)
 set(CUDA_NVCC_FLAGS 
@@ -244,31 +194,40 @@ set(CUDA_NVCC_FLAGS
   "-gencode=arch=compute_52,code=sm_52" # Maxwell
   "-gencode=arch=compute_61,code=sm_61" # Pascal
   "--expt-extended-lambda")
-import_library(cuda CUDA_INCLUDE_DIRS CUDA_LIBRARIES)
+import_library(CUDA_INCLUDE_DIRS CUDA_LIBRARIES)
 
 find_package  (FMOD REQUIRED)
-import_library(fmod FMOD_INCLUDE_DIRS FMOD_LIBRARIES)
+import_library(FMOD_INCLUDE_DIRS FMOD_LIBRARIES)
+
+find_package  (FreeImage REQUIRED)
+import_library(FREEIMAGE_INCLUDE_DIRS FREEIMAGE_LIBRARIES)
+
+find_package  (FreeImagePlus REQUIRED)
+import_library(FREEIMAGEPLUS_INCLUDE_DIRS FREEIMAGEPLUS_LIBRARIES)
 
 find_package  (FreeType REQUIRED)
-import_library(freetype FREETYPE_INCLUDE_DIRS FREETYPE_LIBRARY_DEBUG FREETYPE_LIBRARY_RELEASE)
-              
+import_library(FREETYPE_INCLUDE_DIRS FREETYPE_LIBRARY_DEBUG FREETYPE_LIBRARY_RELEASE)
+       
+find_package  (gl REQUIRED)
+list          (APPEND PROJECT_LIBRARIES gl)
+      
 find_package  (GLEW REQUIRED)
-import_library(glew GLEW_INCLUDE_DIRS GLEW_LIBRARIES)
+import_library(GLEW_INCLUDE_DIRS GLEW_LIBRARIES)
               
 find_package  (GLM REQUIRED)
-import_library(glm GLM_INCLUDE_DIRS)
+import_library(GLM_INCLUDE_DIRS)
               
 find_package  (OpenGL REQUIRED)
-import_library(opengl OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
+import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
 
 find_package  (OpenVR REQUIRED)
-import_library(openvr OPENVR_INCLUDE_DIRS OPENVR_LIBRARY)
+import_library(OPENVR_INCLUDE_DIRS OPENVR_LIBRARY)
 
 find_package  (Optix REQUIRED)
-import_library(optix OPTIX_INCLUDE_DIR OPTIX_LIB)
+import_library(OPTIX_INCLUDE_DIR OPTIX_LIB)
 
 find_package  (SDL2 REQUIRED)
-import_library(sdl2 SDL2_INCLUDE_DIR SDL2_LIBRARY)
+import_library(SDL2_INCLUDE_DIR SDL2_LIBRARY)
 if(WIN32)
   set(PROJECT_LIBRARIES ${PROJECT_LIBRARIES} winmm.lib Imm32.lib)
 endif()
@@ -279,8 +238,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<INSTALL_INTERFACE:include> PRIVATE source)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
+target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
+set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)
   string               (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
