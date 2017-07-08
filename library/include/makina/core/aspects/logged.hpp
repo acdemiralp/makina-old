@@ -1,7 +1,7 @@
 #ifndef MAKINA_CORE_ASPECTS_LOGGED_HPP_
 #define MAKINA_CORE_ASPECTS_LOGGED_HPP_
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

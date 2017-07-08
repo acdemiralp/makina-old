@@ -8,7 +8,7 @@
 #include <makina/core/aspects/named.hpp>
 #include <makina/core/entity_component_system/entity.hpp>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

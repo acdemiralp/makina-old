@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 #include <makina/core/rendering/resources/resource.hpp>
 

@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 #include <makina/core/aspects/named.hpp>
 #include <makina/core/rendering/framegraph/render_pass_resources.hpp>

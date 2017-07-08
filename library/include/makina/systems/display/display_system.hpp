@@ -7,7 +7,7 @@
 #include <makina/systems/display/outlets/hmd.hpp>
 #include <makina/systems/display/outlets/window.hpp>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

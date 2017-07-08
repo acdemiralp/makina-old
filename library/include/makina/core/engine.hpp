@@ -10,7 +10,7 @@
 #include <makina/core/entity_component_system/system.hpp>
 #include <makina/core/time/frame_timer.hpp>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

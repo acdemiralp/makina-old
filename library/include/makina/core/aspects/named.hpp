@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

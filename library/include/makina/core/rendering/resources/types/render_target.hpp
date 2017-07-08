@@ -3,7 +3,7 @@
 
 #include <makina/core/rendering/resources/resource.hpp>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

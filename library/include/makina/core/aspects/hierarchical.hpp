@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <vector>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

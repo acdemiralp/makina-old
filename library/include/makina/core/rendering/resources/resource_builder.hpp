@@ -8,7 +8,7 @@
 
 #include <makina/core/rendering/resources/resource_registry.hpp>
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {

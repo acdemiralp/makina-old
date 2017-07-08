@@ -1,7 +1,7 @@
 #ifndef MAKINA_CORE_RENDERING_LOW_LEVEL_RENDERER_RENDER_CONTEXT_HPP_
 #define MAKINA_CORE_RENDERING_LOW_LEVEL_RENDERER_RENDER_CONTEXT_HPP_
 
-#include <export.hpp>
+#include <makina_export.hpp>
 
 namespace mak
 {
