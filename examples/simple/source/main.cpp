@@ -2,8 +2,9 @@
 
 #include <glm/glm.hpp>
 
+#include <gl/all.hpp>
+
 #include <makina/core/engine.hpp>
-#include <makina/core/rendering/backends/opengl/all.hpp>
 #include <makina/core/rendering/framegraph/framegraph.hpp>
 #include <makina/core/rendering/framegraph/render_pass.hpp>
 #include <makina/core/rendering/framegraph/render_pass_resources.hpp>
