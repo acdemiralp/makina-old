@@ -29,14 +29,31 @@ include            (assign_source_group)
 assign_source_group(${PROJECT_SOURCES} )
 
 ##################################################  Dependencies  ##################################################
+include(add_conan_remote)
 include(conan)
 include(import_library)
 
-# Ensure the remotes are available.
-conan_cmake_run(REQUIRES 
-  gl/1.0.2@RWTH-VR/thirdparty BASIC_SETUP BUILD missing)
+set  (BINTRAY_USERNAME "" CACHE STRING "")
+set  (BINTRAY_API_KEY  "" CACHE STRING "")
+if   (BINTRAY_USERNAME STREQUAL "" OR BINTRAY_API_KEY STREQUAL "")
+  message(FATAL_ERROR "BINTRAY_USERNAME and BINTRAY_API_KEY must be set!")
+endif()
 
-set(PROJECT_LIBRARIES ${CONAN_LIBS})
+add_conan_remote(bincrafters https://api.bintray.com/conan/bincrafters/public-conan ${BINTRAY_USERNAME} ${BINTRAY_API_KEY})
+add_conan_remote(rwth-vr     https://api.bintray.com/conan/rwth-vr/conan            ${BINTRAY_USERNAME} ${BINTRAY_API_KEY})
+add_conan_remote(makina      https://api.bintray.com/conan/acdemiralp/makina        ${BINTRAY_USERNAME} ${BINTRAY_API_KEY})
+conan_cmake_run (CONANFILE conanfile.py BASIC_SETUP BUILD missing)
+set             (PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
+# Ensure the remotes are available.
+# foonathan/memory
+# gabime/spdlog
+# rttrorg/rttr
+# assimp 
+# glm 
+# nlohmann/json
+# 01org/tbb
+# vkhlf
+# ocornut/imgui
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
