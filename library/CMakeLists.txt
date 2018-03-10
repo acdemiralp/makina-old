@@ -29,18 +29,14 @@ include            (assign_source_group)
 assign_source_group(${PROJECT_SOURCES} )
 
 ##################################################  Dependencies  ##################################################
+include(conan)
 include(import_library)
-# ADD LIBRARIES HERE.
-# Examples:
-# - Header Only:
-#   find_package  (GLM REQUIRED)
-#   import_library(GLM_INCLUDE_DIRS)
-# - Identical Debug and Release:
-#   find_package  (OpenGL REQUIRED)
-#   import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
-# - Separate Debug and Release:
-#   find_package  (Boost REQUIRED iostreams)
-#   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
+
+# Ensure the remotes are available.
+conan_cmake_run(REQUIRES 
+  gl/1.0.2@RWTH-VR/thirdparty BASIC_SETUP BUILD missing)
+
+set(PROJECT_LIBRARIES ${CONAN_LIBS})
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
