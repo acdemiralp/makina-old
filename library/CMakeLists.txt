@@ -12,11 +12,18 @@ option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
 
 ##################################################    Sources     ##################################################
+file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
-file(GLOB_RECURSE PROJECT_HPPS include/*.hpp)
-file(GLOB_RECURSE PROJECT_CPPS source/*.cpp)
+file(GLOB_RECURSE PROJECT_HPPS include/*.hpp include/*.h)
+file(GLOB_RECURSE PROJECT_CPPS source/*.cpp source/*.c)
 set (PROJECT_EXPORT_HPP "include/${PROJECT_NAME}/export.hpp")
-set (PROJECT_SOURCES CMakeLists.txt ${PROJECT_CMAKE_UTILS} ${PROJECT_HPPS} ${PROJECT_CPPS} ${PROJECT_EXPORT_HPP})
+set (PROJECT_SOURCES 
+  CMakeLists.txt 
+  ${PROJECT_MISC} 
+  ${PROJECT_CMAKE_UTILS} 
+  ${PROJECT_HPPS} 
+  ${PROJECT_CPPS} 
+  ${PROJECT_EXPORT_HPP})
 
 include            (assign_source_group)
 assign_source_group(${PROJECT_SOURCES} )
