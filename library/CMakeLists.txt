@@ -12,13 +12,12 @@ option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
 
 ##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
+file(GLOB_RECURSE PROJECT_MISC *.md *.txt *.py)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_HPPS include/*.hpp include/*.h)
 file(GLOB_RECURSE PROJECT_CPPS source/*.cpp source/*.c)
 set (PROJECT_EXPORT_HPP "include/${PROJECT_NAME}/export.hpp")
 set (PROJECT_SOURCES 
-  CMakeLists.txt 
   ${PROJECT_MISC} 
   ${PROJECT_CMAKE_UTILS} 
   ${PROJECT_HPPS} 
@@ -39,21 +38,29 @@ if   (BINTRAY_USERNAME STREQUAL "" OR BINTRAY_API_KEY STREQUAL "")
   message(FATAL_ERROR "BINTRAY_USERNAME and BINTRAY_API_KEY must be set!")
 endif()
 
-add_conan_remote(bincrafters https://api.bintray.com/conan/bincrafters/public-conan ${BINTRAY_USERNAME} ${BINTRAY_API_KEY})
-add_conan_remote(rwth-vr     https://api.bintray.com/conan/rwth-vr/conan            ${BINTRAY_USERNAME} ${BINTRAY_API_KEY})
-add_conan_remote(makina      https://api.bintray.com/conan/acdemiralp/makina        ${BINTRAY_USERNAME} ${BINTRAY_API_KEY})
-conan_cmake_run (CONANFILE conanfile.py BASIC_SETUP BUILD missing)
-set             (PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
-# Ensure the remotes are available.
-# foonathan/memory
-# gabime/spdlog
-# rttrorg/rttr
-# assimp 
-# glm 
-# nlohmann/json
-# 01org/tbb
-# vkhlf
-# ocornut/imgui
+add_conan_remote(
+  bincrafters 
+  https://api.bintray.com/conan/bincrafters/public-conan 
+  ${BINTRAY_USERNAME} 
+  ${BINTRAY_API_KEY})
+add_conan_remote(
+  conan-community 
+  https://api.bintray.com/conan/conan-community/conan 
+  ${BINTRAY_USERNAME} 
+  ${BINTRAY_API_KEY})
+add_conan_remote(
+  rwth-vr     
+  https://api.bintray.com/conan/rwth-vr/conan            
+  ${BINTRAY_USERNAME} 
+  ${BINTRAY_API_KEY})
+add_conan_remote(
+  makina     
+  https://api.bintray.com/conan/acdemiralp/makina        
+  ${BINTRAY_USERNAME} 
+  ${BINTRAY_API_KEY})
+
+conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
+set            (PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
@@ -83,11 +90,11 @@ generate_export_header(${PROJECT_NAME}
 if(BUILD_TESTS)
   enable_testing()
 
-  set                (TEST_MAIN_NAME catch_main)
-  set                (TEST_MAIN_SOURCES "tests/catch/catch.hpp" "tests/catch/main.cpp")
-  add_library        (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
-  set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER "tests/catch")
-  assign_source_group(${TEST_MAIN_SOURCES})
+  set                  (TEST_MAIN_NAME catch_main)
+  set                  (TEST_MAIN_SOURCES "tests/catch/catch.hpp" "tests/catch/main.cpp")
+  add_library          (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
+  set_property         (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER "tests/catch")
+  assign_source_group  (${TEST_MAIN_SOURCES})
 
   file(GLOB PROJECT_TEST_CPPS tests/*.cpp)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})

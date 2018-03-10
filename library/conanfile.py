@@ -10,12 +10,27 @@ class MakinaConan(ConanFile):
     license         = "MIT"											
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
-    requires        = (("boost/1.66.0@conan/stable" ),
-                       ("di/1.0.0@acdemiralp/makina"),
-                       ("ec/1.0.0@acdemiralp/makina"),
-                       ("fg/1.0.0@acdemiralp/makina"),
-                       ("fi/1.0.0@acdemiralp/makina"),
-                       ("gl/1.0.2@acdemiralp/makina"))
+    requires        = (("assimp/4.1.0@RWTH-VR/thirdparty"      ),
+                       ("boost/1.66.0@conan/stable"            ),
+                       ("bm/1.0.1@acdemiralp/makina"           ),
+                       ("bullet/2.87@bincrafters/stable"       ),
+                       ("catch2/2.2.0@bincrafters/stable"      ),
+                       ("cppzmq/4.2.2@bincrafters/stable"      ),
+                       ("di/1.0.0@acdemiralp/makina"           ),
+                       ("ec/1.0.0@acdemiralp/makina"           ),
+                       ("fg/1.0.0@acdemiralp/makina"           ),
+                       ("fi/1.0.0@acdemiralp/makina"           ),
+                       ("freetype/2.8.1@bincrafters/stable"    ),
+                       ("gl/1.0.2@acdemiralp/makina"           ),
+                       ("glm/0.9.8.5@g-truc/stable"            ),
+                       ("imgui/1.53@acdemiralp/makina"         ),
+                       ("jsonformoderncpp/3.1.1@vthiery/stable"),
+                       ("memory/0.6-1@acdemiralp/makina"       ),
+                       ("ra/1.0.0@acdemiralp/makina"           ),
+                       ("rttr/0.9.5@acdemiralp/makina"         ),
+                       ("spdlog/0.16.3@bincrafters/stable"     ),
+                       ("TBB/4.4.4@conan/testing"              ),
+                       ("vkhlf/master@acdemiralp/makina"       )) 
     options         = {"shared": [True, False]} 
     default_options = "shared=True"
 
