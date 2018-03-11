@@ -1,4 +1,4 @@
-#include <makina/resources/registry.hpp>
+#include <makina/core/registry.hpp>
 
 namespace mak
 {
