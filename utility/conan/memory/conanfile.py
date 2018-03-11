@@ -27,7 +27,7 @@ class MemoryConan(ConanFile):
     def package(self):
         self.copy("*.hpp", dst="include", src=("%s-%s/include" % (self.name, self.version)))
         self.copy("*.hpp", dst="include/foonathan", keep_path=False)
-        self.copy("*config_impl.hpp", dst="include", keep_path=False)
+        self.copy("*_impl.hpp", dst="include", keep_path=False)
         
         self.copy("*.a"  , dst="lib", keep_path=False)
         self.copy("*.so" , dst="lib", keep_path=False)
