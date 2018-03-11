@@ -62,6 +62,9 @@ add_conan_remote(
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
 set            (PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
 
+find_package  (Vulkan REQUIRED)
+import_library(Vulkan_INCLUDE_DIR Vulkan_LIBRARY)
+
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC 
