@@ -10,6 +10,7 @@
 #include <zmq.hpp>
 #include <di/engine.hpp>
 #include <ec/entity.hpp>
+#include <Eigen/Dense>
 #include <fg/render_task.hpp>
 #include <fi/image.hpp>
 #include <ft2build.h>

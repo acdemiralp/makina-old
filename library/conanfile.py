@@ -18,6 +18,7 @@ class MakinaConan(ConanFile):
                        ("cppzmq/4.2.2@bincrafters/stable"      ),
                        ("di/1.0.0@acdemiralp/makina"           ),
                        ("ec/1.0.0@acdemiralp/makina"           ),
+                       ("eigen/3.3.4@conan/stable"             ),
                        ("fg/1.0.0@acdemiralp/makina"           ),
                        ("fi/1.0.0@acdemiralp/makina"           ),
                        ("freetype/2.8.1@bincrafters/stable"    ),
