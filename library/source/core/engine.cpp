@@ -17,7 +17,7 @@ void engine::run       ()
   {
     frame_timer_.tick();
     for (auto& system : systems_)
-      system->update();
+      system->update(frame_timer_.delta_time());
   }
 }
 void engine::stop      ()

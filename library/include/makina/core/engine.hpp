@@ -71,7 +71,7 @@ protected:
   }
 
   std::vector<std::unique_ptr<system>> systems_    ;
-  frame_timer<float, std::milli>       frame_timer_;
+  frame_timer<>                        frame_timer_;
   bool                                 is_running_ = false;
 };
 }

@@ -1,6 +1,7 @@
 #ifndef MAKINA_CORE_SYSTEM_HPP_
 #define MAKINA_CORE_SYSTEM_HPP_
 
+#include <makina/core/frame_timer.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -9,8 +10,8 @@ namespace mak
 class MAKINA_EXPORT system
 {
 public:
-  virtual ~system     () = default;
-  virtual void update () = 0      ;
+  virtual ~system    ()                              = default;
+  virtual void update(frame_timer<>::duration delta) = 0      ;
 };
 }
 
