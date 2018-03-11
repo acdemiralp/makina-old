@@ -28,6 +28,7 @@ class SplinterConan(ConanFile):
     def package(self):
         include_folder = "%s-%s/include" % (self.name, self.version)       
         self.copy("*.h"  , dst="include/splinter", src=include_folder)
+        self.copy("*"    , dst="include", src="%s-%s/thirdparty/Eigen")
         self.copy("*.a"  , dst="lib", keep_path=False)
         self.copy("*.so" , dst="lib", keep_path=False)
         self.copy("*.lib", dst="lib", keep_path=False)

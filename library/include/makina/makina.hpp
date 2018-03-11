@@ -21,6 +21,7 @@
 #include <ra/registry.hpp>
 #include <rttr/registration.h>
 #include <spdlog/logger.h>
+#include <splinter/bspline.h>
 #include <tbb/task.h>
 #undef MemoryBarrier
 #include <vkhlf/CommandBuffer.h>
