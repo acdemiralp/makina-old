@@ -29,6 +29,7 @@ class MakinaConan(ConanFile):
                        ("ra/1.0.0@acdemiralp/makina"           ),
                        ("rttr/0.9.5@acdemiralp/makina"         ),
                        ("spdlog/0.16.3@bincrafters/stable"     ),
+                       ("splinter/3.0@acdemiralp/makina"       ),
                        ("TBB/4.4.4@conan/testing"              ),
                        ("vkhlf/master@acdemiralp/makina"       )) 
     options         = {"shared": [True, False]} 
