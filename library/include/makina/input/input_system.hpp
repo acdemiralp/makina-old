@@ -10,7 +10,7 @@ namespace mak
 {
 class MAKINA_EXPORT input_system : public system, public di::input_system
 {
-public:
+protected:
   void update(frame_timer::duration delta, scene* scene) override;
 };
 }

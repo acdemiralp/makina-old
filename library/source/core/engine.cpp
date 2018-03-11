@@ -17,6 +17,9 @@ void engine::run       ()
   is_running_ = true;
 
   frame_timer_.tick();
+  for (auto& system : systems_)
+    system->prepare();
+
   while (is_running_)
   {
     frame_timer_.tick();

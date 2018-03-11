@@ -11,8 +11,9 @@ namespace mak
 class MAKINA_EXPORT system
 {
 public:
-  virtual ~system    ()                                          = default;
-  virtual void update(frame_timer::duration delta, scene* scene) = 0;
+  virtual ~system     ()                                          = default;
+  virtual void prepare()                                          { }
+  virtual void update (frame_timer::duration delta, scene* scene) = 0;
 };
 }
 
