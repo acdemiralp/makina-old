@@ -12,7 +12,7 @@ class ImguiConan(ConanFile):
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
     options         = {"shared": [True, False]} 
-    default_options = "shared=True"
+    default_options = "shared=False"
 
     def source(self):
         zip_name = "v%s.zip" % self.version

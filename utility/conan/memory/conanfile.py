@@ -5,13 +5,13 @@ import os
 class MemoryConan(ConanFile):
     name            = "memory"
     version         = "0.6-1"     
-    description     = "Conan package for foonathan_memory."           
+    description     = "Conan package for foonathan memory."           
     url             = "https://github.com/foonathan/memory"
     license         = "MIT"                                         
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
     options         = {"shared": [True, False]} 
-    default_options = "shared=True"
+    default_options = "shared=False"
 
     def source(self):
         self.run("git clone --recurse-submodules %s %s-%s" % (self.url, self.name, self.version))
@@ -25,14 +25,14 @@ class MemoryConan(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
-        include_folder = "%s-%s/include" % (self.name, self.version)
-        self.copy("*.h"  , dst="include", src=include_folder)
-        self.copy("*.hpp", dst="include", src=include_folder)
-        self.copy("*.inl", dst="include", src=include_folder)
+        self.copy("*.hpp", dst="include", src=("%s-%s/include" % (self.name, self.version)))
+        self.copy("*.hpp", dst="include/foonathan", keep_path=False)
+        self.copy("*config_impl.hpp", dst="include", keep_path=False)
+        
         self.copy("*.a"  , dst="lib", keep_path=False)
         self.copy("*.so" , dst="lib", keep_path=False)
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = [self.name]
+        self.cpp_info.libs = ["foonathan_memory"]
