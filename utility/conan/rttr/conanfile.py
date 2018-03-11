@@ -27,10 +27,11 @@ class RttrConan(ConanFile):
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
-        include_folder = "%s-%s/src" % (self.name, self.version)
+        include_folder = "%s-%s/src" % (self.name, self.version)       
         self.copy("*.h"  , dst="include", src=include_folder)
-        self.copy("*.hpp", dst="include", src=include_folder)
-        self.copy("*.inl", dst="include", src=include_folder)
+        self.copy("*.rc" , dst="include", src=include_folder)
+        self.copy("*.h"  , dst="include", src="src")
+        self.copy("*.rc" , dst="include", src="src")
         self.copy("*.a"  , dst="lib", keep_path=False)
         self.copy("*.so" , dst="lib", keep_path=False)
         self.copy("*.lib", dst="lib", keep_path=False)

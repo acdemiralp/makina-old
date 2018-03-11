@@ -2,7 +2,6 @@
 #define MAKINA_MAKINA_HPP_
 
 #define NOMINMAX
-
 #include <assimp/mesh.h>
 #include <boost/signals2.hpp>
 #include <bm/bm.hpp>
@@ -23,6 +22,7 @@
 #include <rttr/registration.h>
 #include <spdlog/logger.h>
 #include <tbb/task.h>
+#undef MemoryBarrier
 #include <vkhlf/CommandBuffer.h>
 
 #include <makina/export.hpp>
