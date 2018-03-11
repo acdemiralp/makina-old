@@ -11,7 +11,7 @@ class SplinterConan(ConanFile):
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
     options         = {"shared": [True, False]} 
-    default_options = "shared=True"
+    default_options = "shared=False"
 
     def source(self):
         zip_name = "v%s.zip" % self.version
@@ -20,19 +20,17 @@ class SplinterConan(ConanFile):
         os.unlink(zip_name)
 
     def build(self):
-        cmake          = CMake(self)
-        shared_options = "-DBUILD_STATIC=OFF" if self.options.shared else "-DBUILD_STATIC=ON"
-        self.run("cmake %s-%s %s %s" % (self.name, self.version, cmake.command_line, shared_options))
+        cmake = CMake(self)
+        self.run("cmake %s-%s %s" % (self.name, self.version, cmake.command_line))
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
         include_folder = "%s-%s/include" % (self.name, self.version)       
         self.copy("*.h"  , dst="include/splinter", src=include_folder)
-        self.copy("*"    , dst="include", src=("%s-%s/thirdparty/Eigen" % (self.name, self.version)))
         self.copy("*.a"  , dst="lib", keep_path=False)
         self.copy("*.so" , dst="lib", keep_path=False)
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = [self.name]
+        self.cpp_info.libs = ["splinter-3-0"] if self.options.shared else ["splinter-static-3-0"]
