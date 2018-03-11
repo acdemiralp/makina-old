@@ -12,7 +12,8 @@ namespace settings
 {
   using temporal_type   = float;
   using temporal_period = std::milli;
-  using component_types = boost::mp11::mp_list<int, unsigned int, float, double>; // TODO: Change to actual components.
+  using component_types = boost::mp11::mp_list<int, unsigned int, float, double>;   // TODO: Change to actual components.
+  using resource_types  = boost::mp11::mp_list<int, unsigned long long, long long>; // TODO: Change to actual resources.
 }
 }
 
