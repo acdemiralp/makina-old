@@ -11,7 +11,7 @@ namespace mak
 class MAKINA_EXPORT input_system : public system, public di::input_system
 {
 public:
-  void update(frame_timer<>::duration delta) override;
+  void update(frame_timer::duration delta) override;
 };
 }
 

@@ -2,7 +2,7 @@
 
 namespace mak
 {
-void input_system::update(frame_timer<>::duration delta)
+void input_system::update(frame_timer::duration delta)
 {
   tick();
 }

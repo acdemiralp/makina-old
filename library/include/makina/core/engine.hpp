@@ -9,6 +9,7 @@
 #include <makina/export.hpp>
 #include <makina/core/frame_timer.hpp>
 #include <makina/core/logger.hpp>
+#include <makina/core/scene.hpp>
 #include <makina/core/system.hpp>
 
 namespace mak
@@ -71,7 +72,8 @@ protected:
   }
 
   std::vector<std::unique_ptr<system>> systems_    ;
-  frame_timer<>                        frame_timer_;
+  scene                                scene_      ;
+  frame_timer                          frame_timer_;
   bool                                 is_running_ = false;
 };
 }

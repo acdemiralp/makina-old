@@ -10,8 +10,8 @@ namespace mak
 class MAKINA_EXPORT system
 {
 public:
-  virtual ~system    ()                              = default;
-  virtual void update(frame_timer<>::duration delta) = 0      ;
+  virtual ~system    ()                            = default;
+  virtual void update(frame_timer::duration delta) = 0;
 };
 }
 

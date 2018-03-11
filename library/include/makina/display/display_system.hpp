@@ -11,7 +11,7 @@ namespace mak
 class MAKINA_EXPORT display_system : public system, public di::display_system
 {
 public:
-  void update(frame_timer<>::duration delta) override;
+  void update(frame_timer::duration delta) override;
 };
 }
 
