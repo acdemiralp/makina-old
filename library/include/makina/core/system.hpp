@@ -5,12 +5,12 @@
 
 namespace mak
 {
+// A system is anything that updates regularly.
 class MAKINA_EXPORT system
 {
 public:
-
-protected:
-
+  virtual ~system     () = default;
+  virtual void update () = 0      ;
 };
 }
 
