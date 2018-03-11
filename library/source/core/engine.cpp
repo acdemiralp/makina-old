@@ -2,6 +2,10 @@
 
 namespace mak
 {
+void engine::set_scene (std::unique_ptr<scene> scene)
+{
+  scene_ = std::move(scene);
+}
 void engine::run       ()
 {
   if (is_running_)
@@ -17,7 +21,7 @@ void engine::run       ()
   {
     frame_timer_.tick();
     for (auto& system : systems_)
-      system->update(frame_timer_.delta_time(), scene_);
+      system->update(frame_timer_.delta_time(), scene_.get());
   }
 }
 void engine::stop      ()

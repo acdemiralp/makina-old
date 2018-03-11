@@ -60,9 +60,11 @@ public:
     systems_.erase(iterator, systems_.end());
   }
 
-  void run       ();
-  void stop      ();
-  bool is_running() const;
+  void         set_scene    (std::unique_ptr<scene> scene);
+
+  void         run          ();
+  void         stop         ();
+  bool         is_running   () const;
 
 protected:
   template<typename system_type>
@@ -72,7 +74,7 @@ protected:
   }
 
   std::vector<std::unique_ptr<system>> systems_    ;
-  scene                                scene_      ;
+  std::unique_ptr<scene>               scene_      ;
   frame_timer                          frame_timer_;
   bool                                 is_running_ = false;
 };
