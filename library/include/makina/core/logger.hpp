@@ -5,9 +5,11 @@
 
 #include <spdlog/logger.h>
 
+#include <makina/export.hpp>
+
 namespace mak
 {
-extern std::shared_ptr<spdlog::logger> logger;
+MAKINA_EXPORT extern std::shared_ptr<spdlog::logger> logger;
 }
 
 #endif

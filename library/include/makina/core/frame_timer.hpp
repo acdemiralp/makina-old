@@ -3,11 +3,13 @@
 
 #include <chrono>
 
+#include <makina/export.hpp>
+
 namespace mak
 {
 // Frame timer keeps track of time and the delta between two consecutive calls to tick().
 template<typename type = float, typename period = std::milli>
-class frame_timer
+class MAKINA_EXPORT frame_timer
 {
 public:
   using clock      = std::chrono::high_resolution_clock;
