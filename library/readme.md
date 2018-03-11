@@ -1,10 +1,11 @@
 ## Makina NGE ##
 
 ### Requirements ###
-- Git
-- CMake 3.2+
-- Conan 1.1+
 - A C++14 Compiler
+- CMake 3.10+ https://cmake.org/download
+- Conan 1.1+ https://conan.io
+- Git https://git-scm.com/downloads
+- Vulkan https://vulkan.lunarg.com/sdk/home
 
 ### Building ###
 - Create an account at https://bintray.com and note your API key located at https://bintray.com/profile/edit .
@@ -12,7 +13,7 @@
 - Configure and generate. Dependencies will be downloaded, built and linked automatically via Conan through Bintray.
 
 ### Profiling ###
-- We recommend MTuner for profiling: https://github.com/milostosic/MTuner/releases/download/v4.0.9/mtuner64.zip .
+- MTuner is recommended for profiling: https://github.com/milostosic/MTuner/releases/download/v4.0.9/mtuner64.zip .
 
 ### Publishing new packages ###
 - You can publish new packages to the Makina conan repository via running the following in their conanfile directory.
