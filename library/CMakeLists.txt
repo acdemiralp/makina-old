@@ -1,5 +1,5 @@
 ##################################################    Project     ##################################################
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project               (makina VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
@@ -62,6 +62,7 @@ add_conan_remote(
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
 set            (PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
 
+# There is no option to include Vulkan from Conan at the moment.
 find_package  (Vulkan REQUIRED)
 import_library(Vulkan_INCLUDE_DIR Vulkan_LIBRARY)
 
