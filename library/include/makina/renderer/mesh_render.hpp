@@ -5,8 +5,8 @@
 
 namespace mak
 {
-class material;
-class mesh;
+struct material;
+struct mesh;
 
 struct MAKINA_EXPORT mesh_render
 {
