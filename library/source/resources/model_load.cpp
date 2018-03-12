@@ -6,6 +6,7 @@
 #include <filesystem>
 
 #include <makina/core/logger.hpp>
+#include <makina/renderer/transform.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/model.hpp>
 
@@ -80,5 +81,30 @@ inline void ra::load(const std::string& filepath, mak::model* model)
       material->specular_image = std::make_unique<mak::image>(folderpath + "/" + relative_image_filepath.C_Str());
   }
 
+  std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
+  hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
+  {
+    auto& matrix    = node->mTransformation;
 
+    auto  entity    = model->scene->add_entity();
+    auto  transform = entity->add_component<mak::transform>();
+    transform->set_matrix(glm::mat4(
+      {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0]},
+      {matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1]},
+      {matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2]},
+      {matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]}));
+    transform->set_parent(parent);
+
+    if (node->mNumMeshes > 0)
+    {
+      auto mesh_render      = entity->add_component<mak::mesh_render>();
+      auto mesh_index       = node->mMeshes[0];
+      mesh_render->mesh     = model->meshes   [mesh_index].get();
+      mesh_render->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
+    }
+
+    for (auto i = 0; i < node->mNumChildren; ++i)
+      hierarchy_traverser(node->mChildren[i], transform);
+  };
+  hierarchy_traverser (scene->mRootNode, nullptr);
 }
