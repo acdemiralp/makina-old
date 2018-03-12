@@ -7,27 +7,28 @@
 
 #include <glm/vec3.hpp>
 
+#include <makina/aspects/named.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
-struct MAKINA_EXPORT material
+struct MAKINA_EXPORT material : public named
 {
     
 };
 
-struct MAKINA_EXPORT dynamic_material : material
+struct MAKINA_EXPORT dynamic_material : public material
 {
   std::map<std::string, std::any> properties;
 };
 
-struct MAKINA_EXPORT physically_based_material : material
+struct MAKINA_EXPORT physically_based_material : public material
 {
   physically_based_material           ()                                       = default;
   physically_based_material           (const physically_based_material&  that) = delete ;
   physically_based_material           (      physically_based_material&& temp) = default;
-  virtual ~physically_based_material()                                         = default;
+  virtual ~physically_based_material  ()                                       = default;
   physically_based_material& operator=(const physically_based_material&  that) = delete ;
   physically_based_material& operator=(      physically_based_material&& temp) = default;
 
@@ -43,7 +44,7 @@ struct MAKINA_EXPORT physically_based_material : material
   std::unique_ptr<image> ambient_occlusion_image;
 };
 
-struct MAKINA_EXPORT phong_material : material
+struct MAKINA_EXPORT phong_material : public material
 {
   phong_material           ()                            = default;
   phong_material           (const phong_material&  that) = delete ;
