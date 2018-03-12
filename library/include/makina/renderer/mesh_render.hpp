@@ -5,12 +5,13 @@
 
 namespace mak
 {
-class MAKINA_EXPORT mesh_render
+class material;
+class mesh;
+
+struct MAKINA_EXPORT mesh_render
 {
-public:
-
-protected:
-
+  material* material;
+  mesh*     mesh    ;
 };
 }
 
