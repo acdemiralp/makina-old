@@ -10,7 +10,7 @@
 
 namespace mak
 {
-MAKINA_EXPORT extern std::unique_ptr<ra::registry<settings::resource_types>> registry;
+MAKINA_EXPORT extern std::unique_ptr<settings::registry_type> registry;
 }
 
 #endif

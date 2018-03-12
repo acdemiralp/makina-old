@@ -3,7 +3,15 @@
 
 #include <ratio>
 
-#include <boost/mp11.hpp>
+#include <ec/entity.hpp>
+#include <ra/registry.hpp>
+
+#include <makina/renderer/light.hpp>
+#include <makina/renderer/mesh_render.hpp>
+#include <makina/renderer/projection.hpp>
+#include <makina/renderer/transform.hpp>
+#include <makina/resources/image.hpp>
+#include <makina/resources/model.hpp>
 
 namespace mak
 {
@@ -12,8 +20,8 @@ namespace settings
 {
   using temporal_type   = float;
   using temporal_period = std::milli;
-  using component_types = boost::mp11::mp_list<int, unsigned int, float, double>;   // TODO: Change to actual components.
-  using resource_types  = boost::mp11::mp_list<int, unsigned long long, long long>; // TODO: Change to actual resources.
+  using entity_type     = ec::entity<light, mesh_render, projection, transform>;
+  using registry_type   = ra::registry<image, model>;
 }
 }
 

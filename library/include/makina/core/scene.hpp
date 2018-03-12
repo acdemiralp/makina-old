@@ -8,7 +8,7 @@
 
 namespace mak
 {
-using scene = ec::scene<ec::entity<settings::component_types>>;
+using scene = ec::scene<settings::entity_type>;
 }
 
 #endif
