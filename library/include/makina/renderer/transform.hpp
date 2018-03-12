@@ -4,10 +4,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <glm/glm.hpp>
 
 #include <makina/aspects/hierarchical.hpp>
-#include <makina/renderer/coordinate_system.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -15,34 +13,45 @@ namespace mak
 class MAKINA_EXPORT transform : public hierarchical<transform>
 {
 public:
-  glm::vec3 translation       (bool global = false) const;
-  glm::quat rotation          (bool global = false) const;
-  glm::vec3 rotation_euler    (bool global = false) const;
-  glm::vec3 scale             (bool global = false) const;
-  glm::mat4 matrix            (bool global = false) const;
-  
-  glm::vec3 right             (bool global = false) const;
-  glm::vec3 up                (bool global = false) const;
-  glm::vec3 forward           (bool global = false) const;
+  transform           ();
+  transform           (const transform&  that) = default;
+  transform           (      transform&& temp) = default;
+  virtual ~transform  ()                       = default;
+  transform& operator=(const transform&  that) = default;
+  transform& operator=(      transform&& temp) = default;
 
-  void      set_translation   (const glm::vec3& translation);
-  void      set_rotation      (const glm::quat& rotation);
-  void      set_rotation_euler(const glm::vec3& rotation);
-  void      set_scale         (const glm::vec3& scale);
-  void      set_matrix        (const glm::mat4& matrix);
-                                                                           
-  void      translate         (const glm::vec3& value);
-  void      rotate            (const glm::quat& value);
-  void      rotate_euler      (const glm::vec3& value);
-  void      scale             (const glm::vec3& value);
-  void      look_at           (const glm::vec3& target, const glm::vec3& up);
-  void      reset             ();
+  glm::vec3         translation          (const bool absolute = false) const;
+  glm::quat         rotation             (const bool absolute = false) const;
+  glm::vec3         rotation_euler       (const bool absolute = false) const;
+  glm::vec3         scale                (const bool absolute = false) const;
+  glm::mat4         matrix               (const bool absolute = false) const;
+                                         
+  glm::vec3         right                (const bool absolute = false) const;
+  glm::vec3         up                   (const bool absolute = false) const;
+  glm::vec3         forward              (const bool absolute = false) const;
+
+  void              set_translation      (const glm::vec3& translation, const bool absolute = false);
+  void              set_rotation         (const glm::quat& rotation   , const bool absolute = false);
+  void              set_rotation_euler   (const glm::vec3& rotation   , const bool absolute = false);
+  void              set_scale            (const glm::vec3& scale      , const bool absolute = false);
+  void              set_matrix           (const glm::mat4& matrix     , const bool absolute = false);
+                                                                                      
+  void              translate            (const glm::vec3& value      , const bool absolute = false);
+  void              rotate               (const glm::quat& value      , const bool absolute = false);
+  void              rotate_euler         (const glm::vec3& value      , const bool absolute = false);
+  void              scale                (const glm::vec3& value      , const bool absolute = false);
+  void              look_at              (const glm::vec3& target     , const glm::vec3& up = glm::vec3(0.0f, 1.0f, 0.0f), const bool absolute = false);
+  void              reset                ();
 
 protected:
-  glm::vec3 translation_;
-  glm::quat rotation_   ;
-  glm::vec3 scale_      ;
-  glm::mat4 matrix_     ;
+  void              update_matrix        ();
+  void              update_hierarchy     ();
+
+  glm::vec3 translation_     = glm::vec3(0.0f, 0.0f, 0.0f);
+  glm::quat rotation_        = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+  glm::vec3 scale_           = glm::vec3(1.0f, 1.0f, 1.0f);
+  glm::mat4 matrix_          ;
+  glm::mat4 absolute_matrix_ ;
 };
 }
 
