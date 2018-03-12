@@ -74,7 +74,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<INSTALL_INTERFACE:include> PRIVATE source)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DNOMINMAX)
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DNOMINMAX -DGLM_FORCE_LEFT_HANDED)
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)
