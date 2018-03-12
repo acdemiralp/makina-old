@@ -2,5 +2,5 @@
 
 namespace mak
 {
-ra::registry<settings::resource_types> registry = ra::registry<settings::resource_types>();
+std::unique_ptr<ra::registry<settings::resource_types>> registry = std::make_unique<ra::registry<settings::resource_types>>();
 }
