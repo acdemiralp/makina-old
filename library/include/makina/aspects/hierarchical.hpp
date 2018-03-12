@@ -14,7 +14,7 @@ class MAKINA_EXPORT hierarchical
 public:
   virtual ~hierarchical() = default;
 
-  void                         set_parent(derived* parent)
+  virtual void                 set_parent(derived* parent)
   {
     if (parent_)
       parent_->children_.erase(std::remove(parent_->children_.begin(), parent_->children_.end(), static_cast<derived*>(this)), parent_->children_.end());
