@@ -6,6 +6,7 @@
 #include <filesystem>
 
 #include <makina/core/logger.hpp>
+#include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/model.hpp>

@@ -3,7 +3,6 @@
 
 #include <chrono>
 
-#include <makina/core/settings.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -45,7 +44,9 @@ protected:
   time_point time_      ;
 };
 
-using frame_timer = _frame_timer<settings::temporal_type, settings::temporal_period>;
+using temporal_type   = float;
+using temporal_period = std::milli;
+using frame_timer     = _frame_timer<temporal_type, temporal_period>;
 }
 
 #endif

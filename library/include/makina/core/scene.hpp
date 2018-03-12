@@ -4,11 +4,15 @@
 #include <ec/entity.hpp>
 #include <ec/scene.hpp>
 
-#include <makina/core/settings.hpp>
+#include <makina/renderer/light.hpp>
+#include <makina/renderer/mesh_render.hpp>
+#include <makina/renderer/projection.hpp>
+#include <makina/renderer/transform.hpp>
 
 namespace mak
 {
-using scene = ec::scene<settings::entity_type>;
+using entity = ec::entity<light, mesh_render, projection, transform>;
+using scene  = ec::scene<entity>;
 }
 
 #endif

@@ -2,5 +2,5 @@
 
 namespace mak
 {
-std::unique_ptr<settings::registry_type> registry = std::make_unique<settings::registry_type>();
+std::unique_ptr<registry_type> registry = std::make_unique<registry_type>();
 }
