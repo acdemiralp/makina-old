@@ -91,6 +91,9 @@ generate_export_header(${PROJECT_NAME}
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
 
+# Copy data folder to build directory.
+file(COPY ${PROJECT_SOURCE_DIR}/../data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
   enable_testing()
