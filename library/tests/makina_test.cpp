@@ -13,6 +13,7 @@
 #include <makina/core/registry.hpp>
 #include <makina/display/display_system.hpp>
 #include <makina/input/input_system.hpp>
+#include <makina/renderer/backend/opengl_render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/makina.hpp>
@@ -34,22 +35,15 @@ TEST_CASE("Makina test.", "[makina]")
 
   engine->get_system<mak::input_system>()->on_quit.connect(std::bind(&mak::engine::stop, engine.get()));
   
-  engine->get_system<mak::renderer>()->add_render_task<render_task_data>(
-    "Render Task",
-    [&] (render_task_data& data, fg::render_task_builder& builder)
-    {
-      gl::set_clear_color       ({0.0F, 0.0F, 0.0F, 0.0F});
-      gl::set_depth_test_enabled(true);
-    },
-    [=] (const render_task_data& data)
-    {
-      gl::set_viewport({0, 0}, {640, 480});
-      gl::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    });
+  auto renderer = engine->get_system<mak::renderer>();
+  mak::add_clear_render_task(renderer, {0.0F, 0.0F, 0.0F, 1.0F});
+  mak::add_phong_render_task(renderer);
 
   auto& models = mak::registry->get<mak::model>();
   models.storage().emplace_back();
-  ra::load(std::string("data/model/setesh/setesh.obj"), &models.storage().back());
+  auto& model  = models.storage().back();
+  ra::load(std::string("data/model/setesh/setesh.obj"), &model);
+  engine->set_scene(std::make_unique<mak::scene>(*model.scene));
 
   engine->run();
 }
