@@ -22,7 +22,7 @@ class MakinaConan(ConanFile):
                        ("fg/1.0.0@acdemiralp/makina"           ),
                        ("fi/1.0.1@acdemiralp/makina"           ),
                        ("freetype/2.8.1@bincrafters/stable"    ),
-                       ("gl/1.0.4@acdemiralp/makina"           ),
+                       ("gl/1.1.1@acdemiralp/makina"           ),
                        ("glm/0.9.8.5@g-truc/stable"            ),
                        ("imgui/1.53@acdemiralp/makina"         ),
                        ("jsonformoderncpp/3.1.1@vthiery/stable"),
