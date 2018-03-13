@@ -20,7 +20,7 @@ class MakinaConan(ConanFile):
                        ("ec/1.0.0@acdemiralp/makina"           ),
                        ("eigen/3.3.4@conan/stable"             ),
                        ("fg/1.0.0@acdemiralp/makina"           ),
-                       ("fi/1.0.0@acdemiralp/makina"           ),
+                       ("fi/1.0.1@acdemiralp/makina"           ),
                        ("freetype/2.8.1@bincrafters/stable"    ),
                        ("gl/1.0.4@acdemiralp/makina"           ),
                        ("glm/0.9.8.5@g-truc/stable"            ),
