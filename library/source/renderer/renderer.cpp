@@ -17,11 +17,19 @@ void renderer::update (frame_timer::duration delta, scene* scene)
   auto lights       = scene->entities<light>                 ();
   auto mesh_renders = scene->entities<transform, mesh_render>();
 
-  // Backend-independent information:
-  // - Who is the main camera? Or do we create a render target for each camera? If so, what is the viewport of each render target?
-  // - An array of lights per type.
-  // - Vertex, normal, texcoord buffer, index buffers containing data for all meshes.
-  // - Used materials and their relationship to the index buffers.
+  // Backend-independent render information:
+  // - 5 buffers for vertices, normals, texcoords, instance attributes, indices of all meshes.
+  // - 1 buffer  for lights.
+  // - 1 buffer  for materials.
+  // - 1 buffer  for transform matrices and index spans (per mesh   instance).
+  // - 1 buffer  for view and projection matrices       (per camera instance).
+  // - N images  for each channel of each material.
+  // - 1 index   for the main camera.
+  // - 1 retained render target (or 2 for VR) for the backbuffer.
+
+  // Notes:
+  // - Any other resources are created and managed by the render tasks.
+  // - Render task writing to the backbuffer controls what goes to the screen.
 
   execute();
 }
