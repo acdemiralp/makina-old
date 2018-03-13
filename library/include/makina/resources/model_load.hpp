@@ -4,6 +4,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <boost/lexical_cast.hpp>
 #include <ra/load.hpp>
 
 #include <filesystem>
@@ -79,13 +80,23 @@ inline void ra::load(const std::string& filepath, mak::model* model)
     aiGetMaterialColor(assimp_material, AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor4D*>(&material->specular ));
     aiGetMaterialFloat(assimp_material, AI_MATKEY_SHININESS     , reinterpret_cast<float*>    (&material->shininess));
 
-    aiString relative_ambient_filepath, relative_diffuse_filepath, relative_specular_filepath;
-    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_AMBIENT , 0, &relative_ambient_filepath))
-      material->ambient_image  = std::make_unique<mak::image>(folderpath + "/" + relative_ambient_filepath.C_Str());
-    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_DIFFUSE , 0, &relative_diffuse_filepath))
-      material->diffuse_image  = std::make_unique<mak::image>(folderpath + "/" + relative_diffuse_filepath.C_Str());
-    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_SPECULAR, 0, &relative_specular_filepath))
-      material->specular_image = std::make_unique<mak::image>(folderpath + "/" + relative_specular_filepath.C_Str());
+    auto load_texture = [&] (aiTextureType type, std::unique_ptr<mak::image>& image)
+    {
+      aiString relative_filepath;
+      if (AI_SUCCESS == assimp_material->GetTexture(type, 0, &relative_filepath) && relative_filepath.length > 0)
+      {
+        if(relative_filepath.data[0] == '*')
+        {
+          auto texture = scene->mTextures[boost::lexical_cast<int>(relative_filepath.data[1])];
+          image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight});
+        }
+        else
+          image = std::make_unique<mak::image>(folderpath + "/" + relative_filepath.C_Str());
+      }
+    };
+    load_texture(aiTextureType_AMBIENT , material->ambient_image );
+    load_texture(aiTextureType_DIFFUSE , material->diffuse_image );
+    load_texture(aiTextureType_SPECULAR, material->specular_image);
   }
 
   model->scene = std::make_unique<mak::scene>();
