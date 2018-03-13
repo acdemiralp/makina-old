@@ -1,3 +1,6 @@
+#ifndef MAKINA_RESOURCES_IMAGE_LOAD_HPP_
+#define MAKINA_RESOURCES_IMAGE_LOAD_HPP_
+
 #include <ra/load.hpp>
 
 #include <cstdint>
@@ -42,3 +45,5 @@ inline void ra::load(const image_description& description, std::optional<mak::im
   else if (description.bits_per_pixel == 24) image->value().to_24_bits    ();
   else                                       image->value().to_32_bits    ();
 }
+
+#endif

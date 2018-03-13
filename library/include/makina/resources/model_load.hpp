@@ -1,9 +1,15 @@
+#ifndef MAKINA_RESOURCES_MODEL_LOAD_HPP_
+#define MAKINA_RESOURCES_MODEL_LOAD_HPP_
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <ra/load.hpp>
 
 #include <filesystem>
+#include <functional>
+#include <memory>
+#include <string>
 
 #include <makina/core/logger.hpp>
 #include <makina/renderer/mesh_render.hpp>
@@ -41,20 +47,20 @@ inline void ra::load(const std::string& filepath, mak::model* model)
 
     mesh->set_name(assimp_mesh->mName.C_Str());
     
-    mesh->vertices             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices     ), reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices      + assimp_mesh->mNumVertices));
-    mesh->normals              .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals      ), reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals       + assimp_mesh->mNumVertices));
+    mesh->vertices             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices        ), reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices         + assimp_mesh->mNumVertices));
+    mesh->normals              .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals         ), reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals          + assimp_mesh->mNumVertices));
     if (assimp_mesh->HasTextureCoords(0))
-      mesh->texture_coordinates.assign (reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords), reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords + assimp_mesh->mNumVertices));
+      mesh->texture_coordinates.assign (reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords[0]), reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords[0] + assimp_mesh->mNumVertices));
     if (assimp_mesh->HasVertexColors (0))
-      mesh->colors             .assign (reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       ), reinterpret_cast<glm::vec4*>(assimp_mesh->mColors        + assimp_mesh->mNumVertices));
-    mesh->tangents             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents     ), reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents      + assimp_mesh->mNumVertices));
-    mesh->bitangents           .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents   ), reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents    + assimp_mesh->mNumVertices));
+      mesh->colors             .assign (reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       [0]), reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       [0] + assimp_mesh->mNumVertices));
+    mesh->tangents             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents        ), reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents         + assimp_mesh->mNumVertices));
+    mesh->bitangents           .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents      ), reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents       + assimp_mesh->mNumVertices));
 
     mesh->indices              .reserve(3 * assimp_mesh->mNumFaces);
     for (auto j = 0; j < assimp_mesh->mNumFaces; ++j) 
     {
       auto& face = assimp_mesh->mFaces[j];
-      mesh->indices.insert(mesh->indices.end(), {face.mIndices[j], face.mIndices[j + 1], face.mIndices[j + 2]});
+      mesh->indices.insert(mesh->indices.end(), {face.mIndices[0], face.mIndices[1], face.mIndices[2]});
     }
   }
 
@@ -73,20 +79,21 @@ inline void ra::load(const std::string& filepath, mak::model* model)
     aiGetMaterialColor(assimp_material, AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor4D*>(&material->specular ));
     aiGetMaterialFloat(assimp_material, AI_MATKEY_SHININESS     , reinterpret_cast<float*>    (&material->shininess));
 
-    aiString relative_image_filepath;
-    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_AMBIENT , 0, &relative_image_filepath))
-      material->ambient_image  = std::make_unique<mak::image>(folderpath + "/" + relative_image_filepath.C_Str());
-    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_DIFFUSE , 0, &relative_image_filepath))
-      material->diffuse_image  = std::make_unique<mak::image>(folderpath + "/" + relative_image_filepath.C_Str());
-    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_SPECULAR, 0, &relative_image_filepath))
-      material->specular_image = std::make_unique<mak::image>(folderpath + "/" + relative_image_filepath.C_Str());
+    aiString relative_ambient_filepath, relative_diffuse_filepath, relative_specular_filepath;
+    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_AMBIENT , 0, &relative_ambient_filepath))
+      material->ambient_image  = std::make_unique<mak::image>(folderpath + "/" + relative_ambient_filepath.C_Str());
+    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_DIFFUSE , 0, &relative_diffuse_filepath))
+      material->diffuse_image  = std::make_unique<mak::image>(folderpath + "/" + relative_diffuse_filepath.C_Str());
+    if (AI_SUCCESS == assimp_material->GetTexture(aiTextureType_SPECULAR, 0, &relative_specular_filepath))
+      material->specular_image = std::make_unique<mak::image>(folderpath + "/" + relative_specular_filepath.C_Str());
   }
 
+  model->scene = std::make_unique<mak::scene>();
   std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
   hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
   {
     auto& matrix    = node->mTransformation;
-
+  
     auto  entity    = model->scene->add_entity();
     auto  transform = entity->add_component<mak::transform>();
     transform->set_matrix(glm::mat4(
@@ -95,7 +102,7 @@ inline void ra::load(const std::string& filepath, mak::model* model)
       {matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2]},
       {matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]}));
     transform->set_parent(parent);
-
+  
     if (node->mNumMeshes > 0)
     {
       auto mesh_render      = entity->add_component<mak::mesh_render>();
@@ -103,9 +110,11 @@ inline void ra::load(const std::string& filepath, mak::model* model)
       mesh_render->mesh     = model->meshes   [mesh_index].get();
       mesh_render->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
     }
-
+  
     for (auto i = 0; i < node->mNumChildren; ++i)
       hierarchy_traverser(node->mChildren[i], transform);
   };
   hierarchy_traverser (scene->mRootNode, nullptr);
 }
+
+#endif
