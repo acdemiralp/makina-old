@@ -4,6 +4,10 @@
 
 namespace mak
 {
+opengl_render_target::opengl_render_target() : gl::framebuffer(0u)
+{
+
+}
 opengl_render_target::opengl_render_target(const std::array<GLsizei, 2>& size, const GLenum color_format, const GLenum depth_format) : gl::framebuffer()
 {
   color_texture_.set_storage(0, color_format, size[0], size[1]);
