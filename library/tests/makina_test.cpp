@@ -35,9 +35,10 @@ TEST_CASE("Makina test.", "[makina]")
   const auto input_system = engine->get_system<mak::input_system>();
   input_system->on_quit.connect(std::bind(&mak::engine::stop, engine.get()));
 
-  const auto renderer = engine->get_system<mak::renderer>();
-  add_clear_render_task(renderer, {0.0F, 0.0F, 0.0F, 1.0F});
-  add_phong_render_task(renderer);
+  const auto renderer   = engine->get_system<mak::renderer>();
+  const auto backbuffer = std::make_unique<mak::opengl_render_target>();
+  add_clear_render_task(renderer, backbuffer.get(), {0.0F, 0.0F, 0.0F, 1.0F});
+  add_phong_render_task(renderer, backbuffer.get());
 
   auto& models = mak::registry->get<mak::model>();
   auto& model  = models.storage().emplace_back();
