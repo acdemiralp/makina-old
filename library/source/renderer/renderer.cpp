@@ -4,6 +4,8 @@
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/resources/material.hpp>
+#include <makina/resources/mesh.hpp>
 
 namespace mak
 {
@@ -13,9 +15,32 @@ void renderer::prepare()
 }
 void renderer::update (frame_timer::duration delta, scene* scene)
 {
-  auto cameras      = scene->entities<transform, projection> ();
-  auto lights       = scene->entities<light>                 ();
-  auto mesh_renders = scene->entities<transform, mesh_render>();
+  for (auto& entity : scene->entities<transform, projection> ())
+  {
+    const auto transform   = entity->component<mak::transform>  ();
+    const auto mesh_render = entity->component<mak::projection> ();
+  }
+  for (auto& entity : scene->entities<transform, light>      ())
+  {
+    const auto transform   = entity->component<mak::transform>  ();
+    const auto light       = entity->component<mak::light>      ();
+  }
+
+  std::vector<glm::vec3>     all_vertices           ;
+  std::vector<glm::vec3>     all_normals            ;
+  std::vector<glm::vec2>     all_texture_coordinates;
+  std::vector<glm::uvec3>    all_instance_attributes; // [0] transform index, [1] material index, [2] indices offset
+  std::vector<std::uint32_t> all_indices            ;
+  for (auto& entity : scene->entities<transform, mesh_render>())
+  {
+    const auto  transform           = entity->component<mak::transform>  ();
+    const auto  mesh_render         = entity->component<mak::mesh_render>();
+    
+    const auto& vertices            = mesh_render->mesh->vertices           ;
+    const auto& normal              = mesh_render->mesh->normals            ;
+    const auto& texture_coordinates = mesh_render->mesh->texture_coordinates;
+    const auto& indices             = mesh_render->mesh->indices            ;
+  }
 
   // Backend-independent render information:
   // - 5 buffers for vertices, normals, texcoords, instance attributes, indices of all meshes.
