@@ -18,9 +18,8 @@ std::unique_ptr<engine> make_default_engine()
     auto entity       = scene ->add_entity();
     auto transform    = entity->add_component<mak::transform> ();
     auto projection   = entity->add_component<mak::projection>();
-    auto aspect_ratio = 4.0f / 3.0f;
-    transform ->set_translation(glm::vec3(0.0f, 0.0f, -10.0f));
-    projection->set_perspective(210.0f / aspect_ratio, aspect_ratio, {0.01f, 1000.0f}); // Human horizontal vision is ~210 degrees.
+    transform ->set_translation(glm::vec3(0.0f, 1.0f, -10.0f));
+    projection->set_perspective(60.0f, 4.0f / 3.0f, {0.3f, 1000.0f});
   }
   {
     auto entity    = scene ->add_entity();
