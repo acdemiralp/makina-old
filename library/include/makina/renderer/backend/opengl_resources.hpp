@@ -15,26 +15,26 @@ namespace mak
 {
 struct MAKINA_EXPORT buffer_description
 {
-  GLsizeiptr                 size             ;
-  GLenum                     type             = GL_ARRAY_BUFFER;
+  GLsizeiptr             size         ;
+  GLenum                 type         = GL_ARRAY_BUFFER;
 };
 struct MAKINA_EXPORT texture_description
 {
-  std::array<GLsizei, 3>     size             ;
-  GLenum                     format           = GL_RGBA;
-  GLsizei                    levels           = 0      ;
+  std::array<GLsizei, 3> size         ;
+  GLenum                 format       = GL_RGBA;
+  GLsizei                levels       = 0      ;
 };
 struct MAKINA_EXPORT sampler_description
 {
-  std::array<GLenum, 3>      wrap             = {GL_REPEAT, GL_REPEAT, GL_REPEAT};
-  GLenum                     min_filter       = GL_NEAREST;
-  GLenum                     mag_filter       = GL_NEAREST;
+  std::array<GLenum, 3>  wrap         = {GL_REPEAT, GL_REPEAT, GL_REPEAT};
+  GLenum                 min_filter   = GL_NEAREST;
+  GLenum                 mag_filter   = GL_NEAREST;
 };
 struct MAKINA_EXPORT render_target_description
 {
-  std::array<GLsizei, 2>     size             ;
-  GLenum                     color_format     = GL_RGBA;
-  GLenum                     depth_format     = GL_DEPTH_COMPONENT32;
+  std::array<GLsizei, 2> size         ;
+  GLenum                 color_format = GL_RGBA;
+  GLenum                 depth_format = GL_DEPTH_COMPONENT32;
 };
 
 using buffer_resource        = fg::resource<buffer_description       , gl::buffer          >;

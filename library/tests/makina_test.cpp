@@ -21,12 +21,9 @@ extern "C"
 #include <makina/renderer/renderer.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/makina.hpp>
-#include "makina/renderer/backend/opengl_resources.hpp"
 
 TEST_CASE("Makina test.", "[makina]")
 {
-  fi::initialize();
-
   auto engine = mak::make_default_engine();
 
   const auto display_system = engine->get_system<mak::display_system>();
@@ -35,10 +32,12 @@ TEST_CASE("Makina test.", "[makina]")
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{640, 480}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
-  gl::initialize();
 
   const auto input_system = engine->get_system<mak::input_system>();
   input_system->on_quit.connect(std::bind(&mak::engine::stop, engine.get()));
+
+  fi::initialize();
+  gl::initialize();
 
   const auto renderer      = engine->get_system<mak::renderer>();
   auto       render_target = mak::opengl_render_target();
