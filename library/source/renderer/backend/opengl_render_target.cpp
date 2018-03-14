@@ -4,7 +4,7 @@
 
 namespace mak
 {
-opengl_render_target::opengl_render_target() : gl::framebuffer(0u)
+opengl_render_target::opengl_render_target() : gl::framebuffer(0)
 {
 
 }

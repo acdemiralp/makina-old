@@ -4,7 +4,7 @@
 
 namespace mak
 {
-fg::render_task<clear_task_data>* add_clear_render_task(fg::framegraph* framegraph, opengl_render_target* render_target, const glm::vec4& color)
+fg::render_task<clear_task_data>* add_clear_render_task(fg::framegraph* framegraph, render_target_resource* render_target, const glm::vec4& color)
 {
   return framegraph->add_render_task<clear_task_data>(
     "Clear Pass",
@@ -14,10 +14,10 @@ fg::render_task<clear_task_data>* add_clear_render_task(fg::framegraph* framegra
     },
     [color] (const clear_task_data& data)
     {
-      data.target->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
+      data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
     });
 }
-fg::render_task<phong_task_data>* add_phong_render_task(fg::framegraph* framegraph, opengl_render_target* render_target)
+fg::render_task<phong_task_data>* add_phong_render_task(fg::framegraph* framegraph, render_target_resource* render_target)
 {
   return framegraph->add_render_task<phong_task_data>(
     "Phong Shading Pass",
