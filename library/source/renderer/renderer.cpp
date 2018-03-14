@@ -13,7 +13,7 @@ void renderer::prepare()
 }
 void renderer::update (frame_timer::duration delta, scene* scene)
 {
-  auto camera       = scene->entities<transform, projection> ();
+  auto cameras      = scene->entities<transform, projection> ();
   auto lights       = scene->entities<light>                 ();
   auto mesh_renders = scene->entities<transform, mesh_render>();
 

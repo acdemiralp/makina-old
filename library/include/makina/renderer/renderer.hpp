@@ -12,7 +12,7 @@ namespace mak
 class MAKINA_EXPORT renderer : public fg::framegraph, public system
 {
 protected:
-  void prepare() override;
+  void prepare()                                          override;
   void update (frame_timer::duration delta, scene* scene) override;
 };
 }
