@@ -23,11 +23,11 @@ fg::render_task<phong_task_data>* add_phong_render_task(fg::framegraph* framegra
     "Phong Shading Pass",
     [&] (      phong_task_data& data, fg::render_task_builder& builder)
     {
-
+      data.target = builder.read(render_target);
     },
     [=] (const phong_task_data& data)
     {
-
+      // Take mesh, material, light, camera data and render onto data.target.
     });
 }
 }

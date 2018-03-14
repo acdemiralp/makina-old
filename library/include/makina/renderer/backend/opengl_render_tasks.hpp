@@ -9,11 +9,11 @@
 
 namespace mak
 {
-struct clear_task_data
+struct MAKINA_EXPORT clear_task_data
 {
   opengl_render_target* target;
 };
-struct phong_task_data
+struct MAKINA_EXPORT phong_task_data
 {
   opengl_render_target* target;
 };
