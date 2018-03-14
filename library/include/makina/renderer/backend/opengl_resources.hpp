@@ -8,7 +8,7 @@
 #include <gl/sampler.hpp>
 #include <gl/texture.hpp>
 
-#include <makina/renderer/backend/render_target.hpp>
+#include <makina/renderer/backend/opengl_render_target.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -37,16 +37,16 @@ struct MAKINA_EXPORT render_target_description
   GLenum                     depth_format     = GL_DEPTH_COMPONENT32;
 };
 
-using buffer_resource        = fg::resource<buffer_description       , gl::buffer    >;
-using texture_1d_resource    = fg::resource<texture_description      , gl::texture_1d>;
-using texture_2d_resource    = fg::resource<texture_description      , gl::texture_2d>;
-using texture_3d_resource    = fg::resource<texture_description      , gl::texture_3d>;
-using sampler_resource       = fg::resource<sampler_description      , gl::sampler   >;
-using render_target_resource = fg::resource<render_target_description, render_target >;
+using buffer_resource        = fg::resource<buffer_description       , gl::buffer          >;
+using texture_1d_resource    = fg::resource<texture_description      , gl::texture_1d      >;
+using texture_2d_resource    = fg::resource<texture_description      , gl::texture_2d      >;
+using texture_3d_resource    = fg::resource<texture_description      , gl::texture_3d      >;
+using sampler_resource       = fg::resource<sampler_description      , gl::sampler         >;
+using render_target_resource = fg::resource<render_target_description, opengl_render_target>;
 }
 
 template<>
-inline std::unique_ptr<gl::buffer>         fg::realize(const mak::buffer_description&        description)
+inline std::unique_ptr<gl::buffer>                fg::realize(const mak::buffer_description&        description)
 {
   auto   buffer = std::make_unique<gl::buffer>();
   buffer->set_data_immutable(description.size);
@@ -55,28 +55,28 @@ inline std::unique_ptr<gl::buffer>         fg::realize(const mak::buffer_descrip
   return buffer;
 }
 template<>
-inline std::unique_ptr<gl::texture_1d>     fg::realize(const mak::texture_description&       description)
+inline std::unique_ptr<gl::texture_1d>            fg::realize(const mak::texture_description&       description)
 {
   auto   texture = std::make_unique<gl::texture_1d>();
   texture->set_storage(description.levels, description.format, description.size[0]);
   return texture;
 }
 template<>
-inline std::unique_ptr<gl::texture_2d>     fg::realize(const mak::texture_description&       description)
+inline std::unique_ptr<gl::texture_2d>            fg::realize(const mak::texture_description&       description)
 {
   auto   texture = std::make_unique<gl::texture_2d>();
   texture->set_storage(description.levels, description.format, description.size[0], description.size[1]);
   return texture;
 }
 template<>
-inline std::unique_ptr<gl::texture_3d>     fg::realize(const mak::texture_description&       description)
+inline std::unique_ptr<gl::texture_3d>            fg::realize(const mak::texture_description&       description)
 {
   auto   texture = std::make_unique<gl::texture_3d>();
   texture->set_storage(description.levels, description.format, description.size[0], description.size[1], description.size[2]);
   return texture;
 }
 template<>
-inline std::unique_ptr<gl::sampler>        fg::realize(const mak::sampler_description&       description)
+inline std::unique_ptr<gl::sampler>               fg::realize(const mak::sampler_description&       description)
 {
   auto   sampler = std::make_unique<gl::sampler>();
   sampler->set_wrap_s    (description.wrap[0]);
@@ -87,9 +87,9 @@ inline std::unique_ptr<gl::sampler>        fg::realize(const mak::sampler_descri
   return sampler;
 }
 template<>
-inline std::unique_ptr<mak::render_target> fg::realize(const mak::render_target_description& description)
+inline std::unique_ptr<mak::opengl_render_target> fg::realize(const mak::render_target_description& description)
 {
-  return std::make_unique<mak::render_target>(description.size, description.color_format, description.depth_format);
+  return std::make_unique<mak::opengl_render_target>(description.size, description.color_format, description.depth_format);
 }
 
 #endif
