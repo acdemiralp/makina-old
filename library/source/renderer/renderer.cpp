@@ -9,11 +9,16 @@
 
 namespace mak
 {
-void renderer::prepare()
+const scene* renderer::scene_cache() const
+{
+  return scene_cache_;
+}
+
+void         renderer::prepare    ()
 {
   compile();
 }
-void renderer::update (frame_timer::duration delta, scene* scene)
+void         renderer::update     (frame_timer::duration delta, scene* scene)
 {
   for (auto& entity : scene->entities<transform, projection> ())
   {

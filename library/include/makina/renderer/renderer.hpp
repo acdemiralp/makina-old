@@ -11,9 +11,14 @@ namespace mak
 // Renderer is a framegraph system.
 class MAKINA_EXPORT renderer : public fg::framegraph, public system
 {
+public:
+  const scene* scene_cache() const;
+
 protected:
-  void prepare()                                          override;
-  void update (frame_timer::duration delta, scene* scene) override;
+  void         prepare    ()                                          override;
+  void         update     (frame_timer::duration delta, scene* scene) override;
+
+  scene* scene_cache_ = nullptr;
 };
 }
 
