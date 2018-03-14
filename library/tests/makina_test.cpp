@@ -4,6 +4,10 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+extern "C"
+{
+  _declspec(dllexport) unsigned int NvOptimusEnablement = 0x00000001;
+}
 #endif
 
 #include <fi/free_image.hpp>
