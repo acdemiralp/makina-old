@@ -65,12 +65,16 @@ add_conan_remote(
   ${BINTRAY_USERNAME} 
   ${BINTRAY_API_KEY})
 
-conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
-set            (PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
+# Necessary for correct linking order.
+find_package  (OpenGL REQUIRED)
+import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
 
 # There is no option to include Vulkan from Conan at the moment.
 find_package  (Vulkan REQUIRED)
 import_library(Vulkan_INCLUDE_DIR Vulkan_LIBRARY)
+
+conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
+list           (APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
