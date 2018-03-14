@@ -11,6 +11,7 @@ struct MAKINA_EXPORT light
 {
   enum class type
   {
+    ambient    ,
     directional,
     point      ,
     spot
