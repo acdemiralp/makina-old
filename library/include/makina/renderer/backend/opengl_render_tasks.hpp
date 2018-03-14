@@ -4,15 +4,22 @@
 #include <fg/framegraph.hpp>
 #include <glm/vec4.hpp>
 
+#include <makina/renderer/backend/opengl_render_target.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
-struct clear_task_data { };
-struct phong_task_data { };
+struct clear_task_data
+{
+  opengl_render_target* target;
+};
+struct phong_task_data
+{
+  opengl_render_target* target;
+};
 
-MAKINA_EXPORT fg::render_task<clear_task_data>* add_clear_render_task(fg::framegraph* framegraph, const glm::vec4& color);
-MAKINA_EXPORT fg::render_task<phong_task_data>* add_phong_render_task(fg::framegraph* framegraph);
+MAKINA_EXPORT fg::render_task<clear_task_data>* add_clear_render_task(fg::framegraph* framegraph, opengl_render_target* render_target, const glm::vec4& color);
+MAKINA_EXPORT fg::render_task<phong_task_data>* add_phong_render_task(fg::framegraph* framegraph, opengl_render_target* render_target);
 }
 
 #endif
