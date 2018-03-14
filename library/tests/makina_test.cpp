@@ -34,7 +34,7 @@ TEST_CASE("Makina test.", "[makina]")
     "Makina", 
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{640, 480}, 
-    di::opengl_context_settings{di::opengl_profile::core, 4, 2});
+    di::opengl_context_settings{di::opengl_profile::core, 4, 5});
   gl::initialize();
 
   const auto input_system = engine->get_system<mak::input_system>();
