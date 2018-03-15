@@ -2,11 +2,16 @@
 
 namespace mak
 {
-void engine::set_scene (std::unique_ptr<scene> scene)
+scene* engine::scene     () const
+{
+  return scene_.get();
+}
+void   engine::set_scene (std::unique_ptr<mak::scene> scene)
 {
   scene_ = std::move(scene);
 }
-void engine::run       ()
+
+void   engine::run       ()
 {
   if (is_running_)
   {
@@ -27,7 +32,7 @@ void engine::run       ()
       system->update(frame_timer_.delta_time(), scene_.get());
   }
 }
-void engine::stop      ()
+void   engine::stop      ()
 {
   if (!is_running_)
   {
@@ -37,7 +42,7 @@ void engine::stop      ()
 
   is_running_ = false;
 }
-bool engine::is_running() const
+bool   engine::is_running() const
 {
   return is_running_;
 }

@@ -60,7 +60,8 @@ public:
     systems_.erase(iterator, systems_.end());
   }
 
-  void         set_scene    (std::unique_ptr<scene> scene);
+  scene*       scene        () const;
+  void         set_scene    (std::unique_ptr<mak::scene> scene);
 
   void         run          ();
   void         stop         ();
@@ -74,7 +75,7 @@ protected:
   }
 
   std::vector<std::unique_ptr<system>> systems_    ;
-  std::unique_ptr<scene>               scene_      ;
+  std::unique_ptr<mak::scene>          scene_      ;
   frame_timer                          frame_timer_;
   bool                                 is_running_ = false;
 };
