@@ -26,8 +26,6 @@ protected:
   gl::texture_2d color_texture_;
   gl::texture_2d depth_texture_;
 };
-
-MAKINA_EXPORT extern opengl_render_target default_render_target;
 }
 
 #endif
