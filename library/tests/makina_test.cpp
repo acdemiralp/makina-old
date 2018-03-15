@@ -48,5 +48,6 @@ TEST_CASE("Makina test.", "[makina]")
   auto& model  = models.storage().emplace_back();
   ra::load(std::string("data/model/setesh/setesh.obj"), &model);
   engine->scene()->insert(*model.scene);
-  engine->run  ();
+
+  engine->run();
 }
