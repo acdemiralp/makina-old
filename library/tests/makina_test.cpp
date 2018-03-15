@@ -39,16 +39,14 @@ TEST_CASE("Makina test.", "[makina]")
   fi::initialize();
   gl::initialize();
 
-  const auto renderer      = engine->get_system<mak::renderer>();
-  auto       render_target = mak::opengl_render_target();
-  const auto backbuffer    = renderer->add_retained_resource("Backbuffer", mak::render_target_description(), &render_target);
+  const auto renderer   = engine->get_system<mak::renderer>();
+  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::render_target_description(), &mak::default_render_target);
   add_clear_render_task(renderer, backbuffer, {0.0F, 0.0F, 0.0F, 1.0F});
   add_phong_render_task(renderer, backbuffer);
 
   auto& models = mak::registry->get<mak::model>();
   auto& model  = models.storage().emplace_back();
   ra::load(std::string("data/model/setesh/setesh.obj"), &model);
-  engine->set_scene(std::make_unique<mak::scene>(*model.scene));
-
-  engine->run();
+  engine->scene()->insert(*model.scene);
+  engine->run  ();
 }
