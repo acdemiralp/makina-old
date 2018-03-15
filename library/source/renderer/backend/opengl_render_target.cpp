@@ -17,4 +17,10 @@ opengl_render_target::opengl_render_target(const std::array<GLsizei, 2>& size, c
   if (!is_complete())
     throw std::runtime_error("The render target framebuffer is incomplete!");
 }
+
+opengl_render_target* default_render_target()
+{
+  static auto default_target = opengl_render_target();
+  return &default_target;
+}
 }

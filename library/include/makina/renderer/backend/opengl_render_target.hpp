@@ -22,10 +22,11 @@ public:
   opengl_render_target& operator=(      opengl_render_target&& temp) = default;
 
 protected:
-
   gl::texture_2d color_texture_;
   gl::texture_2d depth_texture_;
 };
+
+MAKINA_EXPORT opengl_render_target* default_render_target();
 }
 
 #endif
