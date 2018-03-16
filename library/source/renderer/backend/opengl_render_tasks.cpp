@@ -11,20 +11,7 @@
 
 namespace mak
 {
-fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, render_target_resource* render_target, const glm::vec4&              color     )
-{
-  return framegraph->add_render_task<clear_task_data>(
-    "Clear Pass",
-    [&]     (      clear_task_data& data, fg::render_task_builder& builder)
-    {
-      data.target = builder.read(render_target);
-    },
-    [color] (const clear_task_data& data)
-    {
-      data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
-    });
-}
-fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph, render_target_resource* render_target)
+fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph)
 {
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
@@ -39,12 +26,12 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       data.materials           = builder.create<buffer_resource>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
       data.cameras             = builder.create<buffer_resource>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
       data.lights              = builder.create<buffer_resource>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
-      // Totals to 64 * 5 + 16 * 4 = 384 MB of GPU memory.
+      // Totals to 64 * 5 + 16 * 4 = 384 MB of GPU memory for buffers.
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.create<texture_2d_resource>("Texture " + i, texture_description{{2048, 2048, 1}, GL_RGBA, 0});
-      // Totals to 32 * 16.77 = 536 MB of GPU memory.
+      // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
     },
     [=] (const upload_scene_task_data& data)
     {
@@ -69,6 +56,19 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const auto& texture_coordinates = mesh_render->mesh->texture_coordinates;
         const auto& indices             = mesh_render->mesh->indices            ;
       }
+    });
+}
+fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, render_target_resource* render_target, const glm::vec4&              color     )
+{
+  return framegraph->add_render_task<clear_task_data>(
+    "Clear Pass",
+    [&]     (      clear_task_data& data, fg::render_task_builder& builder)
+    {
+      data.target = builder.read(render_target);
+    },
+    [color] (const clear_task_data& data)
+    {
+      data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
     });
 }
 fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, render_target_resource* render_target, const upload_scene_task_data& scene_data)
