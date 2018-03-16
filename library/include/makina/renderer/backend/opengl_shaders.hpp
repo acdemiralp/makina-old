@@ -5,7 +5,7 @@
 
 namespace mak
 {
-extern std::string phong_vertex_shader  ;
+extern std::string default_vertex_shader;
 extern std::string phong_fragment_shader;
 }
 
