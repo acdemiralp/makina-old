@@ -3,6 +3,7 @@
 #include <boost/lexical_cast.hpp>
 #include <gl/all.hpp>
 
+#include <makina/renderer/backend/opengl_shaders.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
@@ -18,15 +19,15 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     "Upload Scene Pass",
     [ ] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices            = builder.create<buffer_resource>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
-      data.normals             = builder.create<buffer_resource>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
-      data.texture_coordinates = builder.create<buffer_resource>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
-      data.instance_attributes = builder.create<buffer_resource>("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
-      data.indices             = builder.create<buffer_resource>("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER});
-      data.transforms          = builder.create<buffer_resource>("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
-      data.materials           = builder.create<buffer_resource>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
-      data.cameras             = builder.create<buffer_resource>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
-      data.lights              = builder.create<buffer_resource>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
+      data.vertices            = builder.create<buffer_resource>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+      data.normals             = builder.create<buffer_resource>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+      data.texture_coordinates = builder.create<buffer_resource>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+      data.instance_attributes = builder.create<buffer_resource>("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+      data.indices             = builder.create<buffer_resource>("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER });
+      data.transforms          = builder.create<buffer_resource>("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+      data.materials           = builder.create<buffer_resource>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+      data.cameras             = builder.create<buffer_resource>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+      data.lights              = builder.create<buffer_resource>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
       // Totals to 64 * 5 + 16 * 4 = 384 MB of GPU memory for buffers.
       
       data.textures.resize(32);
@@ -65,7 +66,7 @@ fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* 
     "Clear Pass",
     [&] (      clear_task_data& data, fg::render_task_builder& builder)
     {
-      data.target = builder.read(render_target);
+      data.target = builder.write(render_target);
     },
     [=] (const clear_task_data& data)
     {
@@ -78,16 +79,16 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
     "Phong Shading Pass",
     [&] (      phong_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices            = builder.read(scene_data.vertices           );
-      data.normals             = builder.read(scene_data.normals            );
-      data.texture_coordinates = builder.read(scene_data.texture_coordinates);
-      data.instance_attributes = builder.read(scene_data.instance_attributes);
-      data.indices             = builder.read(scene_data.indices            );
-      data.transforms          = builder.read(scene_data.transforms         );
-      data.materials           = builder.read(scene_data.materials          );
-      data.cameras             = builder.read(scene_data.cameras            );
-      data.lights              = builder.read(scene_data.lights             );
-      data.target              = builder.read(render_target                 );
+      data.vertices            = builder.read (scene_data.vertices           );
+      data.normals             = builder.read (scene_data.normals            );
+      data.texture_coordinates = builder.read (scene_data.texture_coordinates);
+      data.instance_attributes = builder.read (scene_data.instance_attributes);
+      data.indices             = builder.read (scene_data.indices            );
+      data.transforms          = builder.read (scene_data.transforms         );
+      data.materials           = builder.read (scene_data.materials          );
+      data.cameras             = builder.read (scene_data.cameras            );
+      data.lights              = builder.read (scene_data.lights             );
+      data.target              = builder.write(render_target                 );
 
       data.textures.resize(scene_data.textures.size());
       for (auto i = 0; i < data.textures.size(); ++i)
