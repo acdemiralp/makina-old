@@ -14,7 +14,7 @@ struct MAKINA_EXPORT upload_scene_task_data
   buffer_resource*                  vertices           ;
   buffer_resource*                  normals            ;
   buffer_resource*                  texture_coordinates;
-  buffer_resource*                  instance_attributes; // [0] transform id, [1] material id, [2] index offset
+  buffer_resource*                  instance_attributes;
   buffer_resource*                  indices            ;
   buffer_resource*                  transforms         ;
   buffer_resource*                  materials          ;
@@ -28,6 +28,16 @@ struct MAKINA_EXPORT clear_task_data
 };
 struct MAKINA_EXPORT phong_task_data
 {
+  buffer_resource*                  vertices           ;
+  buffer_resource*                  normals            ;
+  buffer_resource*                  texture_coordinates;
+  buffer_resource*                  instance_attributes;
+  buffer_resource*                  indices            ;
+  buffer_resource*                  transforms         ;
+  buffer_resource*                  materials          ;
+  buffer_resource*                  cameras            ;
+  buffer_resource*                  lights             ;
+  std::vector<texture_2d_resource*> textures           ;
   render_target_resource*           target             ;
 };
 
