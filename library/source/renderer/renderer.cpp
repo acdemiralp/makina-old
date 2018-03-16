@@ -13,6 +13,7 @@ void         renderer::prepare    ()
 }
 void         renderer::update     (frame_timer::duration delta, scene* scene)
 {
+  scene_cache_ = scene;
   execute();
 }
 }
