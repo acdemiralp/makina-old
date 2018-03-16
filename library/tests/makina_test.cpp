@@ -42,8 +42,11 @@ TEST_CASE("Makina test.", "[makina]")
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::render_target_description(), mak::default_render_target());
   const auto upload_scene_render_task = add_upload_scene_render_task(renderer);
-  const auto clear_render_task        = add_clear_render_task       (renderer, backbuffer, {0.01F, 0.01F, 0.01F, 1.0F});
+  const auto clear_render_task        = add_clear_render_task       (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto phong_render_task        = add_phong_render_task       (renderer, backbuffer, upload_scene_render_task->data());
+  upload_scene_render_task->set_cull_immune(true);
+  clear_render_task       ->set_cull_immune(true);
+  phong_render_task       ->set_cull_immune(true);
 
   auto& models = mak::registry->get<mak::model>();
   auto& model  = models.storage().emplace_back();
