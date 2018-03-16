@@ -99,7 +99,16 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
     },
     [=] (const phong_task_data& data)
     {
-
+      gl::program program;
+      gl::shader  vertex_shader    (GL_VERTEX_SHADER  );
+      gl::shader  fragment_shader  (GL_FRAGMENT_SHADER);
+      vertex_shader  .set_source   (default_vertex_shader);
+      fragment_shader.set_source   (phong_fragment_shader);
+      vertex_shader  .compile      ();
+      fragment_shader.compile      ();
+      program        .attach_shader(vertex_shader  );
+      program        .attach_shader(fragment_shader);
+      program        .link         ();
     });
 }
 }
