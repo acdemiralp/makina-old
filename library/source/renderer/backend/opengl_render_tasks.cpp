@@ -11,7 +11,7 @@
 
 namespace mak
 {
-fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, render_target_resource* render_target, const glm::vec4& color)
+fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, render_target_resource* render_target, const glm::vec4&              color     )
 {
   return framegraph->add_render_task<clear_task_data>(
     "Clear Pass",
@@ -28,11 +28,25 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
 {
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
-    [&] (      upload_scene_task_data& data, fg::render_task_builder& builder)
+    [ ] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
+      data.vertices            = builder.create<buffer_resource>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
+      data.normals             = builder.create<buffer_resource>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
+      data.texture_coordinates = builder.create<buffer_resource>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
+      data.instance_attributes = builder.create<buffer_resource>("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER        });
+      data.indices             = builder.create<buffer_resource>("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER});
+      data.transforms          = builder.create<buffer_resource>("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
+      data.materials           = builder.create<buffer_resource>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
+      data.cameras             = builder.create<buffer_resource>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
+      data.lights              = builder.create<buffer_resource>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_UNIFORM_BUFFER      });
+      // Totals to 64 * 5 + 16 * 4 = 384 MB of GPU memory.
       
+      data.textures.resize(32);
+      for (auto i = 0; i < data.textures.size(); ++i)
+        data.textures[i] = builder.create<texture_2d_resource>("Texture " + i, texture_description{{2048, 2048, 1}, GL_RGBA, 0});
+      // Totals to 32 * 16.77 = 536 MB of GPU memory.
     },
-    [=] (const upload_scene_task_data& data, fg::render_task_builder& builder)
+    [=] (const upload_scene_task_data& data)
     {
       auto scene = framegraph->scene_cache();      
       for (auto& entity : scene->entities<transform, projection> ())
@@ -55,13 +69,9 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const auto& texture_coordinates = mesh_render->mesh->texture_coordinates;
         const auto& indices             = mesh_render->mesh->indices            ;
       }
-    
-      // - 1 buffer  for transform matrices and index spans (per mesh   instance).
-      // - N images  for each channel of each material.
-      // - 1 index   for the main camera.
     });
 }
-fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, render_target_resource* render_target)
+fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, render_target_resource* render_target, const upload_scene_task_data& scene_data)
 {
   return framegraph->add_render_task<phong_task_data>(
     "Phong Shading Pass",
