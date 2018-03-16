@@ -9,7 +9,8 @@ const scene* renderer::scene_cache() const
 
 void         renderer::prepare    ()
 {
-  compile();
+  compile        ();
+  export_graphviz("renderer.gv");
 }
 void         renderer::update     (frame_timer::duration delta, scene* scene)
 {
