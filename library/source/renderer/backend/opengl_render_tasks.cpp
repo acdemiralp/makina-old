@@ -71,6 +71,7 @@ fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* 
     [=] (const clear_task_data& data)
     {
       data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
+      data.target->actual()->clear_depth_and_stencil(0.0f, 0);
     });
 }
 fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, render_target_resource* render_target, const upload_scene_task_data& scene_data)
@@ -93,6 +94,8 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       data.textures.resize(scene_data.textures.size());
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.read(scene_data.textures[i]);
+
+      gl::set_depth_test_enabled(true);
     },
     [=] (const phong_task_data& data)
     {
