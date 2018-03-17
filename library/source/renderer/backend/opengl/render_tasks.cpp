@@ -29,8 +29,9 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       data.cameras             = builder.create<buffer_resource>       ("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
       data.lights              = builder.create<buffer_resource>       ("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
       data.draw_calls          = builder.create<buffer_resource>       ("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
-      data.parameter_map       = builder.create<parameter_map_resource>("Scene Parameter Map"      , parameter_map::description());
       // Totals to 64 * 5 + 16 * 5 = 400 MB of GPU memory for buffers.
+
+      data.parameter_map       = builder.create<parameter_map_resource>("Scene Parameter Map"      , parameter_map::description());
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
