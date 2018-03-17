@@ -1,8 +1,8 @@
-#include <makina/renderer/backend/opengl_graphics_pipeline.hpp>
+#include <makina/renderer/backend/opengl/program.hpp>
 
 namespace mak
 {
-opengl_graphics_pipeline::opengl_graphics_pipeline(
+program::program(
   const std::string& vertex_stage                 ,
   const std::string& tessellation_control_stage   ,
   const std::string& tessellation_evaluation_stage,

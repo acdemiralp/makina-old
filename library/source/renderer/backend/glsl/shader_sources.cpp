@@ -1,4 +1,4 @@
-#include <makina/renderer/backend/opengl_shaders.hpp>
+#include <makina/renderer/backend/glsl/shader_sources.hpp>
 
 namespace mak
 {

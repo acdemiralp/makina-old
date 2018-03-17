@@ -1,9 +1,9 @@
-#include <makina/renderer/backend/opengl_render_tasks.hpp>
+#include <makina/renderer/backend/opengl/render_tasks.hpp>
 
 #include <boost/lexical_cast.hpp>
 #include <gl/all.hpp>
 
-#include <makina/renderer/backend/opengl_shaders.hpp>
+#include <makina/renderer/backend/glsl/shader_sources.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
@@ -32,8 +32,23 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{2048, 2048, 1}, GL_RGBA, 0});
+        data.textures[i] = builder.create<texture_2d_resource>  ("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{2048, 2048, 1}, GL_RGBA, 0});
       // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
+
+      data.vertex_array  = builder.create<vertex_array_resource>("Scene Vertex Array", 
+        vertex_array_description{
+          { 
+            {data.vertices           , 3, GL_FLOAT}, 
+            {data.normals            , 3, GL_FLOAT}, 
+            {data.texture_coordinates, 2, GL_FLOAT}, 
+            {data.instance_attributes, 2, GL_UNSIGNED_INT}
+          },
+          {
+            data.transforms, 
+            data.materials , 
+            data.cameras   , 
+            data.lights
+          }, data.indices});
     },
     [=] (const upload_scene_task_data& data)
     {
@@ -60,13 +75,13 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       }
     });
 }
-fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, render_target_resource* render_target, const glm::vec4&              color     )
+fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, framebuffer_resource* target, const glm::vec4&              color     )
 {
   return framegraph->add_render_task<clear_task_data>(
     "Clear Pass",
     [&] (      clear_task_data& data, fg::render_task_builder& builder)
     {
-      data.target = builder.write(render_target);
+      data.target = builder.write(target);
     },
     [=] (const clear_task_data& data)
     {
@@ -74,24 +89,15 @@ fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* 
       data.target->actual()->clear_depth_and_stencil(0.0f, 0);
     });
 }
-fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, render_target_resource* render_target, const upload_scene_task_data& scene_data)
+fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {
   return framegraph->add_render_task<phong_task_data>(
     "Phong Shading Pass",
     [&] (      phong_task_data& data, fg::render_task_builder& builder)
     {
-      data.pipeline            = builder.create<graphics_pipeline_resource>("Phong Pipeline", graphics_pipeline_description{default_vertex_shader, phong_fragment_shader});
-      data.vertices            = builder.read (scene_data.vertices           );
-      data.normals             = builder.read (scene_data.normals            );
-      data.texture_coordinates = builder.read (scene_data.texture_coordinates);
-      data.instance_attributes = builder.read (scene_data.instance_attributes);
-      data.indices             = builder.read (scene_data.indices            );
-      data.transforms          = builder.read (scene_data.transforms         );
-      data.materials           = builder.read (scene_data.materials          );
-      data.cameras             = builder.read (scene_data.cameras            );
-      data.lights              = builder.read (scene_data.lights             );
-      data.target              = builder.write(render_target                 );
-
+      data.program      = builder.create<program_resource>("Phong Shading Program", program::description{default_vertex_shader, phong_fragment_shader});
+      data.vertex_array = builder.read (scene_data.vertex_array);
+      data.target       = builder.write(target);
       data.textures.resize(scene_data.textures.size());
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.read(scene_data.textures[i]);
@@ -100,7 +106,11 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
     },
     [=] (const phong_task_data& data)
     {
+      data.program     ->actual()->use   ();
+      data.vertex_array->actual()->bind  ();
 
+      data.vertex_array->actual()->unbind();
+      data.program     ->actual()->unuse ();
     });
 }
 }

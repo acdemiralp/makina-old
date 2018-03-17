@@ -17,7 +17,7 @@ extern "C"
 #include <makina/core/registry.hpp>
 #include <makina/display/display_system.hpp>
 #include <makina/input/input_system.hpp>
-#include <makina/renderer/backend/opengl_render_tasks.hpp>
+#include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/makina.hpp>
@@ -40,7 +40,7 @@ TEST_CASE("Makina test.", "[makina]")
   gl::initialize();
 
   const auto renderer   = engine->get_system<mak::renderer>();
-  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::render_target_description(), mak::default_render_target());
+  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::framebuffer::description(), mak::default_framebuffer());
   const auto upload_scene_render_task = add_upload_scene_render_task(renderer);
   const auto clear_render_task        = add_clear_render_task       (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto phong_render_task        = add_phong_render_task       (renderer, backbuffer, upload_scene_render_task->data());

@@ -3,7 +3,12 @@
 
 #include <glm/vec4.hpp>
 
-#include <makina/renderer/backend/opengl_resources.hpp>
+#include <makina/renderer/backend/opengl/buffer.hpp>
+#include <makina/renderer/backend/opengl/framebuffer.hpp>
+#include <makina/renderer/backend/opengl/program.hpp>
+#include <makina/renderer/backend/opengl/sampler.hpp>
+#include <makina/renderer/backend/opengl/texture.hpp>
+#include <makina/renderer/backend/opengl/vertex_array.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/export.hpp>
 
@@ -20,31 +25,24 @@ struct MAKINA_EXPORT upload_scene_task_data
   buffer_resource*                  materials          ;
   buffer_resource*                  cameras            ;
   buffer_resource*                  lights             ;
+  vertex_array_resource*            vertex_array       ;
   std::vector<texture_2d_resource*> textures           ;
 };
 struct MAKINA_EXPORT clear_task_data
 {
-  render_target_resource*           target             ;
+  framebuffer_resource*             target             ;
 };
 struct MAKINA_EXPORT phong_task_data
 {
-  graphics_pipeline_resource*       pipeline           ;
-  buffer_resource*                  vertices           ;
-  buffer_resource*                  normals            ;
-  buffer_resource*                  texture_coordinates;
-  buffer_resource*                  instance_attributes;
-  buffer_resource*                  indices            ;
-  buffer_resource*                  transforms         ;
-  buffer_resource*                  materials          ;
-  buffer_resource*                  cameras            ;
-  buffer_resource*                  lights             ;
+  program_resource*                 program            ;
+  vertex_array_resource*            vertex_array       ;
   std::vector<texture_2d_resource*> textures           ;
-  render_target_resource*           target             ;
+  framebuffer_resource*             target             ;
 };
 
 MAKINA_EXPORT fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph);
-MAKINA_EXPORT fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, render_target_resource* render_target, const glm::vec4& color);
-MAKINA_EXPORT fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, render_target_resource* render_target, const upload_scene_task_data& scene_data);
+MAKINA_EXPORT fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, framebuffer_resource* target, const glm::vec4& color);
+MAKINA_EXPORT fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
 }
 
 #endif
