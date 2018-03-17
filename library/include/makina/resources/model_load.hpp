@@ -17,6 +17,7 @@
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/model.hpp>
+#include <makina/resources/phong_material.hpp>
 
 template<>
 inline void ra::load(const std::string& filepath, mak::model* model)

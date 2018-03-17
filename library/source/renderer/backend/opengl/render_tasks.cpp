@@ -8,7 +8,7 @@
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
 #include <makina/renderer/transform.hpp>
-#include <makina/resources/material.hpp>
+#include <makina/resources/phong_material.hpp>
 #include <makina/resources/mesh.hpp>
 
 namespace mak
