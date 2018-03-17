@@ -29,7 +29,11 @@ inline void ra::load(const std::string& filepath, mak::model* model)
   }
 
   Assimp::Importer importer;
-  const auto scene = importer.ReadFile(filepath.c_str(), aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_MakeLeftHanded | aiProcess_Triangulate);
+  const auto scene = importer.ReadFile(filepath.c_str(), 
+    aiProcess_CalcTangentSpace    |
+    aiProcess_ConvertToLeftHanded |
+    aiProcess_GenSmoothNormals    | 
+    aiProcess_Triangulate         );
 
   if (!scene)
   {
