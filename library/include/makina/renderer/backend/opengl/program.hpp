@@ -25,12 +25,7 @@ public:
     std::string tessellation_evaluation_stage;
   };
 
-  explicit program(
-    const std::string& vertex_stage                  = std::string(),
-    const std::string& tessellation_control_stage    = std::string(),
-    const std::string& tessellation_evaluation_stage = std::string(),
-    const std::string& geometry_stage                = std::string(),
-    const std::string& fragment_stage                = std::string());
+  explicit program  (const description& description);
   program           (const program&  that) = delete ;
   program           (      program&& temp) = default;
   virtual ~program  ()                     = default;
@@ -50,12 +45,7 @@ using program_resource = fg::resource<program::description, program>;
 template<>
 inline std::unique_ptr<mak::program> fg::realize(const mak::program::description& description)
 {
-  return std::make_unique<mak::program>(
-    description.vertex_stage                 , 
-    description.tessellation_control_stage   , 
-    description.tessellation_evaluation_stage, 
-    description.geometry_stage               , 
-    description.fragment_stage               );
+  return std::make_unique<mak::program>(description);
 }
 
 #endif

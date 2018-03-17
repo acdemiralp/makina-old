@@ -26,7 +26,7 @@ layout(std430, binding = 0) readonly buffer transform
   uint       transforms_size  ;
   _transform transforms[]     ;
 };
-layout(std430, binding = 1) readonly buffer camera
+layout(std430, binding = 2) readonly buffer camera
 {
   uint       cameras_size     ;
   _camera    cameras[]        ;
@@ -65,11 +65,6 @@ const uint light_type_directional = 1;
 const uint light_type_point       = 2;
 const uint light_type_spot        = 3;
 
-struct _camera
-{
-  mat4      view            ;
-  mat4      projection      ;
-};
 struct _material
 {
   bvec3     use_texture     ; // ambient-diffuse-specular
@@ -80,6 +75,11 @@ struct _material
   sampler2D ambient_texture ;
   sampler2D diffuse_texture ;
   sampler2D specular_texture;
+};
+struct _camera
+{
+  mat4      view            ;
+  mat4      projection      ;
 };
 struct _light
 {
@@ -92,15 +92,15 @@ struct _light
   vec3      direction       ; // spot-directional
 };
 
-layout(std430, binding = 1) readonly buffer camera
-{
-  uint      cameras_size    ;
-  _camera   cameras[]       ;
-};
-layout(std430, binding = 2) readonly buffer material
+layout(std430, binding = 1) readonly buffer material
 {
   uint      materials_size  ;
   _material materials[]     ;
+};
+layout(std430, binding = 2) readonly buffer camera
+{
+  uint      cameras_size    ;
+  _camera   cameras[]       ;
 };
 layout(std430, binding = 3) readonly buffer light
 {

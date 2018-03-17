@@ -34,21 +34,6 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.create<texture_2d_resource>  ("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{2048, 2048, 1}, GL_RGBA, 0});
       // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
-
-      data.vertex_array  = builder.create<vertex_array_resource>("Scene Vertex Array", 
-        vertex_array_description{
-          { 
-            {data.vertices           , 3, GL_FLOAT}, 
-            {data.normals            , 3, GL_FLOAT}, 
-            {data.texture_coordinates, 2, GL_FLOAT}, 
-            {data.instance_attributes, 2, GL_UNSIGNED_INT}
-          },
-          {
-            data.transforms, 
-            data.materials , 
-            data.cameras   , 
-            data.lights
-          }, data.indices});
     },
     [=] (const upload_scene_task_data& data)
     {
@@ -95,12 +80,28 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
     "Phong Shading Pass",
     [&] (      phong_task_data& data, fg::render_task_builder& builder)
     {
-      data.program      = builder.create<program_resource>("Phong Shading Program", program::description{default_vertex_shader, phong_fragment_shader});
-      data.vertex_array = builder.read (scene_data.vertex_array);
-      data.target       = builder.write(target);
+      data.vertices            = builder.read(scene_data.vertices            );
+      data.normals             = builder.read(scene_data.normals             );
+      data.texture_coordinates = builder.read(scene_data.texture_coordinates );
+      data.instance_attributes = builder.read(scene_data.instance_attributes );
+      data.indices             = builder.read(scene_data.indices             );
+      data.transforms          = builder.read(scene_data.transforms          );
+      data.materials           = builder.read(scene_data.materials           );
+      data.cameras             = builder.read(scene_data.cameras             );
+      data.lights              = builder.read(scene_data.lights              );
       data.textures.resize(scene_data.textures.size());
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.read(scene_data.textures[i]);
+
+      data.program      = builder.create<program_resource>     ("Phong Shading Program", program::description     {default_vertex_shader, phong_fragment_shader});
+      data.vertex_array = builder.create<vertex_array_resource>("Phong Vertex Array"   , vertex_array::description{{ 
+        {data.vertices           , 3, GL_FLOAT       }, 
+        {data.normals            , 3, GL_FLOAT       }, 
+        {data.texture_coordinates, 2, GL_FLOAT       }, 
+        {data.instance_attributes, 2, GL_UNSIGNED_INT}}, 
+        {data.transforms, data.materials, data.cameras, data.lights}, 
+         data.indices});
+      data.target       = builder.write(target);
 
       gl::set_depth_test_enabled(true);
     },
