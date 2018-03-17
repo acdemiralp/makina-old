@@ -26,15 +26,15 @@ vertex_array::vertex_array(const description& description)
   if (description.element_buffer)
     set_element_buffer(*description.element_buffer->actual());
   
-  shader_storage_bindings_ = description.shader_storage_bindings;
-  draw_indirect_buffer_    = description.draw_indirect_buffer   ;
+  shader_storage_buffers_ = description.shader_storage_buffers;
+  draw_indirect_buffer_   = description.draw_indirect_buffer  ;
 }
 
 void vertex_array::bind  () const
 {
   gl::vertex_array::bind  ();
-  for (auto i = 0; i < shader_storage_bindings_.size(); ++i)
-    shader_storage_bindings_[i]->actual()->bind_base  (GL_SHADER_STORAGE_BUFFER, i);
+  for (auto i = 0; i < shader_storage_buffers_.size(); ++i)
+    shader_storage_buffers_[i]->actual()->bind_base  (GL_SHADER_STORAGE_BUFFER, i);
   if (draw_indirect_buffer_)
       draw_indirect_buffer_->actual()->bind  (GL_DRAW_INDIRECT_BUFFER);
 }
@@ -42,8 +42,8 @@ void vertex_array::unbind() const
 {
   if (draw_indirect_buffer_)
       draw_indirect_buffer_->actual()->unbind(GL_DRAW_INDIRECT_BUFFER);
-  for (auto i = 0; i < shader_storage_bindings_.size(); ++i)
-    shader_storage_bindings_[i]->actual()->unbind_base(GL_SHADER_STORAGE_BUFFER, i);
+  for (auto i = 0; i < shader_storage_buffers_.size(); ++i)
+    shader_storage_buffers_[i]->actual()->unbind_base(GL_SHADER_STORAGE_BUFFER, i);
   gl::vertex_array::unbind();
 }
 }

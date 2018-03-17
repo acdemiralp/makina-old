@@ -24,7 +24,7 @@ public:
   struct MAKINA_EXPORT description
   {
     std::vector<attribute_binding> attribute_bindings     ;
-    std::vector<buffer_resource*>  shader_storage_bindings;
+    std::vector<buffer_resource*>  shader_storage_buffers ;
     buffer_resource*               element_buffer         = nullptr;
     buffer_resource*               draw_indirect_buffer   = nullptr;
   };
@@ -40,8 +40,8 @@ public:
   void unbind() const;
 
 protected:
-  std::vector<buffer_resource*> shader_storage_bindings_;
-  buffer_resource*              draw_indirect_buffer_   ;
+  std::vector<buffer_resource*> shader_storage_buffers_;
+  buffer_resource*              draw_indirect_buffer_  ;
 };
 using vertex_array_resource = fg::resource<vertex_array::description, vertex_array>;
 }
