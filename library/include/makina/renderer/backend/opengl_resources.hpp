@@ -8,6 +8,7 @@
 #include <gl/sampler.hpp>
 #include <gl/texture.hpp>
 
+#include <makina/renderer/backend/opengl_graphics_pipeline.hpp>
 #include <makina/renderer/backend/opengl_render_target.hpp>
 #include <makina/export.hpp>
 
@@ -30,6 +31,14 @@ struct MAKINA_EXPORT sampler_description
   GLenum                 min_filter   = GL_NEAREST;
   GLenum                 mag_filter   = GL_NEAREST;
 };
+struct MAKINA_EXPORT graphics_pipeline_description
+{
+  std::string vertex_stage;
+  std::string fragment_stage;
+  std::string geometry_stage;
+  std::string tessellation_control_stage;
+  std::string tessellation_evaluation_stage;
+};
 struct MAKINA_EXPORT render_target_description
 {
   std::array<GLsizei, 2> size         ;
@@ -37,16 +46,17 @@ struct MAKINA_EXPORT render_target_description
   GLenum                 depth_format = GL_DEPTH_COMPONENT32;
 };
 
-using buffer_resource        = fg::resource<buffer_description       , gl::buffer          >;
-using texture_1d_resource    = fg::resource<texture_description      , gl::texture_1d      >;
-using texture_2d_resource    = fg::resource<texture_description      , gl::texture_2d      >;
-using texture_3d_resource    = fg::resource<texture_description      , gl::texture_3d      >;
-using sampler_resource       = fg::resource<sampler_description      , gl::sampler         >;
-using render_target_resource = fg::resource<render_target_description, opengl_render_target>;
+using buffer_resource            = fg::resource<buffer_description           , gl::buffer              >;
+using texture_1d_resource        = fg::resource<texture_description          , gl::texture_1d          >;
+using texture_2d_resource        = fg::resource<texture_description          , gl::texture_2d          >;
+using texture_3d_resource        = fg::resource<texture_description          , gl::texture_3d          >;
+using sampler_resource           = fg::resource<sampler_description          , gl::sampler             >;
+using graphics_pipeline_resource = fg::resource<graphics_pipeline_description, opengl_graphics_pipeline>;
+using render_target_resource     = fg::resource<render_target_description    , opengl_render_target    >;
 }
 
 template<>
-inline std::unique_ptr<gl::buffer>                fg::realize(const mak::buffer_description&        description)
+inline std::unique_ptr<gl::buffer>                    fg::realize(const mak::buffer_description&            description)
 {
   auto   buffer = std::make_unique<gl::buffer>();
   buffer->set_data_immutable(description.size);
@@ -55,28 +65,28 @@ inline std::unique_ptr<gl::buffer>                fg::realize(const mak::buffer_
   return buffer;
 }
 template<>
-inline std::unique_ptr<gl::texture_1d>            fg::realize(const mak::texture_description&       description)
+inline std::unique_ptr<gl::texture_1d>                fg::realize(const mak::texture_description&           description)
 {
   auto   texture = std::make_unique<gl::texture_1d>();
   texture->set_storage(description.levels, description.format, description.size[0]);
   return texture;
 }
 template<>
-inline std::unique_ptr<gl::texture_2d>            fg::realize(const mak::texture_description&       description)
+inline std::unique_ptr<gl::texture_2d>                fg::realize(const mak::texture_description&           description)
 {
   auto   texture = std::make_unique<gl::texture_2d>();
   texture->set_storage(description.levels, description.format, description.size[0], description.size[1]);
   return texture;
 }
 template<>
-inline std::unique_ptr<gl::texture_3d>            fg::realize(const mak::texture_description&       description)
+inline std::unique_ptr<gl::texture_3d>                fg::realize(const mak::texture_description&           description)
 {
   auto   texture = std::make_unique<gl::texture_3d>();
   texture->set_storage(description.levels, description.format, description.size[0], description.size[1], description.size[2]);
   return texture;
 }
 template<>
-inline std::unique_ptr<gl::sampler>               fg::realize(const mak::sampler_description&       description)
+inline std::unique_ptr<gl::sampler>                   fg::realize(const mak::sampler_description&           description)
 {
   auto   sampler = std::make_unique<gl::sampler>();
   sampler->set_wrap_s    (description.wrap[0]);
@@ -87,7 +97,17 @@ inline std::unique_ptr<gl::sampler>               fg::realize(const mak::sampler
   return sampler;
 }
 template<>
-inline std::unique_ptr<mak::opengl_render_target> fg::realize(const mak::render_target_description& description)
+inline std::unique_ptr<mak::opengl_graphics_pipeline> fg::realize(const mak::graphics_pipeline_description& description)
+{
+  return std::make_unique<mak::opengl_graphics_pipeline>(
+    description.vertex_stage                 , 
+    description.tessellation_control_stage   , 
+    description.tessellation_evaluation_stage, 
+    description.geometry_stage               , 
+    description.fragment_stage               );
+}
+template<>
+inline std::unique_ptr<mak::opengl_render_target>     fg::realize(const mak::render_target_description&     description)
 {
   return std::make_unique<mak::opengl_render_target>(description.size, description.color_format, description.depth_format);
 }

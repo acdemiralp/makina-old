@@ -28,6 +28,7 @@ struct MAKINA_EXPORT clear_task_data
 };
 struct MAKINA_EXPORT phong_task_data
 {
+  graphics_pipeline_resource*       pipeline           ;
   buffer_resource*                  vertices           ;
   buffer_resource*                  normals            ;
   buffer_resource*                  texture_coordinates;

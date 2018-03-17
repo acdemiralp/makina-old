@@ -80,6 +80,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
     "Phong Shading Pass",
     [&] (      phong_task_data& data, fg::render_task_builder& builder)
     {
+      data.pipeline            = builder.create<graphics_pipeline_resource>("Phong Pipeline", graphics_pipeline_description{default_vertex_shader, phong_fragment_shader});
       data.vertices            = builder.read (scene_data.vertices           );
       data.normals             = builder.read (scene_data.normals            );
       data.texture_coordinates = builder.read (scene_data.texture_coordinates);
@@ -99,16 +100,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
     },
     [=] (const phong_task_data& data)
     {
-      gl::program program;
-      gl::shader  vertex_shader    (GL_VERTEX_SHADER  );
-      gl::shader  fragment_shader  (GL_FRAGMENT_SHADER);
-      vertex_shader  .set_source   (default_vertex_shader);
-      fragment_shader.set_source   (phong_fragment_shader);
-      vertex_shader  .compile      ();
-      fragment_shader.compile      ();
-      program        .attach_shader(vertex_shader  );
-      program        .attach_shader(fragment_shader);
-      program        .link         ();
+
     });
 }
 }
