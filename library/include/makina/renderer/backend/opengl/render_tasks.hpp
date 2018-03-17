@@ -9,6 +9,7 @@
 #include <makina/renderer/backend/opengl/sampler.hpp>
 #include <makina/renderer/backend/opengl/texture.hpp>
 #include <makina/renderer/backend/opengl/vertex_array.hpp>
+#include <makina/renderer/backend/parameter_map.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/export.hpp>
 
@@ -26,6 +27,7 @@ struct MAKINA_EXPORT upload_scene_task_data
   buffer_resource*                  cameras            ;
   buffer_resource*                  lights             ;
   buffer_resource*                  draw_calls         ;
+  parameter_map_resource*           parameter_map      ;
   std::vector<texture_2d_resource*> textures           ;
 };
 struct MAKINA_EXPORT clear_task_data
@@ -44,6 +46,7 @@ struct MAKINA_EXPORT phong_task_data
   buffer_resource*                  cameras            ;
   buffer_resource*                  lights             ;
   buffer_resource*                  draw_calls         ;
+  parameter_map_resource*           parameter_map      ;
   std::vector<texture_2d_resource*> textures           ;
 
   program_resource*                 program            ;
