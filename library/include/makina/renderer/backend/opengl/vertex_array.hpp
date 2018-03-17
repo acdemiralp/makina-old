@@ -9,7 +9,7 @@
 
 namespace mak
 {
-// A mak::vertex_array is a gl::vertex_array with support for recording shader storage buffers.
+// A mak::vertex_array is a gl::vertex_array with support for recording shader storage and draw indirect buffers.
 class MAKINA_EXPORT vertex_array : public gl::vertex_array
 {
 public:
@@ -26,6 +26,7 @@ public:
     std::vector<attribute_binding> attribute_bindings     ;
     std::vector<buffer_resource*>  shader_storage_bindings;
     buffer_resource*               element_buffer         = nullptr;
+    buffer_resource*               draw_indirect_buffer   = nullptr;
   };
 
   explicit vertex_array  (const description& description);
@@ -40,6 +41,7 @@ public:
 
 protected:
   std::vector<buffer_resource*> shader_storage_bindings_;
+  buffer_resource*              draw_indirect_buffer_   ;
 };
 using vertex_array_resource = fg::resource<vertex_array::description, vertex_array>;
 }
