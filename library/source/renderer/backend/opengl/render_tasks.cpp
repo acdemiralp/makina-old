@@ -28,7 +28,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       data.materials           = builder.create<buffer_resource>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
       data.cameras             = builder.create<buffer_resource>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
       data.lights              = builder.create<buffer_resource>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-      // Totals to 64 * 5 + 16 * 4 = 384 MB of GPU memory for buffers.
+      data.draw_calls          = builder.create<buffer_resource>("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
+      // Totals to 64 * 5 + 16 * 5 = 400 MB of GPU memory for buffers.
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
@@ -89,6 +90,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       data.materials           = builder.read(scene_data.materials           );
       data.cameras             = builder.read(scene_data.cameras             );
       data.lights              = builder.read(scene_data.lights              );
+      data.draw_calls          = builder.read(scene_data.draw_calls          );
       data.textures.resize(scene_data.textures.size());
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.read(scene_data.textures[i]);
@@ -100,7 +102,8 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
         {data.texture_coordinates, 2, GL_FLOAT       }, 
         {data.instance_attributes, 2, GL_UNSIGNED_INT}}, 
         {data.transforms, data.materials, data.cameras, data.lights}, 
-         data.indices});
+         data.indices,
+         data.draw_calls});
       data.target       = builder.write(target);
 
       gl::set_depth_test_enabled(true);
@@ -110,6 +113,8 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       data.program     ->actual()->use   ();
       data.vertex_array->actual()->bind  ();
 
+      // TODO: gl::multi_draw_elements_indirect based on draw calls buffer.
+      
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
     });
