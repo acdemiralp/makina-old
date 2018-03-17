@@ -6,7 +6,6 @@
 #include <makina/renderer/backend/opengl/buffer.hpp>
 #include <makina/renderer/backend/opengl/framebuffer.hpp>
 #include <makina/renderer/backend/opengl/program.hpp>
-#include <makina/renderer/backend/opengl/sampler.hpp>
 #include <makina/renderer/backend/opengl/texture.hpp>
 #include <makina/renderer/backend/opengl/vertex_array.hpp>
 #include <makina/renderer/backend/parameter_map.hpp>
