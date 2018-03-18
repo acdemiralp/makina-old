@@ -3,7 +3,6 @@
 #include <di/systems/input/mouse.hpp>
 #include <glm/vec3.hpp>
 
-#include <makina/core/logger.hpp>
 #include <makina/renderer/transform.hpp>
 
 namespace mak
@@ -22,17 +21,8 @@ controller make_wasd_controller(const float move_sensitivity, const float look_s
   {
     di::mouse::set_captured(true );
     di::mouse::set_visible (false);
-
     transform->rotate_euler(glm::vec3(0.0f, value[0] * look_sensitivity, 0.0f));
     transform->rotate_euler(glm::vec3(value[1] * look_sensitivity, 0.0f, 0.0f));
-
-    logger->info("Translation: {} {} {}, Rotation: {} {} {}",
-      transform->translation   ()[0],
-      transform->translation   ()[1],
-      transform->translation   ()[2],
-      transform->rotation_euler()[0],
-      transform->rotation_euler()[1],
-      transform->rotation_euler()[2]);
   };
   return wasd_controller;
 }
