@@ -7,6 +7,7 @@
 
 #include <di/systems/input/key.hpp>
 
+#include <makina/core/frame_timer.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -15,12 +16,14 @@ class transform;
 
 struct MAKINA_EXPORT controller
 {
-  std::function<void(transform*, di::key)>                    on_key_press    ;
-  std::function<void(transform*, di::key)>                    on_key_release  ;
-  std::function<void(transform*, std::size_t)>                on_mouse_press  ;
-  std::function<void(transform*, std::size_t)>                on_mouse_release;
-  std::function<void(transform*, std::array<std::size_t, 2>)> on_mouse_move   ;
-  std::function<void(transform*, std::array<std::size_t, 2>)> on_mouse_wheel  ;
+  std::function<void(transform*, frame_timer::duration, di::key)>                    on_key_press    ;
+  std::function<void(transform*, frame_timer::duration, di::key)>                    on_key_down     ;
+  std::function<void(transform*, frame_timer::duration, di::key)>                    on_key_release  ;
+  std::function<void(transform*, frame_timer::duration, std::size_t)>                on_mouse_press  ;
+  std::function<void(transform*, frame_timer::duration, std::size_t)>                on_mouse_down   ;
+  std::function<void(transform*, frame_timer::duration, std::size_t)>                on_mouse_release;
+  std::function<void(transform*, frame_timer::duration, std::array<std::size_t, 2>)> on_mouse_move   ;
+  std::function<void(transform*, frame_timer::duration, std::array<std::size_t, 2>)> on_mouse_wheel  ;
 };
 }
 

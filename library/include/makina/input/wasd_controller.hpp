@@ -5,7 +5,7 @@
 
 namespace mak
 {
-controller make_wasd_controller();
+controller make_wasd_controller(const float move_sensitivity = 1.0f, const float look_sensitivity = 1.0f);
 }
 
 #endif
