@@ -14,7 +14,7 @@
 
 ### Profiling ###
 - MTuner is recommended for profiling: https://github.com/milostosic/MTuner/releases/download/v4.0.9/mtuner64.zip .
-
+- Renderdoc is recommended for GPU debugging: https://renderdoc.org/ .
 ### Publishing new packages ###
 - You can publish new packages to the Makina conan repository via running the following in their conanfile directory.
 conan export . acdemiralp/makina
