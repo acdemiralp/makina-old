@@ -2,6 +2,7 @@
 
 #include <makina/display/display_system.hpp>
 #include <makina/input/input_system.hpp>
+#include <makina/input/wasd_controller.hpp>
 #include <makina/renderer/renderer.hpp>
 
 namespace mak
@@ -19,6 +20,7 @@ std::unique_ptr<engine> make_default_engine()
     auto transform    = entity->add_component<mak::transform> ();
     auto projection   = entity->add_component<mak::projection>();
     transform ->set_translation(glm::vec3(0.0f, 1.0f, -10.0f));
+    auto controller   = entity->add_component<mak::controller>(make_wasd_controller());
     projection->set_perspective(60.0f, 4.0f / 3.0f, {0.3f, 1000.0f});
   }
   {
