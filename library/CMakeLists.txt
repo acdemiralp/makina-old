@@ -101,6 +101,18 @@ generate_export_header(${PROJECT_NAME}
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
 
+# Copy dlls to build directory.
+if(WIN32)
+  foreach   (FOLDER ${CONAN_BIN_DIRS_DEBUG})
+    file    (GLOB BINARIES ${FOLDER}/*.dll)
+    file    (COPY ${BINARIES} DESTINATION ${PROJECT_BINARY_DIR}/Debug  )
+  endforeach()
+  foreach   (FOLDER ${CONAN_BIN_DIRS_RELEASE})
+    file    (GLOB BINARIES ${FOLDER}/*.dll)
+    file    (COPY ${BINARIES} DESTINATION ${PROJECT_BINARY_DIR}/Release)
+  endforeach()
+endif()
+
 # Copy data folder to build directory.
 file(COPY ${PROJECT_SOURCE_DIR}/../data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
