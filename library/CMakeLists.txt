@@ -114,7 +114,7 @@ if(WIN32)
 endif()
 
 # Copy data folder to build directory.
-file(COPY ${PROJECT_SOURCE_DIR}/../data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/../data DESTINATION ${PROJECT_BINARY_DIR})
 
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
