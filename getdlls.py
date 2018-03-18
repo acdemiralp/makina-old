@@ -1,3 +1,13 @@
+
+"""
+    Script for geting all dlls from conan cache folders and bringing them to a specified folder, 
+    for convenience and build automation. 
+
+    Usage: py getdlls.py -d <path_where_the_dlls_go>
+
+    dlls are broken up by environment, which is determined by conaninfo.txt files. 
+"""
+
 import sys
 import getopt
 from pathlib import Path
