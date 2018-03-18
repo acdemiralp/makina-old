@@ -11,8 +11,8 @@ namespace mak
 struct MAKINA_EXPORT texture_description
 {
   std::array<GLsizei, 3> size   ;
-  GLenum                 format = GL_RGBA;
-  GLsizei                levels = 0      ;
+  GLenum                 format = GL_RGBA8;
+  GLsizei                levels = 1       ;
 };
 using texture_1d_resource = fg::resource<texture_description, gl::texture_1d>;
 using texture_2d_resource = fg::resource<texture_description, gl::texture_2d>;
