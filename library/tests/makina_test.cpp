@@ -27,10 +27,10 @@ TEST_CASE("Makina test.", "[makina]")
   auto engine = mak::make_default_engine();
 
   const auto display_system = engine->get_system<mak::display_system>();
-  display_system->create_opengl_window(
+  auto window = display_system->create_opengl_window(
     "Makina", 
     std::array<std::size_t, 2>{32 , 32 }, 
-    std::array<std::size_t, 2>{640, 480}, 
+    std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
 
   const auto input_system = engine->get_system<mak::input_system>();

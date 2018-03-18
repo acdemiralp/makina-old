@@ -15,6 +15,37 @@
 
 namespace mak
 {
+fg::render_task<test_task_data>*         add_test_render_task        (renderer* framegraph, framebuffer_resource* target)
+{
+  return framegraph->add_render_task<test_task_data>(
+    "Test Shading Pass",
+    [&] (      test_task_data& data, fg::render_task_builder& builder)
+    {
+      data.vertices     = builder.create<buffer_resource>      ("Test Shading Vertices"    , buffer_description        {GLsizeiptr(1e+6), GL_ARRAY_BUFFER});
+      data.program      = builder.create<program_resource>     ("Test Shading Program"     , program::description      {
+        "#version 420 \n in vec3 position; out vec3 color; void main() { color = position; gl_Position = vec4(position, 1.0); }", 
+        "#version 420 \n in vec3 color; out vec4 frag_color; void main() { frag_color = vec4(color.x + 0.5, 0.5, color.y + 0.5, 1.0); }"});
+      data.vertex_array = builder.create<vertex_array_resource>("Test Shading Vertex Array", vertex_array::description {{{data.vertices, 3, GL_FLOAT}}});
+      data.target       = builder.write(target);
+    },
+    [=] (const test_task_data& data)
+    {
+      data.program     ->actual()->use   ();
+      data.vertex_array->actual()->bind  ();
+      data.target      ->actual()->bind  ();
+      
+      std::vector<glm::vec3> points = {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, 1.0f, 0.0f}};
+      data.vertices->actual()->set_sub_data(0, sizeof(glm::vec3) * points.size(), points.data());
+
+      gl::draw_arrays(GL_TRIANGLE_STRIP, 0, 5);
+
+      data.target      ->actual()->unbind();
+      data.vertex_array->actual()->unbind();
+      data.program     ->actual()->unuse ();
+
+      gl::print_error("Error in Test Shading Pass: ");
+    });
+}
 fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph)
 {
   // Shader types.

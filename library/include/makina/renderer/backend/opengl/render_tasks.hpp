@@ -14,6 +14,13 @@
 
 namespace mak
 {
+struct MAKINA_EXPORT test_task_data
+{
+  buffer_resource*                  vertices           ;
+  program_resource*                 program            ;
+  vertex_array_resource*            vertex_array       ;
+  framebuffer_resource*             target             ;
+};
 struct MAKINA_EXPORT upload_scene_task_data
 {
   buffer_resource*                  vertices           ;
@@ -53,6 +60,7 @@ struct MAKINA_EXPORT phong_task_data
   framebuffer_resource*             target             ;
 };
 
+MAKINA_EXPORT fg::render_task<test_task_data>*         add_test_render_task        (renderer* framegraph, framebuffer_resource* target);
 MAKINA_EXPORT fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph);
 MAKINA_EXPORT fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, framebuffer_resource* target, const glm::vec4& color);
 MAKINA_EXPORT fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
