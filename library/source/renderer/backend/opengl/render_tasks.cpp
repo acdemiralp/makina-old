@@ -221,16 +221,16 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto materials_size  = static_cast<GLuint>(materials .size());
       auto cameras_size    = static_cast<GLuint>(cameras   .size());
       auto lights_size     = static_cast<GLuint>(lights    .size());
+      data.transforms->actual()->set_sub_data(0               , sizeof GLuint                        , &transforms_size );
+      data.materials ->actual()->set_sub_data(0               , sizeof GLuint                        , &materials_size  );
+      data.cameras   ->actual()->set_sub_data(0               , sizeof GLuint                        , &cameras_size    );
+      data.lights    ->actual()->set_sub_data(0               , sizeof GLuint                        , &lights_size     );
+      data.transforms->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform * transforms.size(), transforms.data()); // std430 cannot be trusted for alignment.
+      data.materials ->actual()->set_sub_data(sizeof glm::vec4, sizeof _material  * materials .size(), materials .data()); // std430 cannot be trusted for alignment.
+      data.cameras   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera    * cameras   .size(), cameras   .data()); // std430 cannot be trusted for alignment.
+      data.lights    ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light     * lights    .size(), lights    .data()); // std430 cannot be trusted for alignment.
+      gl::memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-      data.transforms   ->actual()->set_sub_data(0               , sizeof glm::uint                     , &transforms_size );
-      data.materials    ->actual()->set_sub_data(0               , sizeof glm::uint                     , &materials_size  );
-      data.cameras      ->actual()->set_sub_data(0               , sizeof glm::uint                     , &cameras_size    );
-      data.lights       ->actual()->set_sub_data(0               , sizeof glm::uint                     , &lights_size     );
-      data.transforms   ->actual()->set_sub_data(sizeof glm::uint, sizeof _transform * transforms.size(), transforms.data());
-      data.materials    ->actual()->set_sub_data(sizeof glm::uint, sizeof _material  * materials .size(), materials .data());
-      data.cameras      ->actual()->set_sub_data(sizeof glm::uint, sizeof _camera    * cameras   .size(), cameras   .data());
-      data.lights       ->actual()->set_sub_data(sizeof glm::uint, sizeof _light     * lights    .size(), lights    .data());
-      
       data.draw_calls   ->actual()->set_sub_data(0           , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls.data());
       data.parameter_map->actual()->set         ("draw_count", draw_calls.size());
 
