@@ -6,6 +6,12 @@ std::string default_vertex_shader = R"(
 #version 450
 #extension GL_ARB_explicit_attrib_location : enable
 
+const mat4 lh_to_rh = mat4(
+  vec4(1.0f, 0.0f,  0.0f, 0.0f),
+  vec4(0.0f, 1.0f,  0.0f, 0.0f),
+  vec4(0.0f, 0.0f, -1.0f, 0.0f),
+  vec4(0.0f, 0.0f,  0.0f, 1.0f));
+
 struct _transform
 {
   mat4 model     ;
@@ -43,7 +49,7 @@ out vs_output_type
 
 void main()
 {
-  mat4 model_view   = cameras[camera_index].view * transforms[instance_attribute.x].model;
+  mat4 model_view   = lh_to_rh * cameras[camera_index].view * transforms[instance_attribute.x].model;
   vec4 trans_vertex = model_view * vec4(vertex, 1.0f);
   
   vs_output.vertex             = trans_vertex.xyz;
