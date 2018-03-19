@@ -1,5 +1,7 @@
 #include <makina/renderer/backend/glsl/shader_sources.hpp>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace mak
 {
 std::string default_vertex_shader = R"(
@@ -11,6 +13,12 @@ const mat4 lh_to_rh = mat4(
   vec4(0.0f, 1.0f,  0.0f, 0.0f),
   vec4(0.0f, 0.0f, -1.0f, 0.0f),
   vec4(0.0f, 0.0f,  0.0f, 1.0f));
+
+const mat4 lh_to_rh2 = mat4(
+  vec4(1.0f, 0.0f,  0.0f,  0.0f),
+  vec4(0.0f, 1.0f,  0.0f,  0.0f),
+  vec4(0.0f, 0.0f,  1.0f, -1.0f),
+  vec4(0.0f, 0.0f, -1.0f,  1.0f));
 
 struct _transform
 {
@@ -49,15 +57,19 @@ out vs_output_type
 
 void main()
 {
-  mat4 model_view   = lh_to_rh * cameras[camera_index].view * transforms[instance_attribute.x].model;
-  vec4 trans_vertex = model_view * vec4(vertex, 1.0f);
+  mat4 model_view   = lh_to_rh * cameras[camera_index].view * transforms[instance_attribute.x].model * lh_to_rh;
+  vec4 trans_vertex = model_view * vec4(vertex.x, vertex.y, -vertex.z, 1.0f);
   
   vs_output.vertex             = trans_vertex.xyz;
   vs_output.normal             = normalize((model_view * vec4(normal, 0.0f)).xyz);
   vs_output.texture_coordinate = texture_coordinate;
   vs_output.material_index     = instance_attribute.y;
 
-  gl_Position = cameras[camera_index].projection * trans_vertex;
+  mat4 proj = cameras[camera_index].projection;
+  proj[2][2] = -proj[2][2];
+  proj[3][2] = -proj[3][2];
+
+  gl_Position = proj * trans_vertex;
 }
 )";
 std::string phong_fragment_shader = R"(

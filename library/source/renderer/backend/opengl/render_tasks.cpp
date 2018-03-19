@@ -305,7 +305,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       data.target      ->actual()->bind  ();
 
       //gl::set_depth_test_enabled          (true   );
-      //gl::set_polygon_face_culling_enabled(true   );
+      gl::set_polygon_face_culling_enabled(false );
       //gl::set_front_face                  (GL_CW  );
       //gl::set_cull_face                   (GL_BACK);
       gl::multi_draw_elements_indirect    (GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
