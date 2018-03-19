@@ -30,6 +30,12 @@ std::unique_ptr<engine> make_default_engine()
     transform->set_rotation_euler(glm::vec3(50.0f, -30.0f, 0.0f));
     light->color = glm::vec3(1.0f, 0.95f, 0.83f);
   }
+  {
+    auto entity    = scene ->add_entity();
+    auto transform = entity->add_component<mak::transform>();
+    auto light     = entity->add_component<mak::light>    ();
+    light->type  = mak::light::type::ambient;
+  }
   engine->set_scene(std::move(scene));
 
   return engine;
