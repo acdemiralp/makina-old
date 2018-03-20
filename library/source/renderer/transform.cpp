@@ -102,6 +102,18 @@ void              transform::reset                ()
   update_matrix();
 }
 
+void              transform::set_parent           (transform* parent)
+{
+  set_parent(parent, true);
+}
+void              transform::set_parent           (transform* parent, const bool maintain_absolute)
+{
+  const auto matrix = absolute_matrix_;
+  hierarchical<transform>::set_parent(parent);
+  if (maintain_absolute) set_matrix(matrix, true);
+  update_matrix();
+}
+
 void              transform::update_matrix        ()
 {
   matrix_ = glm::translate(translation_) * glm::mat4_cast(rotation_) * glm::scale(scale_);

@@ -43,17 +43,8 @@ public:
   void              look_at              (const glm::vec3& target     , const glm::vec3& up = glm::vec3(0.0f, 1.0f, 0.0f), const bool absolute = false);
   void              reset                ();
 
-  void              set_parent           (transform* parent) override
-  {
-    set_parent(parent, true);
-  }
-  void              set_parent           (transform* parent, const bool maintain_absolute)
-  {
-    const auto matrix = absolute_matrix_;
-    hierarchical<transform>::set_parent(parent);
-    if (maintain_absolute) set_matrix(matrix, true);
-    update_matrix();
-  }
+  void              set_parent           (transform* parent) override;
+  void              set_parent           (transform* parent, const bool maintain_absolute);
 
 protected:
   void              update_matrix        ();
