@@ -94,9 +94,13 @@ inline void ra::load(const std::string& filepath, mak::model* model)
         {
           auto texture = scene->mTextures[boost::lexical_cast<int>(relative_filepath.data[1])];
           image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight});
+          image->to_32_bits();
         }
         else
+        {
           image = std::make_unique<mak::image>(folderpath + "/" + relative_filepath.C_Str());
+          image->to_32_bits();
+        }
       }
     };
     load_texture(aiTextureType_AMBIENT , material->ambient_image );
