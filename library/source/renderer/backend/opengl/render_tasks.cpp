@@ -48,36 +48,31 @@ fg::render_task<test_task_data>*         add_test_render_task        (renderer* 
 }
 fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph)
 {
-  // Shader types.
+  // Shader types with std430 alignment.
   struct _transform
   {
-    glm::mat4  model           ;
+    glm::mat4    model      ;
   };
   struct _material
   {
-    glm::bvec3 use_texture     ;
-    glm::vec3  ambient         ;
-    glm::vec3  diffuse         ;
-    glm::vec3  specular        ;
-    glm::f32   shininess       ;
-    glm::u64   ambient_texture ;
-    glm::u64   diffuse_texture ;
-    glm::u64   specular_texture;
+    glm::bvec4   use_texture; // ambient - diffuse - specular - unused
+    glm::vec4    ambient    ; // w is unused.
+    glm::vec4    diffuse    ; // w is unused.
+    glm::vec4    specular   ; // w is shininess.
+    glm::u64vec4 textures   ; // ambient - diffuse - specular - unused
   };
   struct _camera
   {
-    glm::mat4  view            ;
-    glm::mat4  projection      ;
-  };
-  struct _light
-  {            
-    glm::uint  type            ;
-    glm::vec3  color           ;
-    glm::f32   intensity       ;
-    glm::f32   range           ; // spot-point
-    glm::vec2  spot_angles     ; // spot
-    glm::vec3  position        ; // spot-point
-    glm::vec3  direction       ; // spot-directional
+    glm::mat4    view       ;
+    glm::mat4    projection ;
+  };             
+  struct _light  
+  {              
+    glm::uvec4   type       ; // y, z, w are unused.
+    glm::vec4    color      ; // w is unused.
+    glm::vec4    properties ; // intensity - range - inner spot - outer spot
+    glm::vec4    position   ; // w is unused.
+    glm::vec4    direction  ; // w is unused.
   };
 
   return framegraph->add_render_task<upload_scene_task_data>(
@@ -100,7 +95,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{2048, 2048, 1}, GL_RGBA8});
+        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{512, 512, 1}, GL_RGBA8});
       // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
     },
     [=] (const upload_scene_task_data& data)
@@ -130,41 +125,43 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         std::optional<gl::texture_handle> ambient_handle, diffuse_handle, specular_handle;
         if (material->ambient_image)
         {
-          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->ambient_image->dimensions()[0], material->ambient_image->dimensions()[1], GL_RGBA, GL_UNSIGNED_BYTE, material->ambient_image->pixels().data);
+          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->ambient_image->dimensions()[0], material->ambient_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->ambient_image->pixels().data);
           ambient_handle.emplace(*data.textures[texture_offset]->actual());
           ambient_handle->set_resident(true);
           texture_offset++;
         }
         if (material->diffuse_image)
         {
-          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->diffuse_image->dimensions()[0], material->diffuse_image->dimensions()[1], GL_RGBA, GL_UNSIGNED_BYTE, material->diffuse_image->pixels().data);
+          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->diffuse_image->dimensions()[0], material->diffuse_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->diffuse_image->pixels().data);
           diffuse_handle.emplace(*data.textures[texture_offset]->actual());
           diffuse_handle->set_resident(true);
           texture_offset++;
         }
         if (material->ambient_image)
         {
-          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->specular_image->dimensions()[0], material->specular_image->dimensions()[1], GL_RGBA, GL_UNSIGNED_BYTE, material->specular_image->pixels().data);
+          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->specular_image->dimensions()[0], material->specular_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->specular_image->pixels().data);
           specular_handle.emplace(*data.textures[texture_offset]->actual());
           specular_handle->set_resident(true);
           texture_offset++;
         }
 
         transforms.push_back(_transform {transform->matrix(true)});
-        materials .push_back(_material  {
-          glm::bvec3 
+        materials .push_back(_material {
+          glm::bvec4 
           {
             ambient_handle ,
             diffuse_handle ,
-            specular_handle
+            specular_handle,
+            false
           },
-          material->ambient  ,
-          material->diffuse  ,
-          material->specular ,
-          material->shininess,
-          ambient_handle  ? ambient_handle ->id() : 0,
-          diffuse_handle  ? diffuse_handle ->id() : 0,
-          specular_handle ? specular_handle->id() : 0 
+          glm::vec4   (material->ambient , 0.0f),
+          glm::vec4   (material->diffuse , 0.0f),
+          glm::vec4   (material->specular, material->shininess),
+          glm::u64vec4(
+            ambient_handle  ? ambient_handle ->id() : 0, 
+            diffuse_handle  ? diffuse_handle ->id() : 0, 
+            specular_handle ? specular_handle->id() : 0, 
+            0)
         });
 
         const auto& vertices            = mesh_render->mesh->vertices           ;
@@ -207,13 +204,11 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         auto light     = entity->component<mak::light>    ();
         lights.push_back(_light
         {
-          static_cast<GLuint>(light->type),
-          light    ->color                ,
-          light    ->intensity            ,
-          light    ->range                ,
-          light    ->spot_angles          ,
-          transform->translation(true)    ,
-          transform->forward    (true)
+          glm::uvec4(light->type , 0, 0, 0),
+          glm::vec4 (light->color, 0.0f),
+          glm::vec4 (light->intensity, light->range, light->spot_angles[0], light->spot_angles[1]),
+          glm::vec4 (transform->translation(true), 0.0f),
+          glm::vec4 (transform->forward    (true), 0.0f)
         });
       }
 
@@ -221,15 +216,14 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto materials_size  = static_cast<GLuint>(materials .size());
       auto cameras_size    = static_cast<GLuint>(cameras   .size());
       auto lights_size     = static_cast<GLuint>(lights    .size());
-      //data.transforms->actual()->set_sub_data(0                , sizeof GLuint                        , &transforms_size );
-      data.materials ->actual()->set_sub_data(0                , sizeof GLuint                        , &materials_size  );
-      //data.cameras   ->actual()->set_sub_data(0                , sizeof GLuint                        , &cameras_size    );
-      data.lights    ->actual()->set_sub_data(0                , sizeof GLuint                        , &lights_size     );
-      data.transforms->actual()->set_sub_data(0, sizeof _transform * transforms.size(), transforms.data()); // std430 cannot be trusted for alignment.
-      data.materials ->actual()->set_sub_data(sizeof glm::uvec4, sizeof _material  * materials .size(), materials .data()); // std430 cannot be trusted for alignment.
-      data.cameras   ->actual()->set_sub_data(0, sizeof _camera    * cameras   .size(), cameras   .data()); // std430 cannot be trusted for alignment.
-      data.lights    ->actual()->set_sub_data(sizeof glm::uvec4, sizeof _light     * lights    .size(), lights    .data()); // std430 cannot be trusted for alignment.
-      gl::memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+      data.transforms->actual()->set_sub_data(0               , sizeof GLuint                        , &transforms_size );
+      data.materials ->actual()->set_sub_data(0               , sizeof GLuint                        , &materials_size  );
+      data.cameras   ->actual()->set_sub_data(0               , sizeof GLuint                        , &cameras_size    );
+      data.lights    ->actual()->set_sub_data(0               , sizeof GLuint                        , &lights_size     );
+      data.transforms->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform * transforms.size(), transforms.data()); // std430 alignment
+      data.materials ->actual()->set_sub_data(sizeof glm::vec4, sizeof _material  * materials .size(), materials .data()); // std430 alignment
+      data.cameras   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera    * cameras   .size(), cameras   .data()); // std430 alignment
+      data.lights    ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light     * lights    .size(), lights    .data()); // std430 alignment
 
       data.draw_calls   ->actual()->set_sub_data(0           , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls.data());
       data.parameter_map->actual()->set         ("draw_count", draw_calls.size());

@@ -23,11 +23,13 @@ layout(location = 3) in uvec2 instance_attribute; // x transform id, y material 
 
 layout(std430, binding = 0) readonly buffer transform
 {
-  _transform transforms[]     ;
+  uint       transforms_size;
+  _transform transforms[];
 };
 layout(std430, binding = 2) readonly buffer camera
 {
-  _camera    cameras[]        ;
+  uint       cameras_size;
+  _camera    cameras   [];
 };
 uniform uint camera_index = 0u;
 
@@ -65,14 +67,14 @@ const uint light_type_spot        = 3;
 
 struct _material
 {
-  bvec3     use_texture     ; // ambient-diffuse-specular
-  vec3      ambient         ;
-  vec3      diffuse         ;
-  vec3      specular        ;
-  float     shininess       ;
+  bvec4     use_texture     ; // ambient - diffuse - specular - unused
+  vec4      ambient         ; // w is unused.
+  vec4      diffuse         ; // w is unused.
+  vec4      specular        ; // w is shininess.
   sampler2D ambient_texture ;
   sampler2D diffuse_texture ;
   sampler2D specular_texture;
+  sampler2D unused_texture  ;
 };
 struct _camera
 {
@@ -81,27 +83,26 @@ struct _camera
 };
 struct _light
 {
-  uint      type            ;
-  vec3      color           ;
-  float     intensity       ;
-  float     range           ; // spot-point
-  vec2      spot_angles     ; // spot
-  vec3      position        ; // spot-point
-  vec3      direction       ; // spot-directional
+  uvec4     type            ; // y, z, w are unused. 
+  vec4      color           ; // w is unused.
+  vec4      properties      ; // intensity - range - inner spot - outer spot
+  vec4      position        ; // w is unused.
+  vec4      direction       ; // w is unused.
 };
 
 layout(std430, binding = 1) readonly buffer material
 {
-  uvec4     materials_size  ;
+  uint      materials_size  ;
   _material materials[]     ;
 };
 layout(std430, binding = 2) readonly buffer camera
 {
+  uint      cameras_size    ;
   _camera   cameras[]       ;
 };
 layout(std430, binding = 3) readonly buffer light
 {
-  uvec4     lights_size     ;
+  uint      lights_size     ;
   _light    lights[]        ;
 };
 uniform uint  camera_index          = 0;
@@ -121,43 +122,44 @@ layout(location = 0) out vec4 output_color;
 
 void main()
 {
-  vec3  ka = materials[fs_input.material_index].use_texture[0] ? texture(materials[fs_input.material_index].ambient_texture , fs_input.texture_coordinate).rgb : materials[fs_input.material_index].ambient ;
-  vec3  kd = materials[fs_input.material_index].use_texture[1] ? texture(materials[fs_input.material_index].diffuse_texture , fs_input.texture_coordinate).rgb : materials[fs_input.material_index].diffuse ;
-  vec3  ks = materials[fs_input.material_index].use_texture[2] ? texture(materials[fs_input.material_index].specular_texture, fs_input.texture_coordinate).rgb : materials[fs_input.material_index].specular;
-  float a  = materials[fs_input.material_index].shininess;
+  vec3  ka = materials[fs_input.material_index].use_texture[0] ? texture(materials[fs_input.material_index].ambient_texture , fs_input.texture_coordinate).rgb : materials[fs_input.material_index].ambient.rgb ;
+  vec3  kd = materials[fs_input.material_index].use_texture[1] ? texture(materials[fs_input.material_index].diffuse_texture , fs_input.texture_coordinate).rgb : materials[fs_input.material_index].diffuse.rgb ;
+  vec3  ks = materials[fs_input.material_index].use_texture[2] ? texture(materials[fs_input.material_index].specular_texture, fs_input.texture_coordinate).rgb : materials[fs_input.material_index].specular.rgb;
+  float a  = materials[fs_input.material_index].specular.a;
   vec3  n  = normalize( fs_input.normal);
   vec3  v  = normalize(-fs_input.vertex);
 
   vec3 color = vec3(0.0);
-  for(uint i = 0; i < lights_size.x; ++i)
+  for(uint i = 0; i < lights_size; ++i)
   {
-    vec3 il = lights[i].intensity * lights[i].color;
+    vec3 il   = lights[i].properties.x * lights[i].color.rgb;
+    uint type = lights[i].type.x;
 
-    if (lights[i].type == light_type_ambient)
+    if (type == light_type_ambient)
     {
       color += vec3(ka * il);
     }
-    if (lights[i].type == light_type_directional)
+    if (type == light_type_directional)
     {
-      vec3  l           = normalize(-lights[i].direction);
+      vec3  l           = normalize(-lights[i].direction.xyz);
       vec3  r           = reflect  (-l, n);
       vec3  diffuse     = kd * il * max(dot(l, n), 0.0);
       vec3  specular    = ks * il * pow(max(dot(r, v), 0.0), a);
       color += diffuse + specular;
     }
-    if (lights[i].type == light_type_point || lights[i].type == light_type_spot)
+    if (type == light_type_point || type == light_type_spot)
     {
-      vec3  l           = normalize(lights[i].position - fs_input.vertex);
+      vec3  l           = normalize(lights[i].position.xyz - fs_input.vertex);
       vec3  r           = reflect  (-l, n);
-      float distance    = length   (lights[i].position - fs_input.vertex);
+      float distance    = length   (lights[i].position.xyz - fs_input.vertex);
       float attenuation = 1.0 / (attenuation_constant + attenuation_linear * distance + attenuation_quadratic * distance * distance);
       vec3  diffuse     = attenuation * kd * il * max(dot(l, n), 0.0);
       vec3  specular    = attenuation * ks * il * pow(max(dot(r, v), 0.0), a);
   
       // Soft-edged spotlights are a special case of point lights.
-      if(lights[i].type == light_type_spot)
+      if(type == light_type_spot)
       {
-        float cutoff = clamp((dot(l, normalize(-lights[i].direction)) - lights[i].spot_angles.y) / (lights[i].spot_angles.x - lights[i].spot_angles.y), 0.0, 1.0);
+        float cutoff = clamp((dot(l, normalize(-lights[i].direction.xyz)) - lights[i].properties.w) / (lights[i].properties.z - lights[i].properties.w), 0.0, 1.0);
         diffuse  *= cutoff;
         specular *= cutoff;
       }
@@ -166,8 +168,7 @@ void main()
     }
   }
 
-  color = kd;
-  color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
+  // color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
   output_color = vec4(color, 1.0);
 }
 )";
