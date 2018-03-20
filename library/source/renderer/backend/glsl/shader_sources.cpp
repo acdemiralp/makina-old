@@ -50,7 +50,6 @@ void main()
   vs_output.material_index     = instance_attribute.y;
 
   gl_Position = cameras[camera_index].projection * trans_vertex;
-  gl_Position.y = -gl_Position.y;
 }
 )";
 std::string phong_fragment_shader = R"(
