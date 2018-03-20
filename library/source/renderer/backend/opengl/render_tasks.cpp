@@ -221,14 +221,14 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto materials_size  = static_cast<GLuint>(materials .size());
       auto cameras_size    = static_cast<GLuint>(cameras   .size());
       auto lights_size     = static_cast<GLuint>(lights    .size());
-      data.transforms->actual()->set_sub_data(0               , sizeof GLuint                        , &transforms_size );
-      data.materials ->actual()->set_sub_data(0               , sizeof GLuint                        , &materials_size  );
-      data.cameras   ->actual()->set_sub_data(0               , sizeof GLuint                        , &cameras_size    );
-      data.lights    ->actual()->set_sub_data(0               , sizeof GLuint                        , &lights_size     );
-      data.transforms->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform * transforms.size(), transforms.data()); // std430 cannot be trusted for alignment.
-      data.materials ->actual()->set_sub_data(sizeof glm::vec4, sizeof _material  * materials .size(), materials .data()); // std430 cannot be trusted for alignment.
-      data.cameras   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera    * cameras   .size(), cameras   .data()); // std430 cannot be trusted for alignment.
-      data.lights    ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light     * lights    .size(), lights    .data()); // std430 cannot be trusted for alignment.
+      //data.transforms->actual()->set_sub_data(0                , sizeof GLuint                        , &transforms_size );
+      data.materials ->actual()->set_sub_data(0                , sizeof GLuint                        , &materials_size  );
+      //data.cameras   ->actual()->set_sub_data(0                , sizeof GLuint                        , &cameras_size    );
+      data.lights    ->actual()->set_sub_data(0                , sizeof GLuint                        , &lights_size     );
+      data.transforms->actual()->set_sub_data(0, sizeof _transform * transforms.size(), transforms.data()); // std430 cannot be trusted for alignment.
+      data.materials ->actual()->set_sub_data(sizeof glm::uvec4, sizeof _material  * materials .size(), materials .data()); // std430 cannot be trusted for alignment.
+      data.cameras   ->actual()->set_sub_data(0, sizeof _camera    * cameras   .size(), cameras   .data()); // std430 cannot be trusted for alignment.
+      data.lights    ->actual()->set_sub_data(sizeof glm::uvec4, sizeof _light     * lights    .size(), lights    .data()); // std430 cannot be trusted for alignment.
       gl::memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
       data.draw_calls   ->actual()->set_sub_data(0           , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls.data());
@@ -304,7 +304,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       data.vertex_array->actual()->bind  ();
       data.target      ->actual()->bind  ();
 
-      glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+      glClipControl                       (GL_UPPER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true);
       gl::set_depth_function              (GL_LESS);
       gl::set_polygon_face_culling_enabled(false  );

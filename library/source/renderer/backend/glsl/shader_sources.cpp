@@ -23,12 +23,10 @@ layout(location = 3) in uvec2 instance_attribute; // x transform id, y material 
 
 layout(std430, binding = 0) readonly buffer transform
 {
-  uint       transforms_size  ;
   _transform transforms[]     ;
 };
 layout(std430, binding = 2) readonly buffer camera
 {
-  uint       cameras_size     ;
   _camera    cameras[]        ;
 };
 uniform uint camera_index = 0u;
@@ -51,7 +49,8 @@ void main()
   vs_output.texture_coordinate = texture_coordinate;
   vs_output.material_index     = instance_attribute.y;
 
-  gl_Position = cameras[camera_index].projection * vec4(trans_vertex.xyz, 1.0);
+  gl_Position = cameras[camera_index].projection * trans_vertex;
+  gl_Position.y = -gl_Position.y;
 }
 )";
 std::string phong_fragment_shader = R"(
@@ -94,17 +93,16 @@ struct _light
 
 layout(std430, binding = 1) readonly buffer material
 {
-  uint      materials_size  ;
+  uvec4     materials_size  ;
   _material materials[]     ;
 };
 layout(std430, binding = 2) readonly buffer camera
 {
-  uint      cameras_size    ;
   _camera   cameras[]       ;
 };
 layout(std430, binding = 3) readonly buffer light
 {
-  uint      lights_size     ;
+  uvec4     lights_size     ;
   _light    lights[]        ;
 };
 uniform uint  camera_index          = 0;
@@ -132,7 +130,7 @@ void main()
   vec3  v  = normalize(-fs_input.vertex);
 
   vec3 color = vec3(0.0);
-  for(int i = 0; i < lights_size; ++i)
+  for(uint i = 0; i < lights_size.x; ++i)
   {
     vec3 il = lights[i].intensity * lights[i].color;
 
@@ -169,6 +167,7 @@ void main()
     }
   }
 
+  color = kd;
   color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
   output_color = vec4(color, 1.0);
 }
