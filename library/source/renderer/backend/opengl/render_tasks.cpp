@@ -237,7 +237,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       gl::print_error("Error in Upload Scene Pass: ");
     });
 }
-fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, framebuffer_resource* target, const glm::vec4&              color     )
+fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* framegraph, framebuffer_resource* target, const glm::vec4&              color     , const float depth)
 {
   return framegraph->add_render_task<clear_task_data>(
     "Clear Pass",
@@ -248,7 +248,7 @@ fg::render_task<clear_task_data>*        add_clear_render_task       (renderer* 
     [=] (const clear_task_data& data)
     {
       data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
-      data.target->actual()->clear_depth_and_stencil(0.0f, 0);
+      data.target->actual()->clear_depth_and_stencil(depth, 0);
 
       gl::print_error("Error in Clear Pass: ");
     });
@@ -304,8 +304,10 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       data.vertex_array->actual()->bind  ();
       data.target      ->actual()->bind  ();
 
-      //gl::set_depth_test_enabled          (true   );
-      gl::set_polygon_face_culling_enabled(false );
+      glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+      gl::set_depth_test_enabled          (true);
+      gl::set_depth_function              (GL_LESS);
+      gl::set_polygon_face_culling_enabled(false  );
       //gl::set_front_face                  (GL_CW  );
       //gl::set_cull_face                   (GL_BACK);
       gl::multi_draw_elements_indirect    (GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
