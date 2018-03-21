@@ -168,8 +168,13 @@ void main()
     }
   }
 
-  // color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
-  color = ka;
+  // TODO: 
+  // - Ensure texture coordinates are scaled correctly.
+  // - Ensure lighting is functional.
+  // - Optimize uploading of data to the GPU.
+
+  color        = ka;
+  color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
   output_color = vec4(color, 1.0);
 }
 )";
