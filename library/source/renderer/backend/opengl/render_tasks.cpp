@@ -95,7 +95,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{128, 128, 1}, GL_RGBA8});
+        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{512, 512, 1}, GL_RGBA8});
       // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
     },
     [=] (const upload_scene_task_data& data)
