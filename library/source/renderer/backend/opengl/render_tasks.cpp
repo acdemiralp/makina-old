@@ -278,7 +278,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
         { 
           {data.vertices           , 3, GL_FLOAT       }, 
           {data.normals            , 3, GL_FLOAT       }, 
-          {data.texture_coordinates, 2, GL_FLOAT       }, 
+          {data.texture_coordinates, 3, GL_FLOAT       }, 
           {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 1}
         }, 
         {

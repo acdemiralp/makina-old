@@ -18,7 +18,7 @@ struct _camera
 
 layout(location = 0) in vec3  vertex;
 layout(location = 1) in vec3  normal;
-layout(location = 2) in vec2  texture_coordinate;
+layout(location = 2) in vec3  texture_coordinate;
 layout(location = 3) in uvec2 instance_attribute; // x transform id, y material id
 
 layout(std430, binding = 0) readonly buffer transform
@@ -48,7 +48,7 @@ void main()
   
   vs_output.vertex             = trans_vertex.xyz;
   vs_output.normal             = normalize((model_view * vec4(normal, 0.0f)).xyz);
-  vs_output.texture_coordinate = texture_coordinate;
+  vs_output.texture_coordinate = texture_coordinate.xy;
   vs_output.material_index     = instance_attribute.y;
 
   gl_Position = cameras[camera_index].projection * trans_vertex;
