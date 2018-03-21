@@ -32,6 +32,8 @@ inline void ra::load(const std::string& filepath, mak::model* model)
   const auto scene = importer.ReadFile(filepath.c_str(), 
     aiProcess_CalcTangentSpace    |
     aiProcess_ConvertToLeftHanded |
+    //aiProcess_MakeLeftHanded      |
+    //aiProcess_FlipWindingOrder    |
     aiProcess_GenSmoothNormals    | 
     aiProcess_Triangulate         );
 
@@ -56,11 +58,14 @@ inline void ra::load(const std::string& filepath, mak::model* model)
     mesh->vertices             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices        ), reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices         + assimp_mesh->mNumVertices));
     mesh->normals              .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals         ), reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals          + assimp_mesh->mNumVertices));
     if (assimp_mesh->HasTextureCoords(0))
-      mesh->texture_coordinates.assign (reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords[0]), reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords[0] + assimp_mesh->mNumVertices));
+      mesh->texture_coordinates.assign (reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords[0]), reinterpret_cast<glm::vec2*>(assimp_mesh->mTextureCoords[0] + assimp_mesh->mNumVertices)); // Make this vec3...
     if (assimp_mesh->HasVertexColors (0))
       mesh->colors             .assign (reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       [0]), reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       [0] + assimp_mesh->mNumVertices));
-    mesh->tangents             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents        ), reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents         + assimp_mesh->mNumVertices));
-    mesh->bitangents           .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents      ), reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents       + assimp_mesh->mNumVertices));
+    if (assimp_mesh->HasTangentsAndBitangents())
+    {
+      mesh->tangents           .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents        ), reinterpret_cast<glm::vec3*>(assimp_mesh->mTangents         + assimp_mesh->mNumVertices));
+      mesh->bitangents         .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents      ), reinterpret_cast<glm::vec3*>(assimp_mesh->mBitangents       + assimp_mesh->mNumVertices));
+    }
 
     mesh->indices              .reserve(3 * assimp_mesh->mNumFaces);
     for (auto j = 0; j < assimp_mesh->mNumFaces; ++j) 

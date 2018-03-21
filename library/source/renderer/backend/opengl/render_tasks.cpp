@@ -95,7 +95,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{512, 512, 1}, GL_RGBA8});
+        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{128, 128, 1}, GL_RGBA8});
       // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
     },
     [=] (const upload_scene_task_data& data)
@@ -301,7 +301,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );
       gl::set_depth_function              (GL_LESS);
-      gl::set_polygon_face_culling_enabled(true   );
+      //gl::set_polygon_face_culling_enabled(true   );
       gl::set_front_face                  (GL_CW  );
       gl::set_cull_face                   (GL_BACK);
       gl::multi_draw_elements_indirect    (GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));

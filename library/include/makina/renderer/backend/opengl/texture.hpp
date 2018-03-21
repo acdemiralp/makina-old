@@ -31,6 +31,11 @@ inline std::unique_ptr<gl::texture_2d> fg::realize(const mak::texture_descriptio
 {
   auto   texture = std::make_unique<gl::texture_2d>();
   texture->set_storage(description.levels, description.format, description.size[0], description.size[1]);
+  texture->bind();
+  texture->set_mag_filter(GL_LINEAR);
+  texture->set_min_filter(GL_LINEAR);
+  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
   return texture;
 }
 template<>

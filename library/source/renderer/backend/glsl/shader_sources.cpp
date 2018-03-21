@@ -169,6 +169,7 @@ void main()
   }
 
   // color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
+  color = ka;
   output_color = vec4(color, 1.0);
 }
 )";
