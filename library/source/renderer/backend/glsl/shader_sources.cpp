@@ -67,7 +67,7 @@ const uint light_type_spot        = 3;
 
 struct _material
 {
-  bvec4     use_texture     ; // ambient - diffuse - specular - unused
+  uvec4     use_texture     ; // ambient - diffuse - specular - unused
   vec4      ambient         ; // w is unused.
   vec4      diffuse         ; // w is unused.
   vec4      specular        ; // w is shininess.
@@ -122,9 +122,15 @@ layout(location = 0) out vec4 output_color;
 
 void main()
 {
-  vec3  ka = materials[fs_input.material_index].use_texture[0] ? texture(materials[fs_input.material_index].ambient_texture , fs_input.texture_coordinate).rgb : materials[fs_input.material_index].ambient.rgb ;
-  vec3  kd = materials[fs_input.material_index].use_texture[1] ? texture(materials[fs_input.material_index].diffuse_texture , fs_input.texture_coordinate).rgb : materials[fs_input.material_index].diffuse.rgb ;
-  vec3  ks = materials[fs_input.material_index].use_texture[2] ? texture(materials[fs_input.material_index].specular_texture, fs_input.texture_coordinate).rgb : materials[fs_input.material_index].specular.rgb;
+  vec3  ka = materials[fs_input.material_index].use_texture[0] == 1
+    ? texture(materials[fs_input.material_index].ambient_texture , fs_input.texture_coordinate).rgb 
+    : materials[fs_input.material_index].ambient.rgb ;             
+  vec3  kd = materials[fs_input.material_index].use_texture[1] == 1
+    ? texture(materials[fs_input.material_index].diffuse_texture , fs_input.texture_coordinate).rgb 
+    : materials[fs_input.material_index].diffuse.rgb ;             
+  vec3  ks = materials[fs_input.material_index].use_texture[2] == 1
+    ? texture(materials[fs_input.material_index].specular_texture, fs_input.texture_coordinate).rgb 
+    : materials[fs_input.material_index].specular.rgb;
   float a  = materials[fs_input.material_index].specular.a;
   vec3  n  = normalize( fs_input.normal);
   vec3  v  = normalize(-fs_input.vertex);
@@ -169,12 +175,11 @@ void main()
   }
 
   // TODO: 
-  // - Ensure texture coordinates are scaled correctly.
   // - Ensure lighting is functional.
   // - Optimize uploading of data to the GPU.
 
-  color        = ka;
-  color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
+  color        = kd;
+  // color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
   output_color = vec4(color, 1.0);
 }
 )";

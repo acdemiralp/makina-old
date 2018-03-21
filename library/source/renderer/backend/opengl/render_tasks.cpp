@@ -55,11 +55,11 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
   };
   struct _material
   {
-    glm::bvec4   use_texture; // ambient - diffuse - specular - unused
-    glm::vec4    ambient    ; // w is unused.
-    glm::vec4    diffuse    ; // w is unused.
-    glm::vec4    specular   ; // w is shininess.
-    glm::u64vec4 textures   ; // ambient - diffuse - specular - unused
+    glm::uvec4   use_texture   ; // ambient - diffuse - specular - unused
+    glm::vec4    ambient       ; // w is unused.
+    glm::vec4    diffuse       ; // w is unused.
+    glm::vec4    specular      ; // w is shininess.
+    glm::u64vec4 textures      ; // ambient - diffuse - specular - unused
   };
   struct _camera
   {
@@ -75,9 +75,11 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     glm::vec4    direction  ; // w is unused.
   };
 
+  const glm::uvec2 texture_size {2048, 2048};
+
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
-    [ ] (      upload_scene_task_data& data, fg::render_task_builder& builder)
+    [=] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices            = builder.create<buffer_resource>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
       data.normals             = builder.create<buffer_resource>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
@@ -95,7 +97,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       
       data.textures.resize(32);
       for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{512, 512, 1}, GL_RGBA8});
+        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
       // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
     },
     [=] (const upload_scene_task_data& data)
@@ -147,12 +149,12 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
 
         transforms.push_back(_transform {transform->matrix(true)});
         materials .push_back(_material {
-          glm::bvec4 
+          glm::uvec4 
           {
-            ambient_handle ,
-            diffuse_handle ,
-            specular_handle,
-            false
+            static_cast<std::uint32_t>(ambient_handle .has_value()),
+            static_cast<std::uint32_t>(diffuse_handle .has_value()),
+            static_cast<std::uint32_t>(specular_handle.has_value()),
+            0
           },
           glm::vec4   (material->ambient , 0.0f),
           glm::vec4   (material->diffuse , 0.0f),
@@ -170,9 +172,23 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const auto& indices             = mesh_render->mesh->indices            ;
         const std::array<std::uint32_t, 2> instance_attribute {i, i};
 
+        glm::vec3 texture_coordinate_scale(1.0f);
+        if (material->ambient_image)
+          texture_coordinate_scale = glm::vec3(float(material->ambient_image ->dimensions()[0]) / texture_size[0], float(material->ambient_image ->dimensions()[1]) / texture_size[1], 1.0f);
+        else if (material->diffuse_image)                                                                                                        
+          texture_coordinate_scale = glm::vec3(float(material->diffuse_image ->dimensions()[0]) / texture_size[0], float(material->diffuse_image ->dimensions()[1]) / texture_size[1], 1.0f);
+        else if (material->specular_image)
+          texture_coordinate_scale = glm::vec3(float(material->specular_image->dimensions()[0]) / texture_size[0], float(material->specular_image->dimensions()[1]) / texture_size[1], 1.0f);
+
+        std::vector<glm::vec3> transformed_texture_coordinates(texture_coordinates.size());
+        std::transform(texture_coordinates.begin(), texture_coordinates.end(), transformed_texture_coordinates.begin(), [texture_coordinate_scale] (const glm::vec3& texture_coordinate)
+        {
+          return texture_coordinate * texture_coordinate_scale;
+        });
+
         data.vertices           ->actual()->set_sub_data(sizeof vertices           [0] * base_vertex_offset, sizeof vertices           [0] * vertices           .size(), vertices           .data());
         data.normals            ->actual()->set_sub_data(sizeof normals            [0] * base_vertex_offset, sizeof normals            [0] * normals            .size(), normals            .data());
-        data.texture_coordinates->actual()->set_sub_data(sizeof texture_coordinates[0] * base_vertex_offset, sizeof texture_coordinates[0] * texture_coordinates.size(), texture_coordinates.data());
+        data.texture_coordinates->actual()->set_sub_data(sizeof texture_coordinates[0] * base_vertex_offset, sizeof texture_coordinates[0] * texture_coordinates.size(), transformed_texture_coordinates.data());
         data.indices            ->actual()->set_sub_data(sizeof indices            [0] * base_vertex_offset, sizeof indices            [0] * indices            .size(), indices            .data());
         data.instance_attributes->actual()->set_sub_data(sizeof std::array<std::uint32_t, 2> * i           , sizeof std::array<std::uint32_t, 2>                       , instance_attribute .data());
 
