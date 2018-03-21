@@ -137,7 +137,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           diffuse_handle->set_resident(true);
           texture_offset++;
         }
-        if (material->ambient_image)
+        if (material->specular_image)
         {
           data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->specular_image->dimensions()[0], material->specular_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->specular_image->pixels().data);
           specular_handle.emplace(*data.textures[texture_offset]->actual());
