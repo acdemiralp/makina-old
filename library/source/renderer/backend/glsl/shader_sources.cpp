@@ -131,7 +131,7 @@ void main()
   vec3  ks = materials[fs_input.material_index].use_texture[2] == 1
     ? texture(materials[fs_input.material_index].specular_texture, fs_input.texture_coordinate).rgb 
     : materials[fs_input.material_index].specular.rgb;
-  float a  = materials[fs_input.material_index].specular.a;
+  float a  = max(materials[fs_input.material_index].specular.w, 0.0001f);
   vec3  n  = normalize( fs_input.normal);
   vec3  v  = normalize(-fs_input.vertex);
 
@@ -143,21 +143,22 @@ void main()
 
     if (type == light_type_ambient)
     {
-      color += vec3(ka * il);
+      color += clamp(vec3(ka * il), 0, 1);
     }
     if (type == light_type_directional)
     {
-      vec3  l           = normalize(-lights[i].direction.xyz);
+      vec3  l           = normalize(cameras[camera_index].view * vec4(-lights[i].direction.xyz, 0.0f)).xyz;
       vec3  r           = reflect  (-l, n);
       vec3  diffuse     = kd * il * max(dot(l, n), 0.0);
       vec3  specular    = ks * il * pow(max(dot(r, v), 0.0), a);
-      color += diffuse + specular;
+      color += clamp(diffuse + specular, 0, 1);
     }
     if (type == light_type_point || type == light_type_spot)
     {
-      vec3  l           = normalize(lights[i].position.xyz - fs_input.vertex);
+      vec3  p           = (cameras[camera_index].view * vec4(lights[i].position.xyz, 1.0f)).xyz;
+      vec3  l           = normalize(p - fs_input.vertex);
       vec3  r           = reflect  (-l, n);
-      float distance    = length   (lights[i].position.xyz - fs_input.vertex);
+      float distance    = length   (p - fs_input.vertex);
       float attenuation = 1.0 / (attenuation_constant + attenuation_linear * distance + attenuation_quadratic * distance * distance);
       vec3  diffuse     = attenuation * kd * il * max(dot(l, n), 0.0);
       vec3  specular    = attenuation * ks * il * pow(max(dot(r, v), 0.0), a);
@@ -170,16 +171,13 @@ void main()
         specular *= cutoff;
       }
 
-      color += diffuse + specular;
+      color += clamp(diffuse + specular, 0, 1);
     }
   }
 
-  // TODO: 
-  // - Ensure lighting is functional.
-  // - Optimize uploading of data to the GPU.
+  // Gamma correction.
+  // color = pow (color, vec3(1.0 / 2.2)); 
 
-  color        = kd;
-  // color        = pow (color, vec3(1.0 / 2.2)); // Gamma correction.
   output_color = vec4(color, 1.0);
 }
 )";

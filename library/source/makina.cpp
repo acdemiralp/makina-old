@@ -23,19 +23,28 @@ std::unique_ptr<engine> make_default_engine()
     auto controller   = entity->add_component<mak::controller>(make_wasd_controller());
     projection->set_perspective(60.0f, 4.0f / 3.0f, {0.3f, 1000.0f});
   }
+  //{
+  //  auto entity      = scene ->add_entity();
+  //  auto transform   = entity->add_component<mak::transform>();
+  //  auto light       = entity->add_component<mak::light>    ();
+  //  light->type      = mak::light::type::ambient;
+  //  light->intensity = 0.1f;
+  //}
   {
     auto entity    = scene ->add_entity();
     auto transform = entity->add_component<mak::transform>();
     auto light     = entity->add_component<mak::light>    ();
-    transform->set_rotation_euler(glm::vec3(50.0f, -30.0f, 0.0f));
-    light->color = glm::vec3(1.0f, 0.95f, 0.83f);
+    transform->set_rotation_euler(glm::vec3(0.0f, 0.0f, 0.0f));
+    light->color   = glm::vec3(1.0f, 0.0f, 0.0f);
   }
-  {
-    auto entity    = scene ->add_entity();
-    auto transform = entity->add_component<mak::transform>();
-    auto light     = entity->add_component<mak::light>    ();
-    light->type  = mak::light::type::ambient;
-  }
+  //{
+  //  auto entity      = scene ->add_entity();
+  //  auto transform   = entity->add_component<mak::transform>();
+  //  auto light       = entity->add_component<mak::light>    ();
+  //  transform ->set_translation(glm::vec3(50.0f, 0.0f, 0.0f));
+  //  light->type      = mak::light::type::point;
+  //  light->color     = glm::vec3(0.0f, 0.0f, 1.0f);
+  //}
   engine->set_scene(std::move(scene));
 
   return engine;

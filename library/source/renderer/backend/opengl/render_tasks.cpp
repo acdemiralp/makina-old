@@ -173,9 +173,9 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const std::array<std::uint32_t, 2> instance_attribute {i, i};
 
         glm::vec3 texture_coordinate_scale(1.0f);
-        if (material->ambient_image)
+        if      (material->ambient_image )
           texture_coordinate_scale = glm::vec3(float(material->ambient_image ->dimensions()[0]) / texture_size[0], float(material->ambient_image ->dimensions()[1]) / texture_size[1], 1.0f);
-        else if (material->diffuse_image)                                                                                                        
+        else if (material->diffuse_image )                                                                                                        
           texture_coordinate_scale = glm::vec3(float(material->diffuse_image ->dimensions()[0]) / texture_size[0], float(material->diffuse_image ->dimensions()[1]) / texture_size[1], 1.0f);
         else if (material->specular_image)
           texture_coordinate_scale = glm::vec3(float(material->specular_image->dimensions()[0]) / texture_size[0], float(material->specular_image->dimensions()[1]) / texture_size[1], 1.0f);
@@ -317,7 +317,7 @@ fg::render_task<phong_task_data>*        add_phong_render_task       (renderer* 
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );
       gl::set_depth_function              (GL_LESS);
-      //gl::set_polygon_face_culling_enabled(true   );
+      gl::set_polygon_face_culling_enabled(true   );
       gl::set_front_face                  (GL_CW  );
       gl::set_cull_face                   (GL_BACK);
       gl::multi_draw_elements_indirect    (GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
