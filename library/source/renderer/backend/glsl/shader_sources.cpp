@@ -135,7 +135,7 @@ void main()
   vec3  n  = normalize( fs_input.normal);
   vec3  v  = normalize(-fs_input.vertex);
 
-  vec3 color = vec3(0.0);
+  vec3 color = vec3(0.0f);
   for(uint i = 0; i < lights_size; ++i)
   {
     vec3 il   = lights[i].properties.x * lights[i].color.rgb;
@@ -143,15 +143,15 @@ void main()
 
     if (type == light_type_ambient)
     {
-      color += clamp(vec3(ka * il), 0, 1);
+      color += clamp(vec3(ka * il), 0.0f, 1.0f);
     }
     if (type == light_type_directional)
     {
-      vec3  l           = normalize(cameras[camera_index].view * vec4(-lights[i].direction.xyz, 0.0f)).xyz;
-      vec3  r           = reflect  (-l, n);
-      vec3  diffuse     = kd * il * max(dot(l, n), 0.0);
-      vec3  specular    = ks * il * pow(max(dot(r, v), 0.0), a);
-      color += clamp(diffuse + specular, 0, 1);
+      vec3  l           = -normalize(cameras[camera_index].view * vec4(lights[i].direction.xyz, 0.0)).xyz;
+      vec3  r           =  reflect  (-l, n);
+      vec3  diffuse     = kd * il * max(dot(n, l), 0.0f);
+      vec3  specular    = ks * il * pow(max(dot(v, r), 0.0f), a);
+      color += clamp(diffuse + specular, 0.0f, 1.0f);
     }
     if (type == light_type_point || type == light_type_spot)
     {
@@ -160,18 +160,18 @@ void main()
       vec3  r           = reflect  (-l, n);
       float distance    = length   (p - fs_input.vertex);
       float attenuation = 1.0 / (attenuation_constant + attenuation_linear * distance + attenuation_quadratic * distance * distance);
-      vec3  diffuse     = attenuation * kd * il * max(dot(l, n), 0.0);
-      vec3  specular    = attenuation * ks * il * pow(max(dot(r, v), 0.0), a);
+      vec3  diffuse     = attenuation * kd * il * max(dot(n, l), 0.0f);
+      vec3  specular    = attenuation * ks * il * pow(max(dot(v, r), 0.0f), a);
   
       // Soft-edged spotlights are a special case of point lights.
       if(type == light_type_spot)
       {
-        float cutoff = clamp((dot(l, normalize(-lights[i].direction.xyz)) - lights[i].properties.w) / (lights[i].properties.z - lights[i].properties.w), 0.0, 1.0);
+        float cutoff = clamp((dot(l, -normalize(cameras[camera_index].view * vec4(lights[i].direction.xyz, 0.0f)).xyz) - lights[i].properties.w) / (lights[i].properties.z - lights[i].properties.w), 0.0f, 1.0f);
         diffuse  *= cutoff;
         specular *= cutoff;
       }
 
-      color += clamp(diffuse + specular, 0, 1);
+      color += clamp(diffuse + specular, 0.0f, 1.0f);
     }
   }
 

@@ -19,32 +19,41 @@ std::unique_ptr<engine> make_default_engine()
     auto entity       = scene ->add_entity();
     auto transform    = entity->add_component<mak::transform> ();
     auto projection   = entity->add_component<mak::projection>();
-    transform ->set_translation(glm::vec3(0.0f, 1.0f, -10.0f));
     auto controller   = entity->add_component<mak::controller>(make_wasd_controller());
+    transform ->set_translation(glm::vec3(0.0f, 0.0f, -10.0f));
     projection->set_perspective(60.0f, 4.0f / 3.0f, {0.3f, 1000.0f});
   }
   //{
   //  auto entity      = scene ->add_entity();
   //  auto transform   = entity->add_component<mak::transform>();
   //  auto light       = entity->add_component<mak::light>    ();
-  //  light->type      = mak::light::type::ambient;
-  //  light->intensity = 0.1f;
+  //  light->type      = light::type::ambient;
+  //  light->color     = glm::vec3(1.0f, 0.0f, 0.0f);
   //}
   {
     auto entity    = scene ->add_entity();
     auto transform = entity->add_component<mak::transform>();
     auto light     = entity->add_component<mak::light>    ();
-    transform->set_rotation_euler(glm::vec3(0.0f, 0.0f, 0.0f));
-    light->color   = glm::vec3(1.0f, 0.0f, 0.0f);
+    light->type    = light::type::directional;
+    light->color   = glm::vec3(0.0f, 1.0f, 0.0f);
   }
-  //{
-  //  auto entity      = scene ->add_entity();
-  //  auto transform   = entity->add_component<mak::transform>();
-  //  auto light       = entity->add_component<mak::light>    ();
-  //  transform ->set_translation(glm::vec3(50.0f, 0.0f, 0.0f));
-  //  light->type      = mak::light::type::point;
-  //  light->color     = glm::vec3(0.0f, 0.0f, 1.0f);
-  //}
+  {
+    auto entity      = scene ->add_entity();
+    auto transform   = entity->add_component<mak::transform>();
+    auto light       = entity->add_component<mak::light>    ();
+    transform->set_translation(glm::vec3(0.0f, 0.0f, 50.0f));
+    light->type      = light::type::point;
+    light->color     = glm::vec3(0.0f, 0.0f, 1.0f);
+  }
+  {
+    auto entity        = scene ->add_entity();
+    auto transform     = entity->add_component<mak::transform>();
+    auto light         = entity->add_component<mak::light>    ();
+    transform->set_translation(glm::vec3(0.0f, 0.0f, -10.0f));
+    light->type        = light::type::spot;
+    light->spot_angles = {5.0f, 15.0f};
+    light->color       = glm::vec3(1.0f, 1.0f, 1.0f);
+  }
   engine->set_scene(std::move(scene));
 
   return engine;
