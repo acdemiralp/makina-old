@@ -2,6 +2,7 @@
 #define MAKINA_RESOURCES_MODEL_HPP_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <makina/aspects/named.hpp>
@@ -14,6 +15,12 @@ namespace mak
 {
 struct MAKINA_EXPORT model : public named
 {
+  struct description
+  {
+    std::string filepath      ;
+    bool        pbr_materials = false;
+  };
+
   model           ()                   = default;
   model           (const model&  that) = delete ;
   model           (      model&& temp) = default;

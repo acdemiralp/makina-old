@@ -11,6 +11,7 @@
 #include <makina/renderer/projection.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/phong_material.hpp>
+#include <makina/resources/physically_based_material.hpp>
 #include <makina/resources/mesh.hpp>
 
 namespace mak

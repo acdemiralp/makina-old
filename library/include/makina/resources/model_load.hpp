@@ -18,9 +18,10 @@
 #include <makina/resources/image.hpp>
 #include <makina/resources/model.hpp>
 #include <makina/resources/phong_material.hpp>
+#include <makina/resources/physically_based_material.hpp>
 
 template<>
-inline void ra::load(const std::string& filepath, mak::model* model)
+inline void ra::load(const mak::model::description& description, mak::model* model)
 {
   if (!model)
   {
@@ -29,7 +30,7 @@ inline void ra::load(const std::string& filepath, mak::model* model)
   }
 
   Assimp::Importer importer;
-  const auto scene = importer.ReadFile(filepath.c_str(), 
+  const auto scene = importer.ReadFile(description.filepath.c_str(), 
     aiProcess_CalcTangentSpace |
     aiProcess_MakeLeftHanded   |
     aiProcess_FlipWindingOrder |
@@ -42,9 +43,9 @@ inline void ra::load(const std::string& filepath, mak::model* model)
     return;
   }
 
-  model->set_name(filepath);
+  model->set_name(description.filepath);
 
-  const auto folderpath = std::experimental::filesystem::path(filepath).parent_path().string();
+  const auto folderpath = std::experimental::filesystem::path(description.filepath).parent_path().string();
 
   for (auto i = 0; i < scene->mNumMeshes; ++i)
   {
@@ -76,19 +77,8 @@ inline void ra::load(const std::string& filepath, mak::model* model)
 
   for (auto i = 0; i < scene->mNumMaterials; ++i)
   {
-    model->materials.push_back(std::make_unique<mak::phong_material>());
-    auto       material        = reinterpret_cast<mak::phong_material*>(model->materials.back().get());
     const auto assimp_material = scene->mMaterials[i];
-
-    aiString name; 
-    assimp_material->Get(AI_MATKEY_NAME, name);
-    material->set_name(name.C_Str());
-
-    aiGetMaterialColor(assimp_material, AI_MATKEY_COLOR_AMBIENT , reinterpret_cast<aiColor4D*>(&material->ambient  ));
-    aiGetMaterialColor(assimp_material, AI_MATKEY_COLOR_DIFFUSE , reinterpret_cast<aiColor4D*>(&material->diffuse  ));
-    aiGetMaterialColor(assimp_material, AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor4D*>(&material->specular ));
-    aiGetMaterialFloat(assimp_material, AI_MATKEY_SHININESS     , reinterpret_cast<float*>    (&material->shininess));
-
+      
     auto load_texture = [&] (aiTextureType type, std::unique_ptr<mak::image>& image)
     {
       aiString relative_filepath;
@@ -98,8 +88,8 @@ inline void ra::load(const std::string& filepath, mak::model* model)
         {
           auto texture = scene->mTextures[boost::lexical_cast<int>(relative_filepath.data[1])];
           image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight});
-          // TODO: Extract compressed textures.
           image->to_32_bits();
+          // TODO: Extract compressed textures.
         }
         else
         {
@@ -108,9 +98,49 @@ inline void ra::load(const std::string& filepath, mak::model* model)
         }
       }
     };
-    load_texture(aiTextureType_AMBIENT , material->ambient_image );
-    load_texture(aiTextureType_DIFFUSE , material->diffuse_image );
-    load_texture(aiTextureType_SPECULAR, material->specular_image);
+
+    if (description.pbr_materials)
+    {
+      model->materials.push_back(std::make_unique <mak::physically_based_material>());
+      auto material = reinterpret_cast<mak::physically_based_material*>(model->materials.back().get());
+
+      aiString name; 
+      assimp_material->Get(AI_MATKEY_NAME, name);
+      material->set_name(name.C_Str());
+
+      aiColor3D diffuse, specular;
+      float     shininess;
+      assimp_material->Get(AI_MATKEY_COLOR_DIFFUSE , diffuse  );
+      assimp_material->Get(AI_MATKEY_COLOR_SPECULAR, specular );
+      assimp_material->Get(AI_MATKEY_SHININESS     , shininess);
+      material->albedo      = {diffuse[0], diffuse[1], diffuse[2]}; 
+      material->metallicity = specular[0];                          
+      material->roughness   = sqrt(2.0f / (shininess + 2.0f)); // Beckmann distribution.
+
+      load_texture(aiTextureType_DIFFUSE  , material->albedo_image           );
+      load_texture(aiTextureType_SPECULAR , material->metallicity_image      );
+      load_texture(aiTextureType_SHININESS, material->roughness_image        );
+      load_texture(aiTextureType_NORMALS  , material->normal_image           );
+      load_texture(aiTextureType_LIGHTMAP , material->ambient_occlusion_image);
+    }
+    else
+    {
+      model->materials.push_back(std::make_unique<mak::phong_material>());
+      auto material = reinterpret_cast<mak::phong_material*>(model->materials.back().get());
+      
+      aiString name; 
+      assimp_material->Get(AI_MATKEY_NAME, name);
+      material->set_name(name.C_Str());
+
+      assimp_material->Get(AI_MATKEY_COLOR_AMBIENT , reinterpret_cast<aiColor3D&>(material->ambient));
+      assimp_material->Get(AI_MATKEY_COLOR_DIFFUSE , reinterpret_cast<aiColor3D&>(material->diffuse));
+      assimp_material->Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(material->ambient));
+      assimp_material->Get(AI_MATKEY_SHININESS     , reinterpret_cast<float&>    (material->ambient));
+
+      load_texture(aiTextureType_AMBIENT , material->ambient_image );
+      load_texture(aiTextureType_DIFFUSE , material->diffuse_image );
+      load_texture(aiTextureType_SPECULAR, material->specular_image);
+    }
   }
 
   model->scene = std::make_unique<mak::scene>();
@@ -140,6 +170,12 @@ inline void ra::load(const std::string& filepath, mak::model* model)
       hierarchy_traverser(node->mChildren[i], transform);
   };
   hierarchy_traverser (scene->mRootNode, nullptr);
+}
+
+template<>
+inline void ra::load(const std::string& filepath, mak::model* model)
+{
+  ra::load<mak::model::description, mak::model>({filepath}, model);
 }
 
 #endif

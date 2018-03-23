@@ -23,7 +23,6 @@ struct MAKINA_EXPORT physically_based_material : public material
   glm::vec3              albedo                 ;
   float                  metallicity            ;
   float                  roughness              ;
-  float                  refractive_index       ;
 
   std::unique_ptr<image> albedo_image           ;
   std::unique_ptr<image> metallicity_image      ;

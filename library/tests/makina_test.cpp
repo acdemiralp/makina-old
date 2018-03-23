@@ -53,7 +53,7 @@ TEST_CASE("Makina test.", "[makina]")
 
   auto& models = mak::registry->get<mak::model>();
   auto& model  = models.storage().emplace_back();
-  ra::load(std::string("data/model/setesh/setesh.obj"), &model);
+  ra::load(mak::model::description{std::string("data/model/setesh/setesh.obj"), true}, &model);
   engine->scene()->append(*model.scene); // TODO: Preserve transform hierarchy.
   
   //{
