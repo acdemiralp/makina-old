@@ -15,10 +15,13 @@ extern "C"
 #include <ra/load.hpp>
 
 #include <makina/core/registry.hpp>
+#include <makina/core/scene.hpp>
 #include <makina/display/display_system.hpp>
 #include <makina/input/input_system.hpp>
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
+#include <makina/renderer/light.hpp>
 #include <makina/renderer/renderer.hpp>
+#include <makina/renderer/transform.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/makina.hpp>
 
@@ -52,6 +55,38 @@ TEST_CASE("Makina test.", "[makina]")
   auto& model  = models.storage().emplace_back();
   ra::load(std::string("data/model/setesh/setesh.obj"), &model);
   engine->scene()->append(*model.scene); // TODO: Preserve transform hierarchy.
+  
+  //{
+  //  auto entity        = engine->scene()->add_entity();
+  //  auto transform     = entity->add_component<mak::transform>();
+  //  auto light         = entity->add_component<mak::light>    ();
+  //  light->type        = mak::light::type::ambient;
+  //  light->color       = glm::vec3(1.0f, 0.0f, 0.0f);
+  //}
+  //{
+  //  auto entity        = engine->scene()->add_entity();
+  //  auto transform     = entity->add_component<mak::transform>();
+  //  auto light         = entity->add_component<mak::light>    ();
+  //  light->type        = mak::light::type::directional;
+  //  light->color       = glm::vec3(0.0f, 1.0f, 0.0f);
+  //}
+  //{
+  //  auto entity        = engine->scene()->add_entity();
+  //  auto transform     = entity->add_component<mak::transform>();
+  //  auto light         = entity->add_component<mak::light>    ();
+  //  transform->set_translation(glm::vec3(0.0f, 0.0f, 50.0f));
+  //  light->type        = mak::light::type::point;
+  //  light->color       = glm::vec3(0.0f, 0.0f, 1.0f);
+  //}
+  //{
+  //  auto entity        = engine->scene()->add_entity();
+  //  auto transform     = entity->add_component<mak::transform>();
+  //  auto light         = entity->add_component<mak::light>    ();
+  //  transform->set_translation(glm::vec3(0.0f, 0.0f, -10.0f));
+  //  light->type        = mak::light::type::spot;
+  //  light->spot_angles = {5.0f, 15.0f};
+  //  light->color       = glm::vec3(1.0f, 1.0f, 1.0f);
+  //}
 
   engine->run();
 }
