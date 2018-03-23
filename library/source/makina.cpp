@@ -23,13 +23,13 @@ std::unique_ptr<engine> make_default_engine()
     transform ->set_translation(glm::vec3(0.0f, 0.0f, -10.0f));
     projection->set_perspective(60.0f, 4.0f / 3.0f, {0.3f, 1000.0f});
   }
-  //{
-  //  auto entity      = scene ->add_entity();
-  //  auto transform   = entity->add_component<mak::transform>();
-  //  auto light       = entity->add_component<mak::light>    ();
-  //  light->type      = light::type::ambient;
-  //  light->color     = glm::vec3(1.0f, 0.0f, 0.0f);
-  //}
+  {
+    auto entity      = scene ->add_entity();
+    auto transform   = entity->add_component<mak::transform>();
+    auto light       = entity->add_component<mak::light>    ();
+    light->type      = light::type::ambient;
+    light->color     = glm::vec3(1.0f, 0.0f, 0.0f);
+  }
   {
     auto entity    = scene ->add_entity();
     auto transform = entity->add_component<mak::transform>();

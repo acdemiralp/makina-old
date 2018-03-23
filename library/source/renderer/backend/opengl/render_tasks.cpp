@@ -77,6 +77,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
 
   const glm::uvec2 texture_size {2048, 2048};
 
+  // TODO: Optimize GPU uploads through retained resources and scene caching.
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
     [=] (      upload_scene_task_data& data, fg::render_task_builder& builder)

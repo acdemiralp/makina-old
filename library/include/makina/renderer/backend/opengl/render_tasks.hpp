@@ -12,9 +12,6 @@
 #include <makina/renderer/renderer.hpp>
 #include <makina/export.hpp>
 
-// - Ensure lighting is functional.
-// - Optimize uploading of data to the GPU.
-
 namespace mak
 {
 struct MAKINA_EXPORT test_task_data
