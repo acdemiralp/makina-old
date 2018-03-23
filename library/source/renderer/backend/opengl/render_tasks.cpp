@@ -52,9 +52,9 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
   // Shader types with std430 alignment.
   struct _transform
   {
-    glm::mat4    model      ;
+    glm::mat4    model         ;
   };
-  struct _material
+  struct _phong_material
   {
     glm::uvec4   use_texture   ; // ambient - diffuse - specular - unused
     glm::vec4    ambient       ; // w is unused.
@@ -62,24 +62,32 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
     glm::vec4    specular      ; // w is shininess.
     glm::u64vec4 textures      ; // ambient - diffuse - specular - unused
   };
+  struct _physically_based_material
+  {
+    glm::uvec4   use_texture   ; // ambient - diffuse - specular - unused
+    glm::uvec4   use_texture_2 ; // ambient occlusion - unused - unused - unused
+    glm::vec4    albedo        ; // w is unused.
+    glm::vec4    properties    ; // metallicity - roughness - unused - unused
+    glm::u64vec4 textures      ; // albedo - metallicity - roughness - normal
+    glm::u64vec4 textures_2    ; // ambient occlusion - unused - unused - unused
+  };
   struct _camera
   {
-    glm::mat4    view       ;
-    glm::mat4    projection ;
+    glm::mat4    view          ;
+    glm::mat4    projection    ;
   };             
   struct _light  
   {              
-    glm::uvec4   type       ; // y, z, w are unused.
-    glm::vec4    color      ; // w is unused.
-    glm::vec4    properties ; // intensity - range - inner spot - outer spot
-    glm::vec4    position   ; // w is unused.
-    glm::vec4    direction  ; // w is unused.
+    glm::uvec4   type          ; // y, z, w are unused.
+    glm::vec4    color         ; // w is unused.
+    glm::vec4    properties    ; // intensity - range - inner spot - outer spot
+    glm::vec4    position      ; // w is unused.
+    glm::vec4    direction     ; // w is unused.
   };
 
   const glm::uvec2 texture_size {2048, 2048};
 
   // TODO: Optimize GPU uploads through retained resources and scene caching.
-  // TODO: Add physically based material option.
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
     [=] (      upload_scene_task_data& data, fg::render_task_builder& builder)
@@ -110,7 +118,8 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
       auto light_entities       = scene->entities<transform, light>      ();
       auto camera_entities      = scene->entities<transform, projection> ();
       auto transforms           = std::vector<_transform>                        ();
-      auto materials            = std::vector<_material>                         ();
+      auto pbr_materials        = std::vector<_physically_based_material>        ();
+      auto phong_materials      = std::vector<_phong_material>                   ();
       auto cameras              = std::vector<_camera>                           ();
       auto lights               = std::vector<_light>                            ();
       auto draw_calls           = std::vector<gl::draw_elements_indirect_command>();
@@ -124,64 +133,181 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
         const auto  transform   = entity->component<mak::transform>  ();
         const auto  mesh_render = entity->component<mak::mesh_render>();
 
-        auto material = dynamic_cast<phong_material*>(mesh_render->material);
-        if (!material) continue;
+        glm::vec3 texture_coordinate_scale(1.0f);
 
-        std::optional<gl::texture_handle> ambient_handle, diffuse_handle, specular_handle;
-        if (material->ambient_image)
+        auto pbr_material   = dynamic_cast<mak::physically_based_material*>(mesh_render->material);
+        if  (pbr_material)
         {
-          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->ambient_image->dimensions()[0], material->ambient_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->ambient_image->pixels().data);
-          ambient_handle.emplace(*data.textures[texture_offset]->actual());
-          ambient_handle->set_resident(true);
-          texture_offset++;
-        }
-        if (material->diffuse_image)
-        {
-          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->diffuse_image->dimensions()[0], material->diffuse_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->diffuse_image->pixels().data);
-          diffuse_handle.emplace(*data.textures[texture_offset]->actual());
-          diffuse_handle->set_resident(true);
-          texture_offset++;
-        }
-        if (material->specular_image)
-        {
-          data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, material->specular_image->dimensions()[0], material->specular_image->dimensions()[1], GL_BGRA, GL_UNSIGNED_BYTE, material->specular_image->pixels().data);
-          specular_handle.emplace(*data.textures[texture_offset]->actual());
-          specular_handle->set_resident(true);
-          texture_offset++;
-        }
-
-        transforms.push_back(_transform {transform->matrix(true)});
-        materials .push_back(_material {
-          glm::uvec4 
+          std::optional<gl::texture_handle> albedo_handle, metallicity_handle, roughness_handle, normal_handle, ambient_occlusion_handle;
+          if (pbr_material->albedo_image)
           {
-            static_cast<std::uint32_t>(ambient_handle .has_value()),
-            static_cast<std::uint32_t>(diffuse_handle .has_value()),
-            static_cast<std::uint32_t>(specular_handle.has_value()),
-            0
-          },
-          glm::vec4   (material->ambient , 0.0f),
-          glm::vec4   (material->diffuse , 0.0f),
-          glm::vec4   (material->specular, material->shininess),
-          glm::u64vec4(
-            ambient_handle  ? ambient_handle ->id() : 0, 
-            diffuse_handle  ? diffuse_handle ->id() : 0, 
-            specular_handle ? specular_handle->id() : 0, 
-            0)
-        });
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              pbr_material->albedo_image->dimensions()[0],
+              pbr_material->albedo_image->dimensions()[1],
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              pbr_material->albedo_image->pixels().data);
+            albedo_handle.emplace(*data.textures[texture_offset]->actual());
+            albedo_handle->set_resident(true);
+            texture_offset++;
+          }
+          if (pbr_material->metallicity_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              pbr_material->metallicity_image->dimensions()[0],
+              pbr_material->metallicity_image->dimensions()[1],
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              pbr_material->metallicity_image->pixels().data);
+            metallicity_handle.emplace(*data.textures[texture_offset]->actual());
+            metallicity_handle->set_resident(true);
+            texture_offset++;
+          }
+          if (pbr_material->roughness_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              pbr_material->roughness_image->dimensions()[0],
+              pbr_material->roughness_image->dimensions()[1],
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              pbr_material->roughness_image->pixels().data);
+            roughness_handle.emplace(*data.textures[texture_offset]->actual());
+            roughness_handle->set_resident(true);
+            texture_offset++;
+          }
+          if (pbr_material->normal_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              pbr_material->normal_image->dimensions()[0],
+              pbr_material->normal_image->dimensions()[1],
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              pbr_material->normal_image->pixels().data);
+            normal_handle.emplace(*data.textures[texture_offset]->actual());
+            normal_handle->set_resident(true);
+            texture_offset++;
+          }
+          if (pbr_material->ambient_occlusion_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              pbr_material->ambient_occlusion_image->dimensions()[0],
+              pbr_material->ambient_occlusion_image->dimensions()[1],
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              pbr_material->ambient_occlusion_image->pixels().data);
+            ambient_occlusion_handle.emplace(*data.textures[texture_offset]->actual());
+            ambient_occlusion_handle->set_resident(true);
+            texture_offset++;
+          }
+
+          pbr_materials.push_back(_physically_based_material {
+            glm::uvec4 
+            {
+              static_cast<std::uint32_t>(albedo_handle           .has_value()),
+              static_cast<std::uint32_t>(metallicity_handle      .has_value()),
+              static_cast<std::uint32_t>(roughness_handle        .has_value()),
+              static_cast<std::uint32_t>(normal_handle           .has_value())
+            },
+            glm::uvec4
+            {
+              static_cast<std::uint32_t>(ambient_occlusion_handle.has_value()), 0, 0, 0
+            },
+            glm::vec4   (pbr_material->albedo, 0.0f),
+            glm::vec4   (pbr_material->metallicity, pbr_material->roughness, 0.0f, 0.0f),
+            glm::u64vec4(
+              albedo_handle            ? albedo_handle           ->id() : 0,
+              metallicity_handle       ? metallicity_handle      ->id() : 0,
+              roughness_handle         ? roughness_handle        ->id() : 0,
+              normal_handle            ? normal_handle           ->id() : 0),
+            glm::u64vec4(
+              ambient_occlusion_handle ? ambient_occlusion_handle->id() : 0, 0, 0, 0)
+          });
+          
+          if      (pbr_material->albedo_image )
+            texture_coordinate_scale = glm::vec3(float(pbr_material->albedo_image           ->dimensions()[0]) / texture_size[0], float(pbr_material->albedo_image           ->dimensions()[1]) / texture_size[1], 1.0f);
+          else if (pbr_material->metallicity_image)
+            texture_coordinate_scale = glm::vec3(float(pbr_material->metallicity_image      ->dimensions()[0]) / texture_size[0], float(pbr_material->metallicity_image      ->dimensions()[1]) / texture_size[1], 1.0f);
+          else if (pbr_material->roughness_image)
+            texture_coordinate_scale = glm::vec3(float(pbr_material->roughness_image        ->dimensions()[0]) / texture_size[0], float(pbr_material->roughness_image        ->dimensions()[1]) / texture_size[1], 1.0f);
+          else if (pbr_material->normal_image)
+            texture_coordinate_scale = glm::vec3(float(pbr_material->normal_image           ->dimensions()[0]) / texture_size[0], float(pbr_material->normal_image           ->dimensions()[1]) / texture_size[1], 1.0f);
+          else if (pbr_material->ambient_occlusion_image)
+            texture_coordinate_scale = glm::vec3(float(pbr_material->ambient_occlusion_image->dimensions()[0]) / texture_size[0], float(pbr_material->ambient_occlusion_image->dimensions()[1]) / texture_size[1], 1.0f);
+        }
+        auto phong_material = dynamic_cast<mak::phong_material*>           (mesh_render->material);
+        if  (phong_material)
+        {
+          std::optional<gl::texture_handle> ambient_handle, diffuse_handle, specular_handle;
+          if (phong_material->ambient_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              phong_material->ambient_image->dimensions()[0], 
+              phong_material->ambient_image->dimensions()[1], 
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              phong_material->ambient_image->pixels().data);
+            ambient_handle.emplace(*data.textures[texture_offset]->actual());
+            ambient_handle->set_resident(true);
+            texture_offset++;
+          }
+          if (phong_material->diffuse_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              phong_material->diffuse_image->dimensions()[0], 
+              phong_material->diffuse_image->dimensions()[1], 
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              phong_material->diffuse_image->pixels().data);
+            diffuse_handle.emplace(*data.textures[texture_offset]->actual());
+            diffuse_handle->set_resident(true);
+            texture_offset++;
+          }
+          if (phong_material->specular_image)
+          {
+            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+              phong_material->specular_image->dimensions()[0], 
+              phong_material->specular_image->dimensions()[1], 
+              GL_BGRA, 
+              GL_UNSIGNED_BYTE, 
+              phong_material->specular_image->pixels().data);
+            specular_handle.emplace(*data.textures[texture_offset]->actual());
+            specular_handle->set_resident(true);
+            texture_offset++;
+          }
+
+          phong_materials .push_back(_phong_material {
+            glm::uvec4 
+            {
+              static_cast<std::uint32_t>(ambient_handle .has_value()),
+              static_cast<std::uint32_t>(diffuse_handle .has_value()),
+              static_cast<std::uint32_t>(specular_handle.has_value()),
+              0
+            },
+            glm::vec4   (phong_material->ambient , 0.0f),
+            glm::vec4   (phong_material->diffuse , 0.0f),
+            glm::vec4   (phong_material->specular, phong_material->shininess),
+            glm::u64vec4(
+              ambient_handle  ? ambient_handle ->id() : 0, 
+              diffuse_handle  ? diffuse_handle ->id() : 0, 
+              specular_handle ? specular_handle->id() : 0, 
+              0)
+          });
+          
+          if      (phong_material->ambient_image )
+            texture_coordinate_scale = glm::vec3(float(phong_material->ambient_image ->dimensions()[0]) / texture_size[0], float(phong_material->ambient_image ->dimensions()[1]) / texture_size[1], 1.0f);
+          else if (phong_material->diffuse_image )
+            texture_coordinate_scale = glm::vec3(float(phong_material->diffuse_image ->dimensions()[0]) / texture_size[0], float(phong_material->diffuse_image ->dimensions()[1]) / texture_size[1], 1.0f);
+          else if (phong_material->specular_image)
+            texture_coordinate_scale = glm::vec3(float(phong_material->specular_image->dimensions()[0]) / texture_size[0], float(phong_material->specular_image->dimensions()[1]) / texture_size[1], 1.0f);
+        }
+        
+        transforms.push_back(_transform {transform->matrix(true)});
 
         const auto& vertices            = mesh_render->mesh->vertices           ;
         const auto& normals             = mesh_render->mesh->normals            ;
         const auto& texture_coordinates = mesh_render->mesh->texture_coordinates;
         const auto& indices             = mesh_render->mesh->indices            ;
         const std::array<std::uint32_t, 2> instance_attribute {i, i};
-
-        glm::vec3 texture_coordinate_scale(1.0f);
-        if      (material->ambient_image )
-          texture_coordinate_scale = glm::vec3(float(material->ambient_image ->dimensions()[0]) / texture_size[0], float(material->ambient_image ->dimensions()[1]) / texture_size[1], 1.0f);
-        else if (material->diffuse_image )                                                                                                        
-          texture_coordinate_scale = glm::vec3(float(material->diffuse_image ->dimensions()[0]) / texture_size[0], float(material->diffuse_image ->dimensions()[1]) / texture_size[1], 1.0f);
-        else if (material->specular_image)
-          texture_coordinate_scale = glm::vec3(float(material->specular_image->dimensions()[0]) / texture_size[0], float(material->specular_image->dimensions()[1]) / texture_size[1], 1.0f);
 
         std::vector<glm::vec3> transformed_texture_coordinates(texture_coordinates.size());
         std::transform(texture_coordinates.begin(), texture_coordinates.end(), transformed_texture_coordinates.begin(), [texture_coordinate_scale] (const glm::vec3& texture_coordinate)
@@ -231,21 +357,22 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
         });
       }
 
-      auto transforms_size = static_cast<GLuint>(transforms.size());
-      auto materials_size  = static_cast<GLuint>(materials .size());
-      auto cameras_size    = static_cast<GLuint>(cameras   .size());
-      auto lights_size     = static_cast<GLuint>(lights    .size());
-      data.transforms->actual()->set_sub_data(0               , sizeof GLuint                        , &transforms_size );
-      data.materials ->actual()->set_sub_data(0               , sizeof GLuint                        , &materials_size  );
-      data.cameras   ->actual()->set_sub_data(0               , sizeof GLuint                        , &cameras_size    );
-      data.lights    ->actual()->set_sub_data(0               , sizeof GLuint                        , &lights_size     );
-      data.transforms->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform * transforms.size(), transforms.data()); // std430 alignment
-      data.materials ->actual()->set_sub_data(sizeof glm::vec4, sizeof _material  * materials .size(), materials .data()); // std430 alignment
-      data.cameras   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera    * cameras   .size(), cameras   .data()); // std430 alignment
-      data.lights    ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light     * lights    .size(), lights    .data()); // std430 alignment
-
-      data.draw_calls   ->actual()->set_sub_data(0           , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls.data());
-      data.parameter_map->actual()->set         ("draw_count", draw_calls.size());
+      auto transforms_size = static_cast<GLuint>(transforms     .size());
+      auto materials_size  = static_cast<GLuint>(pbr_materials  .size() > 0 ? pbr_materials.size() : phong_materials.size());
+      auto cameras_size    = static_cast<GLuint>(cameras        .size());
+      auto lights_size     = static_cast<GLuint>(lights         .size());
+      data.transforms   ->actual()->set_sub_data(0               , sizeof GLuint                                      , &transforms_size );
+      data.materials    ->actual()->set_sub_data(0               , sizeof GLuint                                      , &materials_size  );
+      data.cameras      ->actual()->set_sub_data(0               , sizeof GLuint                                      , &cameras_size    );
+      data.lights       ->actual()->set_sub_data(0               , sizeof GLuint                                      , &lights_size     );
+      data.transforms   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform                 * transforms_size, transforms     .data());
+      pbr_materials.size() > 0 
+      ? data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _physically_based_material * materials_size , pbr_materials  .data()) 
+      : data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _phong_material            * materials_size , phong_materials.data());
+      data.cameras      ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera                    * cameras_size   , cameras        .data());
+      data.lights       ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light                     * lights_size    , lights         .data());
+      data.draw_calls   ->actual()->set_sub_data(0               , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls.data());
+      data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size());
 
       gl::print_error("Error in Upload Scene Pass: ");
     });
@@ -334,7 +461,6 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
 }
 fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {
-  // TODO: Modify for PBR.
   return framegraph->add_render_task<physically_based_shading_task_data>(
     "Physically Based Shading Pass",
     [&] (      physically_based_shading_task_data& data, fg::render_task_builder& builder)
@@ -357,7 +483,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.program      = builder.create<program_resource>     ("Physically Based Shading Program"     , program::description     
       {
         default_vertex_shader, 
-        phong_fragment_shader
+        physically_based_fragment_shader
       });
       data.vertex_array = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
       {
