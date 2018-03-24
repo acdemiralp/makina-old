@@ -86,30 +86,45 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
   };
 
   const glm::uvec2 texture_size {2048, 2048};
+  
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER });
+  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_cameras             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_lights              = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
+  // Totals to 64 * 5 + 16 * 5 = 400 MB of GPU memory for buffers.
 
-  // TODO: Optimize GPU uploads through retained resources and scene caching.
+  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, mak::parameter_map>("Scene Parameter Map", parameter_map::description());
+
+  std::vector<texture_2d_resource*> retained_textures(64);
+  for (auto i = 0; i < retained_textures.size(); ++i)
+    retained_textures[i] = framegraph->add_retained_resource<texture_description, gl::texture_2d>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
+  // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
+
+  // TODO: Optimize GPU uploads through scene caching.
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
     [=] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices            = builder.create<buffer_resource>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-      data.normals             = builder.create<buffer_resource>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-      data.texture_coordinates = builder.create<buffer_resource>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-      data.instance_attributes = builder.create<buffer_resource>("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-      data.indices             = builder.create<buffer_resource>("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER });
-      data.transforms          = builder.create<buffer_resource>("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-      data.materials           = builder.create<buffer_resource>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-      data.cameras             = builder.create<buffer_resource>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-      data.lights              = builder.create<buffer_resource>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-      data.draw_calls          = builder.create<buffer_resource>("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
-      // Totals to 64 * 5 + 16 * 5 = 400 MB of GPU memory for buffers.
-
-      data.parameter_map = builder.create<parameter_map_resource>("Scene Parameter Map", parameter_map::description());
-      
+      data.vertices            = builder.write<buffer_resource>       (retained_vertices           );
+      data.normals             = builder.write<buffer_resource>       (retained_normals            );
+      data.texture_coordinates = builder.write<buffer_resource>       (retained_texture_coordinates);
+      data.instance_attributes = builder.write<buffer_resource>       (retained_instance_attributes);
+      data.indices             = builder.write<buffer_resource>       (retained_indices            );
+      data.transforms          = builder.write<buffer_resource>       (retained_transforms         );
+      data.materials           = builder.write<buffer_resource>       (retained_materials          );
+      data.cameras             = builder.write<buffer_resource>       (retained_cameras            );
+      data.lights              = builder.write<buffer_resource>       (retained_lights             );
+      data.draw_calls          = builder.write<buffer_resource>       (retained_draw_calls         );
+      data.parameter_map       = builder.write<parameter_map_resource>(retained_parameter_map      );
       data.textures.resize(64);
       for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
-      // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
+        data.textures[i] = builder.write<texture_2d_resource>(retained_textures[i]);
     },
     [=] (const upload_scene_task_data& data)
     {
