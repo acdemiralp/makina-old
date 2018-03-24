@@ -64,7 +64,7 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
   };
   struct _physically_based_material
   {
-    glm::uvec4   use_texture   ; // ambient - diffuse - specular - unused
+    glm::uvec4   use_texture   ; // albedo - metallicity - roughness - normal
     glm::uvec4   use_texture_2 ; // ambient occlusion - unused - unused - unused
     glm::vec4    albedo        ; // w is unused.
     glm::vec4    properties    ; // metallicity - roughness - unused - unused
