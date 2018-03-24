@@ -23,7 +23,7 @@ void   engine::run       ()
 
   frame_timer_.tick();
   for (auto& system : systems_)
-    system->prepare();
+    system->prepare(scene_.get());
 
   while (is_running_)
   {

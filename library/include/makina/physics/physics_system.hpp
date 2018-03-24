@@ -22,7 +22,7 @@ public:
   btDiscreteDynamicsWorld* world();
 
 protected:
-  void prepare()                                          override;
+  void prepare(                             scene* scene) override;
   void update (frame_timer::duration delta, scene* scene) override;
 
   btDefaultCollisionConfiguration     configuration_;

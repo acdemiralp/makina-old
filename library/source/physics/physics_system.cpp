@@ -21,9 +21,9 @@ btDiscreteDynamicsWorld* physics_system::world()
   return &world_;
 }
 
-void physics_system::prepare()
+void physics_system::prepare(scene* scene)
 {
-  // TODO: Collect rigidbodies/colliders from the scene.
+  // TODO: Collect rigidbodies/colliders/transforms from the scene.
 }
 void physics_system::update (frame_timer::duration delta, scene* scene)
 {

@@ -12,7 +12,7 @@ class MAKINA_EXPORT system
 {
 public:
   virtual ~system     ()                                          = default;
-  virtual void prepare()                                          { }
+  virtual void prepare(                             scene* scene) { }
   virtual void update (frame_timer::duration delta, scene* scene) = 0;
 };
 }

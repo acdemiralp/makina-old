@@ -27,7 +27,7 @@ public:
   boost::signals2::signal<void(std::size_t)> on_mouse_down;
 
 protected:
-  void prepare()                                          override;
+  void prepare(                             scene* scene) override;
   void update (frame_timer::duration delta, scene* scene) override;
 
   std::map<di::key    , bool> key_states_      ;

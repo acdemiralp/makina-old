@@ -7,7 +7,7 @@ const scene* renderer::scene_cache() const
   return scene_cache_;
 }
 
-void         renderer::prepare    ()
+void         renderer::prepare    (scene* scene)
 {
   compile        ();
   export_graphviz("renderer.gv");

@@ -15,7 +15,7 @@ public:
   const scene* scene_cache() const;
 
 protected:
-  void         prepare    ()                                          override;
+  void         prepare    (scene* scene)                              override;
   void         update     (frame_timer::duration delta, scene* scene) override;
 
   scene* scene_cache_ = nullptr;

@@ -12,7 +12,7 @@ input_system::input_system()
   on_mouse_release.connect([&] (std::size_t button) { button_states_[button] = false; });
 }
 
-void input_system::prepare()
+void input_system::prepare(scene* scene)
 {
   controller_cache_.clear();
 }
