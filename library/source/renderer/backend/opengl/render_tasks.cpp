@@ -106,10 +106,10 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
 
       data.parameter_map = builder.create<parameter_map_resource>("Scene Parameter Map", parameter_map::description());
       
-      data.textures.resize(32);
+      data.textures.resize(64);
       for (auto i = 0; i < data.textures.size(); ++i)
         data.textures[i] = builder.create<texture_2d_resource>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description{{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
-      // Totals to 32 * 16.77 = 536 MB of GPU memory for textures.
+      // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
     },
     [=] (const upload_scene_task_data& data)
     {
@@ -300,7 +300,7 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
           else if (phong_material->specular_image)
             texture_coordinate_scale = glm::vec3(float(phong_material->specular_image->dimensions()[0]) / texture_size[0], float(phong_material->specular_image->dimensions()[1]) / texture_size[1], 1.0f);
         }
-        
+         
         transforms.push_back(_transform {transform->matrix(true)});
 
         const auto& vertices            = mesh_render->mesh->vertices           ;

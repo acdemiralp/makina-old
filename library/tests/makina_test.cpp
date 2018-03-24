@@ -38,29 +38,26 @@ TEST_CASE("Makina test.", "[makina]")
     std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
 
-  const auto input_system = engine->get_system<mak::input_system>();
-  input_system->on_quit.connect(std::bind(&mak::engine::stop, engine.get()));
-
   fi::initialize();
   gl::initialize();
+
+  const auto input_system = engine->get_system<mak::input_system>();
+  input_system->on_quit.connect(std::bind(&mak::engine::stop, engine.get()));
 
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::framebuffer::description(), mak::default_framebuffer());
   const auto upload_scene_render_task = add_upload_scene_render_task            (renderer);
   const auto clear_render_task        = add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto pbr_render_task          = add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data());
-  upload_scene_render_task->set_cull_immune(true);
-  clear_render_task       ->set_cull_immune(true);
-  pbr_render_task         ->set_cull_immune(true);
 
   auto& models = mak::registry->get<mak::model>();
   auto& model  = models.storage().emplace_back();
-  ra::load(mak::model::description{std::string("data/model/cube/cube.obj"), true}, &model);
+  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
 
   std::random_device                    rd  ;
   std::mt19937                          mt  (rd());
-  std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
-  for(auto i = 0; i < 32; ++i)
+  std::uniform_real_distribution<float> dist(-2.0f, 2.0f);
+  for(auto i = 0; i < 64; ++i)
   {
     auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
     auto transform = entity->component<mak::transform>();

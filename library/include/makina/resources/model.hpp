@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <ra/resource.hpp>
+
 #include <makina/aspects/named.hpp>
 #include <makina/core/scene.hpp>
 #include <makina/resources/material.hpp>
@@ -13,7 +15,7 @@
 
 namespace mak
 {
-struct MAKINA_EXPORT model : public named
+struct MAKINA_EXPORT model : public named, public ra::resource<model>
 {
   struct description
   {
