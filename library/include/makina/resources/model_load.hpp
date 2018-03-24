@@ -166,7 +166,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       auto mesh_index         = node ->mMeshes  [0];
       mesh_render  ->mesh     = model->meshes   [mesh_index].get();
       mesh_render  ->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
-      mesh_collider->mesh     = model->meshes   [mesh_index].get();
+      mesh_collider->set_mesh ( model->meshes   [mesh_index].get());
     }
   
     for (auto i = 0; i < node->mNumChildren; ++i)

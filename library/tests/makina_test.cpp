@@ -10,6 +10,8 @@ extern "C"
 }
 #endif
 
+#include <random>
+
 #include <fi/free_image.hpp>
 #include <gl/all.hpp>
 #include <ra/load.hpp>
@@ -53,8 +55,17 @@ TEST_CASE("Makina test.", "[makina]")
 
   auto& models = mak::registry->get<mak::model>();
   auto& model  = models.storage().emplace_back();
-  ra::load(mak::model::description{std::string("data/model/setesh/setesh.obj"), true}, &model);
-  engine->scene()->append(*model.scene); // TODO: Preserve transform hierarchy.
+  ra::load(mak::model::description{std::string("data/model/cube/cube.obj"), true}, &model);
+
+  std::random_device                    rd  ;
+  std::mt19937                          mt  (rd());
+  std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
+  for(auto i = 0; i < 33; ++i)
+  {
+    auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy.
+    auto transform = entity->component<mak::transform>();
+    transform->set_translation(glm::vec3(dist(mt), dist(mt), dist(mt)));
+  }
   
   //{
   //  auto entity        = engine->scene()->add_entity();

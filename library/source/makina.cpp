@@ -41,7 +41,6 @@ std::unique_ptr<engine> make_default_engine()
     light    ->type      = light::type::directional;
     light    ->color     = glm::vec3(1.0f, 0.95f, 0.83f);
   }
-
   engine->set_scene(std::move(scene));
 
   return engine;
