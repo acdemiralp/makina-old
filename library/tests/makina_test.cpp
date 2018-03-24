@@ -50,8 +50,8 @@ TEST_CASE("Makina test.", "[makina]")
   const auto clear_render_task        = add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto pbr_render_task          = add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data());
 
-  auto& models = mak::registry->get<mak::model>();
-  auto& model  = models.storage().emplace_back();
+  auto& models = mak::registry->get<mak::model>().storage();
+  auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
 
   std::random_device                    rd  ;
