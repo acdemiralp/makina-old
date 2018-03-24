@@ -56,7 +56,7 @@ TEST_CASE("Makina test.", "[makina]")
 
   std::random_device                    rd  ;
   std::mt19937                          mt  (rd());
-  std::uniform_real_distribution<float> dist(-2.0f, 2.0f);
+  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
   for(auto i = 0; i < 64; ++i)
   {
     auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
