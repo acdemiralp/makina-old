@@ -29,7 +29,7 @@ std::unique_ptr<engine> make_default_engine()
     auto light           = entity->add_component<mak::light>    ();
     light    ->type      = light::type::ambient;
     light    ->color     = glm::vec3(1.0f, 0.95f, 0.83f);
-    light    ->intensity = 0.1f;
+    light    ->intensity = 0.001f;
   }
   {
     auto entity          = scene ->add_entity();

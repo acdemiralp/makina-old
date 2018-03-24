@@ -210,32 +210,32 @@ struct _material
 };
 struct _camera
 {
-  mat4      view      ;
-  mat4      projection;
-};
-struct _light
-{
-  uvec4     type      ; // y, z, w are unused. 
-  vec4      color     ; // w is unused.
-  vec4      properties; // intensity - range - inner spot - outer spot
-  vec4      position  ; // w is unused.
-  vec4      direction ; // w is unused.
-};
+  mat4      view                     ;
+  mat4      projection               ;
+};                                   
+struct _light                        
+{                                    
+  uvec4     type                     ; // y, z, w are unused. 
+  vec4      color                    ; // w is unused.
+  vec4      properties               ; // intensity - range - inner spot - outer spot
+  vec4      position                 ; // w is unused.
+  vec4      direction                ; // w is unused.
+};                                   
 
 layout(std430, binding = 1) readonly buffer material
 {
-  uint      materials_size  ;
-  _material materials[]     ;
+  uint      materials_size;
+  _material materials[]   ;
 };
 layout(std430, binding = 2) readonly buffer camera
 {
-  uint      cameras_size    ;
-  _camera   cameras[]       ;
+  uint      cameras_size  ;
+  _camera   cameras[]     ;
 };
 layout(std430, binding = 3) readonly buffer light
 {
-  uint      lights_size     ;
-  _light    lights[]        ;
+  uint      lights_size   ;
+  _light    lights[]      ;
 };
 uniform uint  camera_index          = 0;
 uniform float attenuation_constant  = 1.0;
@@ -274,7 +274,7 @@ vec3  fresnel_schlick      (float hdv, vec3  f0)
 }
 vec3  sample_normal_texture(vec3 vertex, vec3 normal, vec2 texture_coordinate, sampler2D normal_texture)
 {
-  vec3 s   = texture(normal_texture, texture_coordinate) * 2.0f - 1.0f;
+  vec3 s   = texture(normal_texture, texture_coordinate).xyz * 2.0f - 1.0f;
 
   vec3 q1  = dFdx(vertex);
   vec3 q2  = dFdy(vertex);
@@ -291,62 +291,78 @@ vec3  sample_normal_texture(vec3 vertex, vec3 normal, vec2 texture_coordinate, s
 
 void main()
 {
-  // TODO: Change to PBR.
-  vec3  ka = materials[fs_input.material_index].use_texture[0] == 1
-    ? texture(materials[fs_input.material_index].ambient_texture , fs_input.texture_coordinate).rgb 
-    : materials[fs_input.material_index].ambient.rgb ;             
-  vec3  kd = materials[fs_input.material_index].use_texture[1] == 1
-    ? texture(materials[fs_input.material_index].diffuse_texture , fs_input.texture_coordinate).rgb 
-    : materials[fs_input.material_index].diffuse.rgb ;             
-  vec3  ks = materials[fs_input.material_index].use_texture[2] == 1
-    ? texture(materials[fs_input.material_index].specular_texture, fs_input.texture_coordinate).rgb 
-    : materials[fs_input.material_index].specular.rgb;
-  float a  = max(materials[fs_input.material_index].specular.w, 0.0001f);
-  vec3  n  = normalize( fs_input.normal);
-  vec3  v  = normalize(-fs_input.vertex);
+  vec3  ka  = materials[fs_input.material_index].use_texture  [0] == 1
+    ? texture(materials[fs_input.material_index].albedo_texture     , fs_input.texture_coordinate).rgb 
+    : materials[fs_input.material_index].albedo.rgb  ;             
+  float km  = materials[fs_input.material_index].use_texture  [1] == 1
+    ? texture(materials[fs_input.material_index].metallicity_texture, fs_input.texture_coordinate).r 
+    : materials[fs_input.material_index].properties.x;             
+  float kr  = materials[fs_input.material_index].use_texture  [2] == 1
+    ? texture(materials[fs_input.material_index].roughness_texture  , fs_input.texture_coordinate).r 
+    : materials[fs_input.material_index].properties.y; 
+  vec3  n   = materials[fs_input.material_index].use_texture  [3] == 1
+    ? sample_normal_texture(fs_input.vertex, fs_input.normal, fs_input.texture_coordinate, materials[fs_input.material_index].normal_texture)
+    : normalize(fs_input.normal); 
+  vec3  kao = materials[fs_input.material_index].use_texture_2[0] == 1
+    ? texture(materials[fs_input.material_index].ambient_occlusion_texture, fs_input.texture_coordinate).rgb 
+    : vec3(0.0f);
+
+  vec3  v   = normalize(-fs_input.vertex);
+  float ndv = max(dot(n, v), 0.0);
 
   vec3 color = vec3(0.0f);
+  
   for(uint i = 0; i < lights_size; ++i)
   {
     vec3 il   = lights[i].properties.x * lights[i].color.rgb;
     uint type = lights[i].type.x;
-
+  
     if (type == light_type_ambient)
     {
       color += clamp(vec3(ka * il), 0.0f, 1.0f);
     }
     if (type == light_type_directional)
     {
-      vec3  l           = -normalize(cameras[camera_index].view * vec4(lights[i].direction.xyz, 0.0)).xyz;
-      vec3  r           =  reflect  (-l, n);
-      vec3  diffuse     = kd * il * max(dot(n, l), 0.0f);
-      vec3  specular    = ks * il * pow(max(dot(v, r), 0.0f), a);
-      color += clamp(diffuse + specular, 0.0f, 1.0f);
-    }
-    if (type == light_type_point || type == light_type_spot)
-    {
-      vec3  p           = (cameras[camera_index].view * vec4(lights[i].position.xyz, 1.0f)).xyz;
-      vec3  l           = normalize(p - fs_input.vertex);
-      vec3  r           = reflect  (-l, n);
-      float distance    = length   (p - fs_input.vertex);
-      float attenuation = 1.0 / (attenuation_constant + attenuation_linear * distance + attenuation_quadratic * distance * distance);
-      vec3  diffuse     = attenuation * kd * il * max(dot(n, l), 0.0f);
-      vec3  specular    = attenuation * ks * il * pow(max(dot(v, r), 0.0f), a);
-  
-      // Soft-edged spotlights are a special case of point lights.
-      if(type == light_type_spot)
-      {
-        float cutoff = clamp((dot(l, -normalize(cameras[camera_index].view * vec4(lights[i].direction.xyz, 0.0f)).xyz) - lights[i].properties.w) / (lights[i].properties.z - lights[i].properties.w), 0.0f, 1.0f);
-        diffuse  *= cutoff;
-        specular *= cutoff;
-      }
+      vec3  l   = -normalize(cameras[camera_index].view * vec4(lights[i].direction.xyz, 0.0f)).xyz;
+      vec3  h   = normalize(v + l);
 
-      color += clamp(diffuse + specular, 0.0f, 1.0f);
+      float ndl = max(dot(n, l), 0.0f);
+      float ndh = max(dot(n, h), 0.0f);
+      float ldh = max(dot(l, h), 0.0f);
+
+      float d   = distribution_ggx(ndh, kr);
+      float g   = geometry_smith  (ndv, ndl, kr);
+      vec3  f   = fresnel_schlick (ldh, vec3(0.04f)); // TODO: Consider computing k0 from a refraction index.
+
+      vec3  w   = (vec3(1.0f) - f) * (1.0f - km);
+      vec3  s   = (d * g * f) / (4.0f * ndv * ndl + 0.0001f);
+
+      color += ndl * il * (w * ka / pi + s);
     }
+  //  if (type == light_type_point || type == light_type_spot)
+  //  {
+  //    vec3  p           = (cameras[camera_index].view * vec4(lights[i].position.xyz, 1.0f)).xyz;
+  //    vec3  l           = normalize(p - fs_input.vertex);
+  //    vec3  r           = reflect  (-l, n);
+  //    float distance    = length   (p - fs_input.vertex);
+  //    float attenuation = 1.0 / (attenuation_constant + attenuation_linear * distance + attenuation_quadratic * distance * distance);
+  //    vec3  diffuse     = attenuation * kd * il * max(dot(n, l), 0.0f);
+  //    vec3  specular    = attenuation * ks * il * pow(max(dot(v, r), 0.0f), a);
+  //
+  //    // Soft-edged spotlights are a special case of point lights.
+  //    if(type == light_type_spot)
+  //    {
+  //      float cutoff = clamp((dot(l, -normalize(cameras[camera_index].view * vec4(lights[i].direction.xyz, 0.0f)).xyz) - lights[i].properties.w) / (lights[i].properties.z - lights[i].properties.w), 0.0f, 1.0f);
+  //      diffuse  *= cutoff;
+  //      specular *= cutoff;
+  //    }
+  //
+  //    color += clamp(diffuse + specular, 0.0f, 1.0f);
+  //  }
   }
 
   // Gamma correction.
-  // color = pow (color, vec3(1.0 / 2.2)); 
+  color = pow (color, vec3(1.0 / 2.2)); 
 
   output_color = vec4(color, 1.0);
 }
