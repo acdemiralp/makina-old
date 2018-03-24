@@ -5,7 +5,7 @@
 #include <ec/scene.hpp>
 
 #include <makina/input/controller.hpp>
-#include <makina/physics/collider.hpp>
+#include <makina/physics/mesh_collider.hpp>
 #include <makina/physics/rigidbody.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/mesh_render.hpp>
@@ -14,7 +14,7 @@
 
 namespace mak
 {
-using entity = ec::entity<controller, collider, rigidbody, light, mesh_render, projection, transform>;
+using entity = ec::entity<controller, mesh_collider, rigidbody, light, mesh_render, projection, transform>;
 using scene  = ec::scene<entity>;
 }
 

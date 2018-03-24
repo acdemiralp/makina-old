@@ -160,10 +160,13 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
   
     if (node->mNumMeshes > 0)
     {
-      auto mesh_render      = entity->add_component<mak::mesh_render>();
-      auto mesh_index       = node->mMeshes[0];
-      mesh_render->mesh     = model->meshes   [mesh_index].get();
-      mesh_render->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
+      auto mesh_render        = entity->add_component<mak::mesh_render>  ();
+      auto mesh_collider      = entity->add_component<mak::mesh_collider>();
+      auto rigidbody          = entity->add_component<mak::rigidbody>    ();
+      auto mesh_index         = node ->mMeshes  [0];
+      mesh_render  ->mesh     = model->meshes   [mesh_index].get();
+      mesh_render  ->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
+      mesh_collider->mesh     = model->meshes   [mesh_index].get();
     }
   
     for (auto i = 0; i < node->mNumChildren; ++i)
