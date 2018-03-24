@@ -13,6 +13,9 @@ if   (MSVC)
   set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
 endif()
 
+include              (set_max_warning_level)
+set_max_warning_level()
+
 ##################################################    Options     ##################################################
 option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
