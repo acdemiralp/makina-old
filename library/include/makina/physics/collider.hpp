@@ -5,7 +5,10 @@
 
 namespace mak
 {
-
+struct MAKINA_EXPORT collider
+{
+  
+};
 }
 
 #endif
