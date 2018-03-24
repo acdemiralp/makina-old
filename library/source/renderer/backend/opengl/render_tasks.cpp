@@ -549,4 +549,8 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       gl::print_error("Error in Physically Based Shading Pass: ");
     });
 }
+fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target)
+{
+
+}
 }

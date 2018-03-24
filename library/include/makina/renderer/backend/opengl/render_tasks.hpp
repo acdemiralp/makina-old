@@ -78,12 +78,17 @@ struct MAKINA_EXPORT physically_based_shading_task_data
   vertex_array_resource*            vertex_array       ;
   framebuffer_resource*             target             ;
 };
+struct MAKINA_EXPORT ui_task_data
+{
+  
+};
 
 MAKINA_EXPORT fg::render_task<test_task_data>*                     add_test_render_task                    (renderer* framegraph, framebuffer_resource* target);
 MAKINA_EXPORT fg::render_task<upload_scene_task_data>*             add_upload_scene_render_task            (renderer* framegraph);
 MAKINA_EXPORT fg::render_task<clear_task_data>*                    add_clear_render_task                   (renderer* framegraph, framebuffer_resource* target, const glm::vec4& color, const float depth = 1.0f);
 MAKINA_EXPORT fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
 MAKINA_EXPORT fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
+MAKINA_EXPORT fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target);
 }
 
 #endif
