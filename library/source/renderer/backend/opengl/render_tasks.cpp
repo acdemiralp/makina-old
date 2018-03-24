@@ -86,7 +86,7 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
   };
 
   const glm::uvec2 texture_size {2048, 2048};
-  
+
   const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
   const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
   const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
@@ -163,7 +163,8 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               GL_UNSIGNED_BYTE, 
               pbr_material->albedo_image->pixels().data);
             albedo_handle.emplace(*data.textures[texture_offset]->actual());
-            albedo_handle->set_resident(true);
+            if(!albedo_handle->is_resident())
+              albedo_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->metallicity_image)
@@ -171,11 +172,12 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
             data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
               pbr_material->metallicity_image->dimensions()[0],
               pbr_material->metallicity_image->dimensions()[1],
-              GL_BGRA, 
+              GL_RED, 
               GL_UNSIGNED_BYTE, 
               pbr_material->metallicity_image->pixels().data);
             metallicity_handle.emplace(*data.textures[texture_offset]->actual());
-            metallicity_handle->set_resident(true);
+            if(!metallicity_handle->is_resident())
+              metallicity_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->roughness_image)
@@ -183,11 +185,12 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
             data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
               pbr_material->roughness_image->dimensions()[0],
               pbr_material->roughness_image->dimensions()[1],
-              GL_BGRA, 
+              GL_RED, 
               GL_UNSIGNED_BYTE, 
               pbr_material->roughness_image->pixels().data);
             roughness_handle.emplace(*data.textures[texture_offset]->actual());
-            roughness_handle->set_resident(true);
+            if(!roughness_handle->is_resident())
+              roughness_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->normal_image)
@@ -199,9 +202,11 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               GL_UNSIGNED_BYTE, 
               pbr_material->normal_image->pixels().data);
             normal_handle.emplace(*data.textures[texture_offset]->actual());
-            normal_handle->set_resident(true);
+            if(!normal_handle->is_resident())
+              normal_handle->set_resident(true);
             texture_offset++;
           }
+          gl::print_error("Error in Upload Scene Pass 3");
           if (pbr_material->ambient_occlusion_image)
           {
             data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
@@ -211,7 +216,8 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               GL_UNSIGNED_BYTE, 
               pbr_material->ambient_occlusion_image->pixels().data);
             ambient_occlusion_handle.emplace(*data.textures[texture_offset]->actual());
-            ambient_occlusion_handle->set_resident(true);
+            if(!ambient_occlusion_handle->is_resident())
+              ambient_occlusion_handle->set_resident(true);
             texture_offset++;
           }
 
@@ -237,7 +243,7 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
             glm::u64vec4(
               ambient_occlusion_handle ? ambient_occlusion_handle->id() : 0, 0, 0, 0)
           });
-          
+
           if      (pbr_material->albedo_image )
             texture_coordinate_scale = glm::vec3(float(pbr_material->albedo_image           ->dimensions()[0]) / texture_size[0], float(pbr_material->albedo_image           ->dimensions()[1]) / texture_size[1], 1.0f);
           else if (pbr_material->metallicity_image)
@@ -262,7 +268,8 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               GL_UNSIGNED_BYTE, 
               phong_material->ambient_image->pixels().data);
             ambient_handle.emplace(*data.textures[texture_offset]->actual());
-            ambient_handle->set_resident(true);
+            if(!ambient_handle->is_resident())
+              ambient_handle->set_resident(true);
             texture_offset++;
           }
           if (phong_material->diffuse_image)
@@ -274,7 +281,8 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               GL_UNSIGNED_BYTE, 
               phong_material->diffuse_image->pixels().data);
             diffuse_handle.emplace(*data.textures[texture_offset]->actual());
-            diffuse_handle->set_resident(true);
+            if(!diffuse_handle->is_resident())
+              diffuse_handle->set_resident(true);
             texture_offset++;
           }
           if (phong_material->specular_image)
@@ -286,7 +294,8 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               GL_UNSIGNED_BYTE, 
               phong_material->specular_image->pixels().data);
             specular_handle.emplace(*data.textures[texture_offset]->actual());
-            specular_handle->set_resident(true);
+            if(!specular_handle->is_resident())
+              specular_handle->set_resident(true);
             texture_offset++;
           }
 
@@ -315,7 +324,7 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
           else if (phong_material->specular_image)
             texture_coordinate_scale = glm::vec3(float(phong_material->specular_image->dimensions()[0]) / texture_size[0], float(phong_material->specular_image->dimensions()[1]) / texture_size[1], 1.0f);
         }
-         
+
         transforms.push_back(_transform {transform->matrix(true)});
 
         const auto& vertices            = mesh_render->mesh->vertices           ;
