@@ -73,9 +73,9 @@ protected:
   {
     return typeid(system_type) == typeid(*iteratee.get());
   }
-
-  std::vector<std::unique_ptr<system>> systems_    ;
+  
   std::unique_ptr<mak::scene>          scene_      ;
+  std::vector<std::unique_ptr<system>> systems_    ;
   frame_timer                          frame_timer_;
   bool                                 is_running_ = false;
 };
