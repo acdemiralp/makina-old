@@ -11,7 +11,6 @@ extern "C"
 #endif
 
 #include <random>
-#include <future>
 
 #include <fi/free_image.hpp>
 #include <gl/all.hpp>
@@ -59,28 +58,12 @@ TEST_CASE("Makina test.", "[makina]")
   std::random_device                    rd  ;
   std::mt19937                          mt  (rd());
   std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
-
-
-	std::future<void> result_future = std::async([&engine, &model, &dist, &mt]() {
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-		for (auto i = 0; i < 64; ++i)
-		{
-			
-			auto entity = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
-			auto transform = entity->component<mak::transform>();
-			transform->set_translation(glm::vec3(dist(mt), dist(mt), dist(mt)));
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(300));
-		}
-	});
-
-	
-
-	engine->run();
-
-	
-	
+  for(auto i = 0; i < 64; ++i)
+  {
+    auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
+    auto transform = entity->component<mak::transform>();
+    transform->set_translation(glm::vec3(dist(mt), dist(mt), dist(mt)));
+  }
   
   //{
   //  auto entity        = engine->scene()->add_entity();
@@ -114,5 +97,5 @@ TEST_CASE("Makina test.", "[makina]")
   //  light->color       = glm::vec3(1.0f, 1.0f, 1.0f);
   //}
 
-  
+  engine->run();
 }
