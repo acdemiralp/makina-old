@@ -551,6 +551,62 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
 }
 fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target)
 {
+  const glm::uvec2 texture_size {2048, 2048};
 
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Vertices"           , buffer_description{GLsizeiptr(1e+5), GL_ARRAY_BUFFER         });
+  const auto retained_colors              = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Colors"             , buffer_description{GLsizeiptr(1e+5), GL_ARRAY_BUFFER         });
+  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Texture Coordinates", buffer_description{GLsizeiptr(1e+5), GL_ARRAY_BUFFER         });
+  const auto retained_indices             = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Indices"            , buffer_description{GLsizeiptr(1e+5), GL_ELEMENT_ARRAY_BUFFER });
+  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Draw Calls"         , buffer_description{GLsizeiptr(1e+5), GL_DRAW_INDIRECT_BUFFER });
+  // Totals to 5 * 0.1 = 0.5 MB of GPU memory for buffers.
+  
+  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, parameter_map> ("UI Parameter Map"      , parameter_map::description());
+  const auto retained_texture             = framegraph->add_retained_resource<texture_description       , gl::texture_2d>("UI Texture"            , texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
+  // Totals to 1 * 16.77 = 16.77 MB of GPU memory for textures.
+
+  return framegraph->add_render_task<ui_task_data>(
+    "UI Pass",
+    [&] (      ui_task_data& data, fg::render_task_builder& builder)
+    {
+      data.vertices            = builder.read  <buffer_resource>       (retained_vertices           );
+      data.colors              = builder.read  <buffer_resource>       (retained_colors             );
+      data.texture_coordinates = builder.read  <buffer_resource>       (retained_texture_coordinates);
+      data.indices             = builder.read  <buffer_resource>       (retained_indices            );
+      data.draw_calls          = builder.read  <buffer_resource>       (retained_draw_calls         );
+      data.parameter_map       = builder.read  <parameter_map_resource>(retained_parameter_map      );
+      data.texture             = builder.read  <texture_2d_resource>   (retained_texture            );
+      data.program             = builder.create<program_resource>      ("UI Program"     , program::description     
+      {
+        ui_vertex_shader, 
+        ui_fragment_shader
+      });
+      data.vertex_array        = builder.create<vertex_array_resource> ("UI Vertex Array", vertex_array::description
+      {
+        { 
+          {data.vertices           , 2, GL_FLOAT}, 
+          {data.colors             , 4, GL_FLOAT}, 
+          {data.texture_coordinates, 2, GL_FLOAT}
+        }, 
+        {}, 
+        data.indices,
+        data.draw_calls
+      });
+      data.target = builder.write(target);
+    },
+    [=] (const ui_task_data& data)
+    {
+      data.program     ->actual()->use   ();
+      data.vertex_array->actual()->bind  ();
+      data.target      ->actual()->bind  ();
+
+      gl::set_depth_test_enabled      (false);
+      gl::multi_draw_elements_indirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
+
+      data.target      ->actual()->unbind();
+      data.vertex_array->actual()->unbind();
+      data.program     ->actual()->unuse ();
+
+      gl::print_error("Error in UI Pass: ");
+    });
 }
 }

@@ -81,7 +81,9 @@ struct MAKINA_EXPORT physically_based_shading_task_data
 struct MAKINA_EXPORT ui_task_data
 {
   buffer_resource*                  vertices           ;
+  buffer_resource*                  colors             ;
   buffer_resource*                  texture_coordinates;
+  buffer_resource*                  indices            ;
   buffer_resource*                  draw_calls         ;
   parameter_map_resource*           parameter_map      ;
   texture_2d_resource*              texture            ;

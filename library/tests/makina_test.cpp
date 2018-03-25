@@ -31,11 +31,12 @@ TEST_CASE("Makina test.", "[makina]")
   auto engine = mak::make_default_engine();
 
   const auto display_system = engine->get_system<mak::display_system>();
-  auto window = display_system->create_opengl_window(
+  const auto window         = display_system->create_opengl_window(
     "Makina", 
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
+  window->set_swap_mode(di::opengl_swap_mode::vertical_sync);
 
   fi::initialize();
   gl::initialize();
@@ -56,7 +57,7 @@ TEST_CASE("Makina test.", "[makina]")
 
   std::random_device                    rd  ;
   std::mt19937                          mt  (rd());
-  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+  std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
   for(auto i = 0; i < 64; ++i)
   {
     auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.

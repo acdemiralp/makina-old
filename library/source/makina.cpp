@@ -11,12 +11,12 @@ namespace mak
 {
 std::unique_ptr<engine> make_default_engine()
 {
-  auto engine = std::make_unique<mak::engine>();
-  engine->add_system<display_system>();
-  engine->add_system<input_system>  ();
-  engine->add_system<physics_system>();
-  engine->add_system<renderer>      ();
-  engine->add_system<ui_system>     ();
+  auto engine         = std::make_unique<mak::engine>();
+  auto display_system = engine->add_system<mak::display_system>();
+  auto input_system   = engine->add_system<mak::input_system>  ();
+  auto physics_system = engine->add_system<mak::physics_system>();
+  auto renderer       = engine->add_system<mak::renderer>      ();
+  auto ui_system      = engine->add_system<mak::ui_system>     (display_system, input_system);
 
   auto scene = std::make_unique<mak::scene>();
   {
