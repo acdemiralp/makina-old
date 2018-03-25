@@ -19,8 +19,7 @@ controller make_wasd_controller(const float move_sensitivity, const float look_s
   };
   wasd_controller.on_mouse_move = [=] (transform* transform, std::array<std::int32_t, 2> value)
   {
-    di::mouse::set_captured(true );
-    di::mouse::set_visible (false);
+    di::mouse::set_captured(true);
     transform->rotate(angleAxis(glm::radians(value[0] * look_sensitivity), glm::vec3(0, 1, 0)) * 
                       angleAxis(glm::radians(value[1] * look_sensitivity), transform->right()));
   };
