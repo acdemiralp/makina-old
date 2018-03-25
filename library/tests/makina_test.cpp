@@ -54,7 +54,7 @@ TEST_CASE("Makina test.", "[makina]")
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
-
+  
   std::random_device                    rd  ;
   std::mt19937                          mt  (rd());
   std::uniform_real_distribution<float> dist(-0.5f, 0.5f);

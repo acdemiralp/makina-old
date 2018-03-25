@@ -3,6 +3,8 @@
 #include <optional>
 
 #include <boost/lexical_cast.hpp>
+#include <imgui.h>
+#include <gl/auxiliary/glm_uniforms.hpp>
 #include <gl/all.hpp>
 
 #include <makina/renderer/backend/glsl/shader_sources.hpp>
@@ -564,6 +566,20 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
   const auto retained_texture             = framegraph->add_retained_resource<texture_description       , gl::texture_2d>("UI Texture"            , texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
   // Totals to 1 * 16.77 = 16.77 MB of GPU memory for textures.
 
+  {
+    // Setup font texture once.
+    auto& io = ImGui::GetIO();
+    std::uint8_t* pixels;
+    std::int32_t  width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+    auto font_texture = retained_texture->actual();
+    font_texture->set_min_filter(GL_LINEAR);
+    font_texture->set_mag_filter(GL_LINEAR);
+    font_texture->set_sub_image (0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    io.Fonts->TexID = reinterpret_cast<void*>(font_texture->id());
+  }
+
   return framegraph->add_render_task<ui_task_data>(
     "UI Pass",
     [&] (      ui_task_data& data, fg::render_task_builder& builder)
@@ -598,6 +614,12 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
       data.program     ->actual()->use   ();
       data.vertex_array->actual()->bind  ();
       data.target      ->actual()->bind  ();
+      
+      // TODO: Render draw data + adjust scale.
+      auto program = data.program->actual();
+      program->set_uniform(program->uniform_location("projection")              , glm::mat4());
+      program->set_uniform(program->uniform_location("texture_coordinate_scale"), glm::vec2());
+      program->set_uniform(program->uniform_location("ui_texture")              , 1);
 
       gl::set_depth_test_enabled      (false);
       gl::multi_draw_elements_indirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));

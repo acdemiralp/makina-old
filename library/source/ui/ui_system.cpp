@@ -9,7 +9,8 @@ namespace mak
 {
 ui_system::ui_system (display_system* display_system, input_system* input_system) : display_system_(display_system), input_system_(input_system), context_(nullptr)
 {
-
+  if (!display_system_) throw std::runtime_error("UI system requires a valid display system!");
+  if (!input_system_  ) throw std::runtime_error("UI system requires a valid input system!"  );
 }
 
 void ui_system::prepare(                             scene* scene)
@@ -51,42 +52,67 @@ void ui_system::prepare(                             scene* scene)
   cursors_[ImGuiMouseCursor_ResizeNESW] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW);
   cursors_[ImGuiMouseCursor_ResizeNWSE] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE);
 
-#ifdef _WIN32
-  if (display_system_ && display_system_->windows().size() > 0)
-    io.ImeWindowHandle = std::get<HWND>(display_system_->windows()[0]->driver_data());
-#endif
-
-  if (input_system_)
+  if (display_system_->windows().size() > 0)
   {
-    input_system_->on_mouse_wheel  .connect([ ] (std::array<std::int32_t, 2> amount) { ImGui::GetIO().MouseWheel += amount[1];              });
-    input_system_->on_mouse_down   .connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index] = true ;             });
-    input_system_->on_mouse_release.connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index] = false;             });
-    input_system_->on_text_input   .connect([ ] (std::string                 text  ) { ImGui::GetIO().AddInputCharactersUTF8(text.c_str()); });
-    input_system_->on_key_press    .connect([ ] (di::key                     key   )
-    {
-      auto& io = ImGui::GetIO();
-      io.KeysDown[static_cast<std::uint32_t>(key.scan_code)] = true;
-      io.KeyShift = (key.modifier & di::key_modifier::left_shift ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_shift) != di::key_modifier::none;
-      io.KeyCtrl  = (key.modifier & di::key_modifier::left_ctrl  ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_ctrl ) != di::key_modifier::none;
-      io.KeyAlt   = (key.modifier & di::key_modifier::left_alt   ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_alt  ) != di::key_modifier::none;
-      io.KeySuper = (key.modifier & di::key_modifier::left_gui   ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_gui  ) != di::key_modifier::none;
-    });
-    input_system_->on_key_release  .connect([ ] (di::key                     key   )
-    {
-      auto& io = ImGui::GetIO();
-      io.KeysDown[static_cast<std::uint32_t>(key.scan_code)] = false;
-      io.KeyShift = (key.modifier & di::key_modifier::left_shift ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_shift) != di::key_modifier::none;
-      io.KeyCtrl  = (key.modifier & di::key_modifier::left_ctrl  ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_ctrl ) != di::key_modifier::none;
-      io.KeyAlt   = (key.modifier & di::key_modifier::left_alt   ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_alt  ) != di::key_modifier::none;
-      io.KeySuper = (key.modifier & di::key_modifier::left_gui   ) != di::key_modifier::none || (key.modifier & di::key_modifier::right_gui  ) != di::key_modifier::none;
-    });
+    auto main_window_size = display_system_->windows()[0]->size();
+    io.DisplaySize        = ImVec2(main_window_size[0], main_window_size[1]);
+#ifdef _WIN32
+    io.ImeWindowHandle    = std::get<HWND>(display_system_->windows()[0]->driver_data());
+#endif
   }
 
+  input_system_->on_mouse_wheel  .connect([ ] (std::array<std::int32_t, 2> amount) { ImGui::GetIO().MouseWheel += amount[1];              });
+  input_system_->on_mouse_down   .connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index] = true ;             });
+  input_system_->on_mouse_release.connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index] = false;             });
+  input_system_->on_text_input   .connect([ ] (std::string                 text  ) { ImGui::GetIO().AddInputCharactersUTF8(text.c_str()); });
+  input_system_->on_key_press    .connect([ ] (di::key                     key   )
+  {
+    auto& io = ImGui::GetIO();
+    io.KeysDown[static_cast<std::uint32_t>(key.scan_code)] = true;
+    io.KeyShift = (key.modifier & (di::key_modifier::left_shift | di::key_modifier::right_shift)) != di::key_modifier::none;
+    io.KeyCtrl  = (key.modifier & (di::key_modifier::left_ctrl  | di::key_modifier::right_ctrl )) != di::key_modifier::none;
+    io.KeyAlt   = (key.modifier & (di::key_modifier::left_alt   | di::key_modifier::right_alt  )) != di::key_modifier::none;
+    io.KeySuper = (key.modifier & (di::key_modifier::left_gui   | di::key_modifier::right_gui  )) != di::key_modifier::none;
+  });
+  input_system_->on_key_release  .connect([ ] (di::key                     key   )
+  {
+    auto& io = ImGui::GetIO();
+    io.KeysDown[static_cast<std::uint32_t>(key.scan_code)] = false;
+    io.KeyShift = (key.modifier & (di::key_modifier::left_shift | di::key_modifier::right_shift)) != di::key_modifier::none;
+    io.KeyCtrl  = (key.modifier & (di::key_modifier::left_ctrl  | di::key_modifier::right_ctrl )) != di::key_modifier::none;
+    io.KeyAlt   = (key.modifier & (di::key_modifier::left_alt   | di::key_modifier::right_alt  )) != di::key_modifier::none;
+    io.KeySuper = (key.modifier & (di::key_modifier::left_gui   | di::key_modifier::right_gui  )) != di::key_modifier::none;
+  });
+
   ImGui::StyleColorsDark();
+  ImGui::NewFrame       ();
 }
 void ui_system::update (frame_timer::duration delta, scene* scene)
 {
-  auto mouse_position     = di::mouse::absolute_position();
-  ImGui::GetIO().MousePos = ImVec2(mouse_position[0], mouse_position[1]);
+  auto& io             = ImGui::GetIO();
+  auto  mouse_position = di::mouse::absolute_position();
+  io.MousePos          = ImVec2(mouse_position[0], mouse_position[1]);
+  io.DeltaTime         = std::chrono::duration_cast<std::chrono::seconds>(delta).count();
+
+  if(display_system_->windows().size() > 0)
+  {
+    auto main_window_size = display_system_->windows()[0]->size();
+    io.DisplaySize        = ImVec2(main_window_size[0], main_window_size[1]);
+  }
+
+  const auto cursor = ImGui::GetMouseCursor();
+  if(io.MouseDrawCursor || cursor == ImGuiMouseCursor_None) di::mouse::set_visible(false);
+  else
+  {
+    di::mouse::set_visible(true);
+    SDL_SetCursor(cursors_[cursor] ? cursors_[cursor] : cursors_[ImGuiMouseCursor_Arrow]);
+  }
+
+  ImGui::Render  ();
+  ImGui::NewFrame();
+  
+  ImGui::Begin("Test");
+  ImGui::Text ("Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End  ();
 }
 }
