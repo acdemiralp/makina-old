@@ -364,4 +364,49 @@ void main()
   output_color = vec4(color, 1.0);
 }
 )";
+
+std::string ui_vertex_shader   = R"(
+#version 450
+#extension GL_ARB_explicit_attrib_location : enable
+
+uniform mat4 projection;
+
+layout(location = 0) in vec2 vertex            ;
+layout(location = 1) in vec4 color             ;
+layout(location = 2) in vec2 texture_coordinate;
+
+out vs_output_type 
+{
+  vec4 color             ;
+  vec2 texture_coordinate;
+} vs_output;
+
+void main()
+{
+  vs_output.color              = color             ;
+  vs_output.texture_coordinate = texture_coordinate;
+  gl_Position                  = projection * vec4(vertex, 0.0f, 1.0f);
+}
+)";
+std::string ui_fragment_shader = R"(
+#version 450
+#extension GL_ARB_explicit_attrib_location : enable
+#extension GL_ARB_bindless_texture : enable
+layout (bindless_sampler) uniform;
+
+uniform sampler2D ui_texture;
+
+in vs_output_type 
+{
+  vec4 color             ;
+  vec2 texture_coordinate;
+} fs_input;
+
+layout(location = 0) out vec4 output_color;
+
+void main()
+{
+  output_color = fs_input.color * texture(ui_texture, fs_input.texture_coordinate);
+}
+)";
 }
