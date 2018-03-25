@@ -5,6 +5,7 @@
 #include <makina/input/wasd_controller.hpp>
 #include <makina/physics/physics_system.hpp>
 #include <makina/renderer/renderer.hpp>
+#include <makina/ui/ui_system.hpp>
 
 namespace mak
 {
@@ -15,6 +16,7 @@ std::unique_ptr<engine> make_default_engine()
   engine->add_system<input_system>  ();
   engine->add_system<physics_system>();
   engine->add_system<renderer>      ();
+  engine->add_system<ui_system>     ();
 
   auto scene = std::make_unique<mak::scene>();
   {

@@ -80,7 +80,15 @@ struct MAKINA_EXPORT physically_based_shading_task_data
 };
 struct MAKINA_EXPORT ui_task_data
 {
-  
+  buffer_resource*                  vertices           ;
+  buffer_resource*                  texture_coordinates;
+  buffer_resource*                  draw_calls         ;
+  parameter_map_resource*           parameter_map      ;
+  texture_2d_resource*              texture            ;
+
+  program_resource*                 program            ;
+  vertex_array_resource*            vertex_array       ;
+  framebuffer_resource*             target             ;
 };
 
 MAKINA_EXPORT fg::render_task<test_task_data>*                     add_test_render_task                    (renderer* framegraph, framebuffer_resource* target);
