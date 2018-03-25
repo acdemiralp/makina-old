@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
@@ -28,14 +29,20 @@ protected:
   void prepare(                             scene* scene) override;
   void update (frame_timer::duration delta, scene* scene) override;
 
-  std::unique_ptr<btDefaultCollisionConfiguration>     configuration_  ;
-  std::unique_ptr<btCollisionDispatcher>               dispatcher_     ;
-  std::unique_ptr<btDbvtBroadphase>                    broadphase_     ;
-  std::unique_ptr<btSequentialImpulseConstraintSolver> solver_         ;
-  std::unique_ptr<btDiscreteDynamicsWorld>             world_          ;
+  std::unique_ptr<btDefaultCollisionConfiguration>      configuration_				;
+  std::unique_ptr<btCollisionDispatcher>                dispatcher_						;
+  std::unique_ptr<btDbvtBroadphase>                     broadphase_						;
+  std::unique_ptr<btSequentialImpulseConstraintSolver>  solver_								;
+  std::unique_ptr<btDiscreteDynamicsWorld>              world_								;
 
-  std::vector<rigidbody*>                              rigidbodies_    ;
-  std::vector<std::pair<transform*, mesh_collider*>>   mesh_colliders_ ;
+  std::vector<rigidbody*>                               rigidbodies_					;
+  std::vector<std::pair<transform*, mesh_collider*>>    mesh_colliders_				;
+
+	std::unordered_set<std::size_t>												prepared_entity_ids_	;
+
+private:
+	void																									prepare_new_entities(scene* scene)		;
+	void																									prepare_entity(entity* entity)				;
 };
 }
 
