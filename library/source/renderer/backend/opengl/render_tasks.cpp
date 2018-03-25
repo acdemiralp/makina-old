@@ -1,11 +1,16 @@
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 
+#define ImDrawIdx unsigned int
+
+#include <cstdint>
 #include <optional>
 
 #include <boost/lexical_cast.hpp>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <gl/auxiliary/glm_uniforms.hpp>
 #include <gl/all.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <makina/renderer/backend/glsl/shader_sources.hpp>
 #include <makina/renderer/light.hpp>
@@ -46,7 +51,7 @@ fg::render_task<test_task_data>*                     add_test_render_task       
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
 
-      gl::print_error("Error in Test Shading Pass: ");
+      gl::print_error("Error in Test Shading Pass");
     });
 }
 fg::render_task<upload_scene_task_data>*             add_upload_scene_render_task            (renderer* framegraph)
@@ -208,7 +213,6 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
               normal_handle->set_resident(true);
             texture_offset++;
           }
-          gl::print_error("Error in Upload Scene Pass 3");
           if (pbr_material->ambient_occlusion_image)
           {
             data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
@@ -400,7 +404,7 @@ fg::render_task<upload_scene_task_data>*             add_upload_scene_render_tas
       data.draw_calls   ->actual()->set_sub_data(0               , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls     .data());
       data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size());
 
-      gl::print_error("Error in Upload Scene Pass: ");
+      gl::print_error("Error in Upload Scene Pass");
     });
 }
 fg::render_task<clear_task_data>*                    add_clear_render_task                   (renderer* framegraph, framebuffer_resource* target, const glm::vec4&              color     , const float depth)
@@ -416,7 +420,7 @@ fg::render_task<clear_task_data>*                    add_clear_render_task      
       data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
       data.target->actual()->clear_depth_and_stencil(depth, 0);
 
-      gl::print_error("Error in Clear Pass: ");
+      gl::print_error("Error in Clear Pass");
     });
 }
 fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
@@ -451,7 +455,7 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
           {data.vertices           , 3, GL_FLOAT       }, 
           {data.normals            , 3, GL_FLOAT       }, 
           {data.texture_coordinates, 3, GL_FLOAT       }, 
-          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 1}
+          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 1}
         }, 
         {
           data.transforms, 
@@ -473,6 +477,7 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );
       gl::set_depth_function              (GL_LESS);
+      gl::set_scissor_test_enabled        (false  );
       gl::set_polygon_face_culling_enabled(true   );
       gl::set_front_face                  (GL_CW  );
       gl::set_cull_face                   (GL_BACK);
@@ -482,7 +487,7 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
 
-      gl::print_error("Error in Phong Shading Pass: ");
+      gl::print_error("Error in Phong Shading Pass");
     });
 }
 fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
@@ -517,7 +522,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
           {data.vertices           , 3, GL_FLOAT       }, 
           {data.normals            , 3, GL_FLOAT       }, 
           {data.texture_coordinates, 3, GL_FLOAT       }, 
-          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 1}
+          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 1}
         }, 
         {
           data.transforms, 
@@ -539,6 +544,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );
       gl::set_depth_function              (GL_LESS);
+      gl::set_scissor_test_enabled        (false  );
       gl::set_polygon_face_culling_enabled(true   );
       gl::set_front_face                  (GL_CW  );
       gl::set_cull_face                   (GL_BACK);
@@ -548,22 +554,20 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
 
-      gl::print_error("Error in Physically Based Shading Pass: ");
+      gl::print_error("Error in Physically Based Shading Pass");
     });
 }
 fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target)
 {
-  const glm::uvec2 texture_size {2048, 2048};
+  const glm::uvec2 texture_size             {2048, 2048};
+        glm::vec2  texture_coordinate_scale {1.0f, 1.0f};
 
-  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Vertices"           , buffer_description{GLsizeiptr(1e+5), GL_ARRAY_BUFFER         });
-  const auto retained_colors              = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Colors"             , buffer_description{GLsizeiptr(1e+5), GL_ARRAY_BUFFER         });
-  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Texture Coordinates", buffer_description{GLsizeiptr(1e+5), GL_ARRAY_BUFFER         });
-  const auto retained_indices             = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Indices"            , buffer_description{GLsizeiptr(1e+5), GL_ELEMENT_ARRAY_BUFFER });
-  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Draw Calls"         , buffer_description{GLsizeiptr(1e+5), GL_DRAW_INDIRECT_BUFFER });
-  // Totals to 5 * 0.1 = 0.5 MB of GPU memory for buffers.
+  const auto retained_attributes    = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Vertices"     , buffer_description{GLsizeiptr(4e+6), GL_ARRAY_BUFFER         });
+  const auto retained_indices       = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Indices"      , buffer_description{GLsizeiptr(4e+6), GL_ELEMENT_ARRAY_BUFFER });
+  // Totals to 4 * 2 = 8 MB of GPU memory for buffers.
   
-  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, parameter_map> ("UI Parameter Map"      , parameter_map::description());
-  const auto retained_texture             = framegraph->add_retained_resource<texture_description       , gl::texture_2d>("UI Texture"            , texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
+  const auto retained_parameter_map = framegraph->add_retained_resource<parameter_map::description, parameter_map> ("UI Parameter Map", parameter_map::description());
+  const auto retained_texture       = framegraph->add_retained_resource<texture_description       , gl::texture_2d>("UI Texture"      , texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
   // Totals to 1 * 16.77 = 16.77 MB of GPU memory for textures.
 
   {
@@ -578,57 +582,93 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
     font_texture->set_mag_filter(GL_LINEAR);
     font_texture->set_sub_image (0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     io.Fonts->TexID = reinterpret_cast<void*>(font_texture->id());
+
+    texture_coordinate_scale = glm::vec2(float(width) / texture_size[0], float(height) / texture_size[1]);
   }
 
   return framegraph->add_render_task<ui_task_data>(
     "UI Pass",
     [&] (      ui_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices            = builder.read  <buffer_resource>       (retained_vertices           );
-      data.colors              = builder.read  <buffer_resource>       (retained_colors             );
-      data.texture_coordinates = builder.read  <buffer_resource>       (retained_texture_coordinates);
-      data.indices             = builder.read  <buffer_resource>       (retained_indices            );
-      data.draw_calls          = builder.read  <buffer_resource>       (retained_draw_calls         );
-      data.parameter_map       = builder.read  <parameter_map_resource>(retained_parameter_map      );
-      data.texture             = builder.read  <texture_2d_resource>   (retained_texture            );
-      data.program             = builder.create<program_resource>      ("UI Program"     , program::description     
+      data.attributes   = builder.read  <buffer_resource>      (retained_attributes);
+      data.indices      = builder.read  <buffer_resource>      (retained_indices   );
+      data.texture      = builder.read  <texture_2d_resource>  (retained_texture   );
+      data.program      = builder.create<program_resource>     ("UI Program"     , program::description     
       {
         ui_vertex_shader, 
         ui_fragment_shader
       });
-      data.vertex_array        = builder.create<vertex_array_resource> ("UI Vertex Array", vertex_array::description
+      data.vertex_array = builder.create<vertex_array_resource>("UI Vertex Array", vertex_array::description
       {
         { 
-          {data.vertices           , 2, GL_FLOAT}, 
-          {data.colors             , 4, GL_FLOAT}, 
-          {data.texture_coordinates, 2, GL_FLOAT}
+          {data.attributes, 2, GL_FLOAT},
+          {data.attributes, 2, GL_FLOAT},
+          {data.attributes, 4, GL_UNSIGNED_BYTE}
         }, 
         {}, 
-        data.indices,
-        data.draw_calls
+        data.indices
       });
       data.target = builder.write(target);
     },
     [=] (const ui_task_data& data)
     {
-      data.program     ->actual()->use   ();
-      data.vertex_array->actual()->bind  ();
-      data.target      ->actual()->bind  ();
+      auto& io = ImGui::GetIO();
+
+      auto program       = data.program     ->actual();
+      auto vertex_array  = data.vertex_array->actual();
+      auto target        = data.target      ->actual();
+
+      program     ->use   ();
+      vertex_array->bind  ();
+      target      ->bind  ();
+
+      gl::texture_handle handle(*data.texture->actual());
+      if (!handle.is_resident()) handle.set_resident(true);
+
+      program->set_uniform       (program->uniform_location("projection")              , glm::ortho(0.0f, io.DisplaySize.x, 0.0f, io.DisplaySize.y, -1.0f, 1.0f));
+      program->set_uniform       (program->uniform_location("texture_coordinate_scale"), texture_coordinate_scale);
+      program->set_uniform_handle(program->uniform_location("ui_texture")              , handle                  );
       
-      // TODO: Render draw data + adjust scale.
-      auto program = data.program->actual();
-      program->set_uniform(program->uniform_location("projection")              , glm::mat4());
-      program->set_uniform(program->uniform_location("texture_coordinate_scale"), glm::vec2());
-      program->set_uniform(program->uniform_location("ui_texture")              , 1);
+      vertex_array->set_attribute_format(0, 2, GL_FLOAT        , false, IM_OFFSETOF(ImDrawVert, pos));
+      vertex_array->set_attribute_format(1, 2, GL_FLOAT        , false, IM_OFFSETOF(ImDrawVert, uv ));
+      vertex_array->set_attribute_format(2, 4, GL_UNSIGNED_BYTE, true , IM_OFFSETOF(ImDrawVert, col));
 
-      gl::set_depth_test_enabled      (false);
-      gl::multi_draw_elements_indirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
+      gl::set_blending_enabled            (true );
+      gl::set_blend_function              (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      gl::set_polygon_face_culling_enabled(false);
+      gl::set_depth_test_enabled          (false);
+      gl::set_scissor_test_enabled        (true );
+      
+      ImGui::Render();
+      auto draw_data = ImGui::GetDrawData();
+      for(auto i = 0; i < draw_data->CmdListsCount; ++i)
+      {
+        const ImDrawList* command_list = draw_data->CmdLists[i];
+        const ImDrawIdx*  index_offset = nullptr;
 
-      data.target      ->actual()->unbind();
-      data.vertex_array->actual()->unbind();
-      data.program     ->actual()->unuse ();
+        data.attributes->actual()->set_sub_data(0, static_cast<GLsizeiptr>(command_list->VtxBuffer.Size) * sizeof(ImDrawVert), static_cast<const GLvoid*>(command_list->VtxBuffer.Data));
+        data.indices   ->actual()->set_sub_data(0, static_cast<GLsizeiptr>(command_list->IdxBuffer.Size) * sizeof(ImDrawIdx) , static_cast<const GLvoid*>(command_list->IdxBuffer.Data));
 
-      gl::print_error("Error in UI Pass: ");
+        for(auto j = 0; j < command_list->CmdBuffer.Size; ++j)
+        {
+          auto& command = command_list->CmdBuffer[j];
+          gl::set_scissor(
+            {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(io.DisplaySize.y   - command.ClipRect.w)},
+            {static_cast<int>(command.ClipRect.z - command.ClipRect.x), static_cast<int>(command.ClipRect.w - command.ClipRect.y)});
+          gl::draw_elements(GL_TRIANGLES, static_cast<GLsizei>(command.ElemCount), GL_UNSIGNED_INT, index_offset);
+          index_offset += command.ElemCount;
+        }
+      }
+      ImGui::NewFrame();
+
+      gl::set_scissor_test_enabled(false);
+      gl::set_blending_enabled    (false);
+
+      target      ->unbind();
+      vertex_array->unbind();
+      program     ->unuse ();
+
+      gl::print_error("Error in UI Pass");
     });
 }
 }

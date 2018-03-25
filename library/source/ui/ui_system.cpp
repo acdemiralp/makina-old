@@ -108,9 +108,6 @@ void ui_system::update (frame_timer::duration delta, scene* scene)
     SDL_SetCursor(cursors_[cursor] ? cursors_[cursor] : cursors_[ImGuiMouseCursor_Arrow]);
   }
 
-  ImGui::Render  ();
-  ImGui::NewFrame();
-  
   ImGui::Begin("Test");
   ImGui::Text ("Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
   ImGui::End  ();

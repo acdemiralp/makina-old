@@ -372,19 +372,19 @@ std::string ui_vertex_shader   = R"(
 uniform mat4 projection;
 
 layout(location = 0) in vec2 vertex            ;
-layout(location = 1) in vec4 color             ;
-layout(location = 2) in vec2 texture_coordinate;
+layout(location = 1) in vec2 texture_coordinate;
+layout(location = 2) in vec4 color             ;
 
 out vs_output_type 
 {
-  vec4 color             ;
   vec2 texture_coordinate;
+  vec4 color             ;
 } vs_output;
 
 void main()
 {
-  vs_output.color              = color             ;
   vs_output.texture_coordinate = texture_coordinate;
+  vs_output.color              = color             ;
   gl_Position                  = projection * vec4(vertex, 0.0f, 1.0f);
 }
 )";
@@ -399,8 +399,8 @@ uniform vec2      texture_coordinate_scale = vec2(1.0f, 1.0f);
 
 in vs_output_type 
 {
-  vec4 color             ;
   vec2 texture_coordinate;
+  vec4 color             ;
 } fs_input;
 
 layout(location = 0) out vec4 output_color;

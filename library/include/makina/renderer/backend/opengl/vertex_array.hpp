@@ -15,11 +15,13 @@ class MAKINA_EXPORT vertex_array : public gl::vertex_array
 public:
   struct MAKINA_EXPORT attribute_binding
   {
-    buffer_resource* buffer    ;
-    GLint            components;
-    GLenum           type      ;
-    GLboolean        normalize = GL_FALSE;
-    GLuint           divisor   = 0       ;
+    buffer_resource* buffer          ;
+    GLint            components      ;
+    GLenum           type            ;
+    GLboolean        normalize       = GL_FALSE;
+    GLuint           offset          = 0;
+    GLuint           relative_offset = 0;
+    GLuint           divisor         = 0;
   };
   struct MAKINA_EXPORT description
   {
