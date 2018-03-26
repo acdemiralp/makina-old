@@ -4,6 +4,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+#undef MemoryBarrier
 extern "C"
 {
   _declspec(dllexport) unsigned int NvOptimusEnablement = 0x00000001;
@@ -17,6 +18,7 @@ extern "C"
 #include <makina/core/scene.hpp>
 #include <makina/display/display_system.hpp>
 #include <makina/input/input_system.hpp>
+#include <makina/renderer/backend/vulkan/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/model_load.hpp>
@@ -28,9 +30,10 @@ TEST_CASE("Vulkan test.", "[makina]")
   auto engine = mak::make_default_engine();
   engine->remove_system<mak::ui_system>(); // UI system needs GPU texture allocators to be available.
   
-  std::vector<std::string>         enabled_layers     {"VK_LAYER_LUNARG_standard_validation"};
-  std::vector<std::string>         enabled_extensions {"VK_KHR_win32_surface"};
-  std::shared_ptr<vkhlf::Instance> instance = vkhlf::Instance::create("Makina", 1, enabled_layers, enabled_extensions, nullptr);
+  std::vector<std::string> layers     {"VK_LAYER_LUNARG_standard_validation"};
+  std::vector<std::string> extensions {"VK_KHR_surface", "VK_KHR_win32_surface"};
+  auto instance       = vkhlf::Instance::create("Makina", 1, layers, extensions, nullptr);
+  auto debug_callback = instance->createDebugReportCallback(vk::DebugReportFlagBitsEXT::eWarning | vk::DebugReportFlagBitsEXT::eError, &vkhlf::debugReportCallback);
 
   const auto display_system = engine->get_system<mak::display_system>();
   const auto window         = display_system->create_vulkan_window(
