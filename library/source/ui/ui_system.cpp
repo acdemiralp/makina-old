@@ -92,7 +92,7 @@ void ui_system::update (frame_timer::duration delta, scene* scene)
   auto& io             = ImGui::GetIO();
   auto  mouse_position = di::mouse::absolute_position();
   io.MousePos          = ImVec2(mouse_position[0], mouse_position[1]);
-  io.DeltaTime         = std::chrono::duration_cast<std::chrono::seconds>(delta).count();
+  io.DeltaTime         = std::chrono::duration_cast<std::chrono::duration<float>>(delta).count();
 
   if(display_system_->windows().size() > 0)
   {
@@ -108,6 +108,7 @@ void ui_system::update (frame_timer::duration delta, scene* scene)
     SDL_SetCursor(cursors_[cursor] ? cursors_[cursor] : cursors_[ImGuiMouseCursor_Arrow]);
   }
 
+  ImGui::ShowDemoWindow();
   ImGui::Begin("Test");
   ImGui::Text ("Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
   ImGui::End  ();

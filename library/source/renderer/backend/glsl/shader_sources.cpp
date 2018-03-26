@@ -395,7 +395,6 @@ std::string ui_fragment_shader = R"(
 layout (bindless_sampler) uniform;
 
 uniform sampler2D ui_texture;
-uniform vec2      texture_coordinate_scale = vec2(1.0f, 1.0f);
 
 in vs_output_type 
 {
@@ -407,7 +406,7 @@ layout(location = 0) out vec4 output_color;
 
 void main()
 {
-  output_color = fs_input.color * texture(ui_texture, texture_coordinate_scale * fs_input.texture_coordinate);
+  output_color = fs_input.color * texture(ui_texture, fs_input.texture_coordinate);
 }
 )";
 }

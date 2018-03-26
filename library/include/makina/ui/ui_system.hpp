@@ -1,8 +1,6 @@
 #ifndef MAKINA_UI_UI_SYSTEM_HPP_
 #define MAKINA_UI_UI_SYSTEM_HPP_
 
-#define ImDrawIdx unsigned int
-
 #include <array>
 
 #include <di/systems/input/mouse.hpp>

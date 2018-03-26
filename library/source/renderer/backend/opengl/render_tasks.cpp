@@ -1,7 +1,5 @@
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 
-#define ImDrawIdx unsigned int
-
 #include <cstdint>
 #include <optional>
 
@@ -559,32 +557,20 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
 }
 fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target)
 {
-  const glm::uvec2 texture_size             {2048, 2048};
-        glm::vec2  texture_coordinate_scale {1.0f, 1.0f};
-
   const auto retained_attributes    = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Vertices"     , buffer_description{GLsizeiptr(4e+6), GL_ARRAY_BUFFER         });
   const auto retained_indices       = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Indices"      , buffer_description{GLsizeiptr(4e+6), GL_ELEMENT_ARRAY_BUFFER });
-  // Totals to 4 * 2 = 8 MB of GPU memory for buffers.
-  
   const auto retained_parameter_map = framegraph->add_retained_resource<parameter_map::description, parameter_map> ("UI Parameter Map", parameter_map::description());
-  const auto retained_texture       = framegraph->add_retained_resource<texture_description       , gl::texture_2d>("UI Texture"      , texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
-  // Totals to 1 * 16.77 = 16.77 MB of GPU memory for textures.
 
-  {
-    // Setup font texture once.
-    auto& io = ImGui::GetIO();
-    std::uint8_t* pixels;
-    std::int32_t  width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+  auto& io = ImGui::GetIO();
+  std::uint8_t* pixels;
+  std::int32_t  width, height;
+  io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-    auto font_texture = retained_texture->actual();
-    font_texture->set_min_filter(GL_LINEAR);
-    font_texture->set_mag_filter(GL_LINEAR);
-    font_texture->set_sub_image (0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    io.Fonts->TexID = reinterpret_cast<void*>(font_texture->id());
-
-    texture_coordinate_scale = glm::vec2(float(width) / texture_size[0], float(height) / texture_size[1]);
-  }
+  const auto retained_texture = framegraph->add_retained_resource<texture_description, gl::texture_2d>("UI Texture", texture_description {{static_cast<int>(width), static_cast<int>(height), 1}, GL_RGBA8});
+  retained_texture->actual()->set_min_filter(GL_LINEAR);
+  retained_texture->actual()->set_mag_filter(GL_LINEAR);
+  retained_texture->actual()->set_sub_image(0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  io.Fonts->TexID = reinterpret_cast<void*>(retained_texture->actual()->id());
 
   return framegraph->add_render_task<ui_task_data>(
     "UI Pass",
@@ -625,10 +611,12 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
       gl::texture_handle handle(*data.texture->actual());
       if (!handle.is_resident()) handle.set_resident(true);
 
-      program->set_uniform       (program->uniform_location("projection")              , glm::ortho(0.0f, io.DisplaySize.x, 0.0f, io.DisplaySize.y, -1.0f, 1.0f));
-      program->set_uniform       (program->uniform_location("texture_coordinate_scale"), texture_coordinate_scale);
-      program->set_uniform_handle(program->uniform_location("ui_texture")              , handle                  );
+      program->set_uniform       (program->uniform_location("projection"), glm::ortho(0.0f, io.DisplaySize.x, 0.0f, io.DisplaySize.y, 0.0f, 1.0f));
+      program->set_uniform_handle(program->uniform_location("ui_texture"), handle);
       
+      vertex_array->set_vertex_buffer   (0, *data.attributes->actual(), 0, sizeof ImDrawVert);
+      vertex_array->set_vertex_buffer   (1, *data.attributes->actual(), 0, sizeof ImDrawVert);
+      vertex_array->set_vertex_buffer   (2, *data.attributes->actual(), 0, sizeof ImDrawVert);
       vertex_array->set_attribute_format(0, 2, GL_FLOAT        , false, IM_OFFSETOF(ImDrawVert, pos));
       vertex_array->set_attribute_format(1, 2, GL_FLOAT        , false, IM_OFFSETOF(ImDrawVert, uv ));
       vertex_array->set_attribute_format(2, 4, GL_UNSIGNED_BYTE, true , IM_OFFSETOF(ImDrawVert, col));
@@ -652,10 +640,15 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
         for(auto j = 0; j < command_list->CmdBuffer.Size; ++j)
         {
           auto& command = command_list->CmdBuffer[j];
+
+          //gl::texture_handle handle(gl::texture_2d(reinterpret_cast<intptr_t>(command.TextureId)));
+          //if (!handle.is_resident()) handle.set_resident(true);
+          //program->set_uniform_handle(program->uniform_location("ui_texture"), handle);
+
           gl::set_scissor(
-            {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(io.DisplaySize.y   - command.ClipRect.w)},
+            {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(command.ClipRect.y)},
             {static_cast<int>(command.ClipRect.z - command.ClipRect.x), static_cast<int>(command.ClipRect.w - command.ClipRect.y)});
-          gl::draw_elements(GL_TRIANGLES, static_cast<GLsizei>(command.ElemCount), GL_UNSIGNED_INT, index_offset);
+          gl::draw_elements(GL_TRIANGLES, static_cast<GLsizei>(command.ElemCount), GL_UNSIGNED_SHORT, index_offset);
           index_offset += command.ElemCount;
         }
       }
