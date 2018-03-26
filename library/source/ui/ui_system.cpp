@@ -62,8 +62,8 @@ void ui_system::prepare(                             scene* scene)
   }
 
   input_system_->on_mouse_wheel  .connect([ ] (std::array<std::int32_t, 2> amount) { ImGui::GetIO().MouseWheel += amount[1];              });
-  input_system_->on_mouse_down   .connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index] = true ;             });
-  input_system_->on_mouse_release.connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index] = false;             });
+  input_system_->on_mouse_press  .connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index - 1] = true ;         });
+  input_system_->on_mouse_release.connect([ ] (std::size_t                 index ) { ImGui::GetIO().MouseDown[index - 1] = false;         });
   input_system_->on_text_input   .connect([ ] (std::string                 text  ) { ImGui::GetIO().AddInputCharactersUTF8(text.c_str()); });
   input_system_->on_key_press    .connect([ ] (di::key                     key   )
   {
@@ -90,7 +90,7 @@ void ui_system::prepare(                             scene* scene)
 void ui_system::update (frame_timer::duration delta, scene* scene)
 {
   auto& io             = ImGui::GetIO();
-  auto  mouse_position = di::mouse::absolute_position();
+  auto  mouse_position = di::mouse::relative_position();
   io.MousePos          = ImVec2(mouse_position[0], mouse_position[1]);
   io.DeltaTime         = std::chrono::duration_cast<std::chrono::duration<float>>(delta).count();
 
@@ -108,9 +108,8 @@ void ui_system::update (frame_timer::duration delta, scene* scene)
     SDL_SetCursor(cursors_[cursor] ? cursors_[cursor] : cursors_[ImGuiMouseCursor_Arrow]);
   }
 
-  ImGui::ShowDemoWindow();
   ImGui::Begin("Test");
-  ImGui::Text ("Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::Text ("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
   ImGui::End  ();
 }
 }

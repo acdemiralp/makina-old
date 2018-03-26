@@ -567,8 +567,6 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
   io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
   const auto retained_texture = framegraph->add_retained_resource<texture_description, gl::texture_2d>("UI Texture", texture_description {{static_cast<int>(width), static_cast<int>(height), 1}, GL_RGBA8});
-  retained_texture->actual()->set_min_filter(GL_LINEAR);
-  retained_texture->actual()->set_mag_filter(GL_LINEAR);
   retained_texture->actual()->set_sub_image(0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
   io.Fonts->TexID = reinterpret_cast<void*>(retained_texture->actual()->id());
 
@@ -611,7 +609,7 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
       gl::texture_handle handle(*data.texture->actual());
       if (!handle.is_resident()) handle.set_resident(true);
 
-      program->set_uniform       (program->uniform_location("projection"), glm::ortho(0.0f, io.DisplaySize.x, 0.0f, io.DisplaySize.y, 0.0f, 1.0f));
+      program->set_uniform       (program->uniform_location("projection"), glm::ortho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, 0.0f, 1.0f));
       program->set_uniform_handle(program->uniform_location("ui_texture"), handle);
       
       vertex_array->set_vertex_buffer   (0, *data.attributes->actual(), 0, sizeof ImDrawVert);
@@ -633,18 +631,11 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
       {
         const ImDrawList* command_list = draw_data->CmdLists[i];
         const ImDrawIdx*  index_offset = nullptr;
-
         data.attributes->actual()->set_sub_data(0, static_cast<GLsizeiptr>(command_list->VtxBuffer.Size) * sizeof(ImDrawVert), static_cast<const GLvoid*>(command_list->VtxBuffer.Data));
         data.indices   ->actual()->set_sub_data(0, static_cast<GLsizeiptr>(command_list->IdxBuffer.Size) * sizeof(ImDrawIdx) , static_cast<const GLvoid*>(command_list->IdxBuffer.Data));
-
         for(auto j = 0; j < command_list->CmdBuffer.Size; ++j)
         {
           auto& command = command_list->CmdBuffer[j];
-
-          //gl::texture_handle handle(gl::texture_2d(reinterpret_cast<intptr_t>(command.TextureId)));
-          //if (!handle.is_resident()) handle.set_resident(true);
-          //program->set_uniform_handle(program->uniform_location("ui_texture"), handle);
-
           gl::set_scissor(
             {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(command.ClipRect.y)},
             {static_cast<int>(command.ClipRect.z - command.ClipRect.x), static_cast<int>(command.ClipRect.w - command.ClipRect.y)});
@@ -655,7 +646,6 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
       ImGui::NewFrame();
 
       gl::set_scissor_test_enabled(false);
-      gl::set_blending_enabled    (false);
 
       target      ->unbind();
       vertex_array->unbind();
