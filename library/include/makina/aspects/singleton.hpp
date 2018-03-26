@@ -14,7 +14,7 @@ class singleton
 {
 public:
   template<typename... argument_types>
-  static derived& instance(argument_types&&... arguments)
+  static derived& get(argument_types&&... arguments)
   {
     static std::once_flag once;
     std::call_once(once, [ ] (argument_types&&... arguments)
@@ -33,7 +33,7 @@ protected:
   singleton& operator=(      singleton&& temp) = default;
 
 private:
-  static std::unique_ptr<derived> instance_ = nullptr;
+  static std::unique_ptr<derived> instance_;
 };
 }
 
