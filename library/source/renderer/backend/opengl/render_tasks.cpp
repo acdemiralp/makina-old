@@ -637,7 +637,7 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
         {
           auto& command = command_list->CmdBuffer[j];
           gl::set_scissor(
-            {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(command.ClipRect.y)},
+            {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(io.DisplaySize.y   - command.ClipRect.w)},
             {static_cast<int>(command.ClipRect.z - command.ClipRect.x), static_cast<int>(command.ClipRect.w - command.ClipRect.y)});
           gl::draw_elements(GL_TRIANGLES, static_cast<GLsizei>(command.ElemCount), GL_UNSIGNED_SHORT, index_offset);
           index_offset += command.ElemCount;
