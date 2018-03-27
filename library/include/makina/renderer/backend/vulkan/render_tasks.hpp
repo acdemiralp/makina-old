@@ -11,6 +11,7 @@
 #include <vkhlf/Surface.h>
 
 #include <makina/aspects/singleton.hpp>
+#include <makina/config.hpp>
 #include <makina/export.hpp>
 
 namespace mak
