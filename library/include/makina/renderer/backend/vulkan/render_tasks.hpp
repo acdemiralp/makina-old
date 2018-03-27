@@ -17,9 +17,9 @@ namespace mak
 {
 struct MAKINA_EXPORT window_swapchain
 {
-  di::vulkan_window*                           window             ;
-  std::shared_ptr<vkhlf::Surface>              surface            ;
-  std::unique_ptr<vkhlf::FramebufferSwapchain> swapchain          ;
+  di::vulkan_window*                           window   ;
+  std::shared_ptr<vkhlf::Surface>              surface  ;
+  std::shared_ptr<vkhlf::FramebufferSwapchain> swapchain;
 };
 
 struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
@@ -49,7 +49,7 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
     extensions.push_back("VK_KHR_xlib_surface");
 #endif
 
-    instance       = vkhlf::Instance::create(name, version, layers, extensions, nullptr);
+    instance = vkhlf::Instance::create(name, version, layers, extensions, nullptr);
 
 #ifndef NDEBUG
     debug_callback = instance->createDebugReportCallback(
@@ -59,8 +59,6 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
         vk::DebugReportFlagBitsEXT::eError              |
         vk::DebugReportFlagBitsEXT::eDebug              ), &vkhlf::debugReportCallback);
 #endif
-
-
   }
   vulkan_context           (const vulkan_context&  that) = default;
   vulkan_context           (      vulkan_context&& temp) = default;
@@ -68,7 +66,7 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
   vulkan_context& operator=(const vulkan_context&  that) = default;
   vulkan_context& operator=(      vulkan_context&& temp) = default;
 
-  void present() const
+  void present()
   {
     for (auto& window_swapchain : window_swapchains)
     {
@@ -77,16 +75,16 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
     }
   }
 
-  std::shared_ptr<vkhlf::Instance>             instance                 ;
-  std::shared_ptr<vkhlf::DebugReportCallback>  debug_callback           ;
-  std::shared_ptr<vkhlf::PhysicalDevice>       physical_device          ;
-  std::shared_ptr<vkhlf::Device>               logical_device           ;
-  std::shared_ptr<vkhlf::Queue>                graphics_queue           ;
-  std::shared_ptr<vkhlf::Semaphore>            render_complete_semaphore;
-  std::uint32_t                                queue_family_index       = 0;
-  vk::Format                                   color_format             = vk::Format::eUndefined;
-  vk::Format                                   depth_format             = vk::Format::eUndefined;
-  std::vector<window_swapchain>                window_swapchains        ;
+  std::shared_ptr<vkhlf::Instance>            instance                 ;
+  std::shared_ptr<vkhlf::DebugReportCallback> debug_callback           ;
+  std::shared_ptr<vkhlf::PhysicalDevice>      physical_device          ;
+  std::shared_ptr<vkhlf::Device>              logical_device           ;
+  std::shared_ptr<vkhlf::Queue>               graphics_queue           ;
+  std::shared_ptr<vkhlf::Semaphore>           render_complete_semaphore;
+  std::uint32_t                               queue_family_index       = 0;
+  vk::Format                                  color_format             = vk::Format::eUndefined;
+  vk::Format                                  depth_format             = vk::Format::eUndefined;
+  std::vector<window_swapchain>               window_swapchains        ;
 };
 }
 

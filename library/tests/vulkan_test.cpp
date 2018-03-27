@@ -12,7 +12,6 @@ extern "C"
 #endif
 
 #include <fi/free_image.hpp>
-#include <vkhlf/vkhlf.h>
 
 #include <makina/core/registry.hpp>
 #include <makina/core/scene.hpp>
@@ -30,14 +29,9 @@ TEST_CASE("Vulkan test.", "[makina]")
   auto engine = mak::make_default_engine();
   engine->remove_system<mak::ui_system>(); // UI system needs GPU texture allocators to be available.
   
-  std::vector<std::string> layers     {"VK_LAYER_LUNARG_standard_validation"};
-  std::vector<std::string> extensions {"VK_KHR_surface", "VK_KHR_win32_surface"};
-  auto instance       = vkhlf::Instance::create("Makina", 1, layers, extensions, nullptr);
-  auto debug_callback = instance->createDebugReportCallback(vk::DebugReportFlagBitsEXT::eWarning | vk::DebugReportFlagBitsEXT::eError, &vkhlf::debugReportCallback);
-
   const auto display_system = engine->get_system<mak::display_system>();
   const auto window         = display_system->create_vulkan_window(
-    instance->operator vk::Instance(),
+    mak::vulkan_context::get().instance->operator vk::Instance(),
     "Makina (Vulkan)", 
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600});
