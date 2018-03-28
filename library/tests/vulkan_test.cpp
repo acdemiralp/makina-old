@@ -18,6 +18,7 @@ extern "C"
 #include <makina/display/display_system.hpp>
 #include <makina/input/input_system.hpp>
 #include <makina/renderer/backend/vulkan/render_tasks.hpp>
+#include <makina/renderer/backend/vulkan/vulkan_context.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/model_load.hpp>
