@@ -101,8 +101,8 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
     if  (!physical_device) 
       throw std::runtime_error("Failed to find a physical device with presentation support.");
 
-    logical_device            = physical_device->createDevice   (vkhlf::DeviceQueueCreateInfo(queue_family_index, 0.0f), nullptr, {VK_KHR_SWAPCHAIN_EXTENSION_NAME});
-    graphics_queue            = logical_device ->getQueue       (queue_family_index, 0);
+    logical_device            = physical_device->createDevice   (vkhlf::DeviceQueueCreateInfo(0 /* queue family index */, 0.0f /* queue priorities */), nullptr, {VK_KHR_SWAPCHAIN_EXTENSION_NAME});
+    graphics_queue            = logical_device ->getQueue       (0 /* queue family index */, 0 /* queue index */);
     render_complete_semaphore = logical_device ->createSemaphore();
     buffer_allocator          = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(64  * 1024), nullptr);
     image_allocator           = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(128 * 1024), nullptr);
@@ -135,37 +135,26 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
       window_swapchain.surface = instance->createSurface(std::get<0>(driver_data), std::get<1>(driver_data));
 #endif
-
-      if (window_swapchains.size() == 1)
+      
+      auto queue_family_indices = getGraphicsPresentQueueFamilyIndices(physical_device, window_swapchain.surface);
+      auto surface_formats      = physical_device->getSurfaceFormats(window_swapchain.surface);
+      window_swapchain.queue_family_index = queue_family_indices[0];
+      window_swapchain.color_format       = surface_formats.size() == 1 && surface_formats[0].format == vk::Format::eUndefined ? vk::Format::eB8G8R8A8Unorm : surface_formats[0].format;
+      window_swapchain.depth_format       = vk::Format::eD24UnormS8Uint;
+      window_swapchain.swapchain          = std::make_shared<vkhlf::FramebufferSwapchain>(
+        logical_device               ,
+        window_swapchain.surface     ,
+        window_swapchain.color_format,
+        window_swapchain.depth_format,
+        render_pass                  );
+      window_swapchain.window->on_resize.connect([&] (const std::array<std::size_t, 2>& size)
       {
-        auto queue_family_indices = getGraphicsPresentQueueFamilyIndices(physical_device, window_swapchain.surface);
-        auto surface_formats      = physical_device->getSurfaceFormats(window_swapchain.surface);
-        queue_family_index        = queue_family_indices[0];
-        color_format              = surface_formats.size() == 1 && surface_formats[0].format == vk::Format::eUndefined 
-          ? vk::Format::eB8G8R8A8Unorm 
-          : surface_formats[0].format;
-        depth_format              = vk::Format::eD24UnormS8Uint;
-      }
-    }
-
-    for (auto& backbuffer : backbuffers_)
-    {
-      backbuffer.swapchain_.reset(new vkhlf::FramebufferSwapchain(
-        render_context_.device_,
-        backbuffer.surface_,
-        render_context_.color_format_,
-        render_context_.depth_format_,
-        render_context_.render_pass_));
-
-      backbuffer.window_->on_resize.connect([&](const std::array<unsigned, 2>& size)
-      {
-        backbuffer.swapchain_.reset();
-        backbuffer.swapchain_.reset(new vkhlf::FramebufferSwapchain(
-          render_context_.device_,
-          backbuffer.surface_,
-          render_context_.color_format_,
-          render_context_.depth_format_,
-          render_context_.render_pass_));
+        window_swapchain.swapchain = std::make_shared<vkhlf::FramebufferSwapchain>(
+          logical_device               ,
+          window_swapchain.surface     ,
+          window_swapchain.color_format,
+          window_swapchain.depth_format,
+          render_pass                  );
       });
     }
   }
@@ -186,9 +175,6 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
   std::shared_ptr<vkhlf::Semaphore>             render_complete_semaphore;
   std::shared_ptr<vkhlf::DeviceMemoryAllocator> buffer_allocator         ;
   std::shared_ptr<vkhlf::DeviceMemoryAllocator> image_allocator          ;
-  std::uint32_t                                 queue_family_index       = 0;
-  vk::Format                                    color_format             = vk::Format::eUndefined;
-  vk::Format                                    depth_format             = vk::Format::eUndefined;
   std::vector<window_swapchain>                 window_swapchains        ;
 };
 }

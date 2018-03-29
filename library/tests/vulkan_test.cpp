@@ -36,7 +36,8 @@ TEST_CASE("Vulkan test.", "[makina]")
     "Makina (Vulkan)", 
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600});
-
+  mak::vulkan_context::get().create_window_swapchains(display_system->vulkan_windows());
+  
   fi::initialize();
 
   const auto input_system = engine->get_system<mak::input_system>();
