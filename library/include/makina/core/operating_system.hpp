@@ -10,7 +10,7 @@ enum class operating_system
   windows
 };
 
-operating_system current_operating_system()
+inline operating_system current_operating_system()
 {
 #if defined __linux__
   return operating_system::linux;

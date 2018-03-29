@@ -44,6 +44,8 @@ TEST_CASE("Vulkan test.", "[makina]")
   input_system->on_quit.connect(std::bind(&mak::engine::stop, engine.get()));
 
   const auto renderer = engine->get_system<mak::renderer>();
+  add_clear_render_task  (renderer, nullptr, glm::vec4(0.01f, 0.01f, 0.01f, 0.01f), 1.0f);
+  add_present_render_task(renderer);
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
