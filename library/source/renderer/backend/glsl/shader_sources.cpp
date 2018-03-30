@@ -41,6 +41,13 @@ out vs_output_type
   flat uint material_index    ;
 } vs_output;
 
+#ifdef VULKAN
+out gl_PerVertex
+{
+  vec4 gl_Position;
+}
+#endif
+
 void main()
 {
   mat4 model_view   = cameras[camera_index].view * transforms[instance_attribute.x].model;
@@ -380,6 +387,13 @@ out vs_output_type
   vec2 texture_coordinate;
   vec4 color             ;
 } vs_output;
+
+#ifdef VULKAN
+out gl_PerVertex
+{
+  vec4 gl_Position;
+}
+#endif
 
 void main()
 {
