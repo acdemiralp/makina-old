@@ -1,0 +1,66 @@
+## Makina ##
+Makina is a ”not-game engine (NGE)” which provides a subset of common game engine features such as audio, input, physics, rendering, scripting but in contrary to most game engines, is easily extendable with prototypical computer graphics, scientific visualization and virtual reality research. It essentially is a collection of high-quality (or ambitious) libraries weaved together into a cohesive framework.
+
+## Libraries and Tech ##
+- Build
+  - [x] CMake
+  - [x] Conan
+- Core
+  - [x] acdemiralp/ec
+  - [x] Boost
+  - [x] foonathan/memory
+  - [x] gabime/spdlog
+  - [x] rttrorg/rttr
+- Display and Input
+  - [x] acdemiralp/di (OpenVR + SDL2)
+- Assets
+  - [x] acdemiralp/fi (FreeImage)
+  - [x] acdemiralp/ra
+  - [x] Assimp
+  - [x] bgrimstad/splinter
+  - [x] Eigen
+  - [x] FreeType
+  - [x] GLM
+  - [ ] LibVLC
+  - [x] nlohmann/json
+- Compute
+  - [x] 01org/tbb
+  - [ ] Cuda
+- Rendering
+  - [x] acdemiralp/fg
+  - [x] acdemiralp/gl (GLEW + OpenGL)
+  - [ ] DX12
+  - [ ] OptiX
+  - [ ] ospray/ospray
+  - [x] VkHLF (Vulkan)
+- Audio
+  - [ ] FMOD
+- Physics
+  - [x] Bullet
+- Networking
+  - [ ] RakNet
+  - [x] ZeroMQ
+- Scripting
+  - [ ] Mono
+  - [ ] V8
+- UI
+  - [x] ocornut/imgui
+- Profiling
+  - [x] milostosic/MTuner
+- Benchmarking
+  - [x] acdemiralp/bm
+- Testing
+  - [x] philsquared/catch2
+
+## Layers (In-Progress) ##
+- Components: `animator, audio_listener, audio_source, camera, collider, cs_script, image_renderer, js_script, light, mesh_renderer, nurbs_renderer, rigidbody, scalar/vector/tensor_field_renderer, text_renderer, transform, ui_canvas, ui_element...`
+- Systems: `audio_system, interpreters (cs_interpreter, js_interpreter), networking_system, physics_system, renderers (dx12_renderer, gl_renderer, optix_renderer, ospray_renderer, vk_renderer), ui_system`
+- Serialization: 
+  - Assets: `audio_clip, font, image, model (animation_clip, curve, keyframe, material, mesh, transform), nurbs, physics_material, script, shader, video_clip`
+  - Natives: Components, prefabs (partial ec-tables), scenes (complete ec-tables), systems.
+- Rendering:
+  - JoeyDeVries/LearnOpenGL (/pbr)
+  - nvpro-samples/gl_dynamic_lod
+  - nvpro-samples/gl_occlusion_culling
+  - nvpro-samples/gl_optix_composite
+  - nvpro-samples/gl_ssao
