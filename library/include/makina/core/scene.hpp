@@ -7,6 +7,8 @@
 #include <ec/entity.hpp>
 #include <ec/scene.hpp>
 
+#include <makina/audio/audio_listener.hpp>
+#include <makina/audio/audio_source.hpp>
 #include <makina/input/controller.hpp>
 #include <makina/physics/mesh_collider.hpp>
 #include <makina/physics/rigidbody.hpp>
@@ -20,7 +22,7 @@ namespace mak
 class behavior  ;
 using behaviors = std::vector<std::shared_ptr<behavior>>;
 
-using entity    = ec::entity<controller, mesh_collider, rigidbody, light, mesh_render, projection, transform, behaviors>;
+using entity    = ec::entity<audio_listener, audio_source, controller, mesh_collider, rigidbody, light, mesh_render, projection, transform, behaviors>;
 using scene     = ec::scene<entity>;
 }
 
