@@ -3,7 +3,7 @@
 namespace mak
 {
 std::string test_vertex_shader = R"(
-#version 450
+#version 420
 #extension GL_ARB_explicit_attrib_location : enable
 
 layout(location = 0) in  vec3 vertex; 
@@ -23,7 +23,7 @@ void main()
 }
 )";
 std::string test_fragment_shader = R"(
-#version 450
+#version 420
 #extension GL_ARB_explicit_attrib_location : enable
 
 layout(location = 0) in  vec3 color     ; 

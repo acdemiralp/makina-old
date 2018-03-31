@@ -31,11 +31,11 @@ TEST_CASE("Vulkan test.", "[makina]")
   
   const auto display_system = engine->get_system<mak::display_system>();
   const auto window         = display_system->create_vulkan_window(
-    mak::vulkan_context::get().instance->operator vk::Instance(),
+    mak::vulkan_context.instance->operator vk::Instance(),
     "Makina (Vulkan)", 
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600});
-  mak::vulkan_context::get().create_window_swapchains(display_system->vulkan_windows());
+  mak::vulkan_context.create_window_swapchains(display_system->vulkan_windows());
   
   fi::initialize();
 

@@ -4,7 +4,7 @@
 
 namespace mak
 {
-vulkan_context::vulkan_context()
+_vulkan_context::_vulkan_context()
 {
   const auto               name       = typeid(*this).name();
   const auto               version    = VK_MAKE_VERSION(1, 0, 0);
@@ -81,7 +81,7 @@ vulkan_context::vulkan_context()
   image_allocator           = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(128 * 1024), nullptr);
 }
 
-void vulkan_context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
+void _vulkan_context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
 {
   for (auto& window : windows)
   {
@@ -162,7 +162,7 @@ void vulkan_context::create_window_swapchains (const std::vector<di::vulkan_wind
     });
   }
 }
-void vulkan_context::present_window_swapchains()
+void _vulkan_context::present_window_swapchains()
 {
   for (auto& window_swapchain : window_swapchains)
   {
@@ -170,4 +170,6 @@ void vulkan_context::present_window_swapchains()
     window_swapchain.swapchain->acquireNextFrame();
   }
 }
+
+_vulkan_context vulkan_context = _vulkan_context();
 }

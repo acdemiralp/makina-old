@@ -36,23 +36,22 @@ using image_resource = fg::resource<image_description, std::shared_ptr<vkhlf::Im
 template<>
 inline std::unique_ptr<std::shared_ptr<vkhlf::Image>> fg::realize(const mak::image_description& description)
 {
-  auto& context = mak::vulkan_context::get();
-  return std::make_unique<std::shared_ptr<vkhlf::Image>>(context.logical_device->createImage(
-    description.create_flags         ,
-    description.type                 ,
-    description.format               ,
-    description.extent               ,
-    description.mip_levels           ,
-    description.array_layers         ,
-    description.samples              ,
-    description.tiling               ,
-    description.usage_flags          ,
-    description.sharing_mode         ,
-    description.queue_family_indices ,
-    description.initial_layout       ,
-    description.memory_property_flags,
-    context.image_allocator          ,
-    nullptr                          ));
+  return std::make_unique<std::shared_ptr<vkhlf::Image>>(mak::vulkan_context.logical_device->createImage(
+    description.create_flags           ,
+    description.type                   ,
+    description.format                 ,
+    description.extent                 ,
+    description.mip_levels             ,
+    description.array_layers           ,
+    description.samples                ,
+    description.tiling                 ,
+    description.usage_flags            ,
+    description.sharing_mode           ,
+    description.queue_family_indices   ,
+    description.initial_layout         ,
+    description.memory_property_flags  ,
+    mak::vulkan_context.image_allocator,
+    nullptr                            ));
 }
 
 #endif

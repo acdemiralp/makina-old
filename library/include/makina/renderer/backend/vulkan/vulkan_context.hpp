@@ -14,20 +14,19 @@
 #include <vkhlf/Queue.h>
 #include <vkhlf/Semaphore.h>
 
-#include <makina/aspects/singleton.hpp>
 #include <makina/renderer/backend/vulkan/window_swapchain.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
-struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
+struct MAKINA_EXPORT _vulkan_context
 {
-  vulkan_context           ();
-  vulkan_context           (const vulkan_context&  that) = default;
-  vulkan_context           (      vulkan_context&& temp) = default;
-  virtual ~vulkan_context  ()                            = default;
-  vulkan_context& operator=(const vulkan_context&  that) = default;
-  vulkan_context& operator=(      vulkan_context&& temp) = default;
+  _vulkan_context           ();
+  _vulkan_context           (const _vulkan_context&  that) = default;
+  _vulkan_context           (      _vulkan_context&& temp) = default;
+  virtual ~_vulkan_context  ()                            = default;
+  _vulkan_context& operator=(const _vulkan_context&  that) = default;
+  _vulkan_context& operator=(      _vulkan_context&& temp) = default;
 
   void create_window_swapchains (const std::vector<di::vulkan_window*>& windows);
   void present_window_swapchains();
@@ -43,6 +42,8 @@ struct MAKINA_EXPORT vulkan_context : public singleton<vulkan_context>
   std::shared_ptr<vkhlf::CommandPool>           command_pool             ;
   std::vector<window_swapchain>                 window_swapchains        ;
 };
+
+MAKINA_EXPORT extern _vulkan_context vulkan_context;
 }
 
 #endif
