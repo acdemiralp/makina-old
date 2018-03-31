@@ -32,13 +32,16 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         "test.vs", glsl::test_vertex_shader  ,
         "test.fs", glsl::test_fragment_shader,
         vk::PrimitiveTopology::eTriangleStrip,
-        vulkan::context().window_swapchains[0].render_pass // Test task applies to the first window.
-        });
+        context().window_swapchains[0].render_pass, // Test task applies to the first window.
+        {
+          vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32Sfloat, offsetof(vertex_t, vertex))
+        },
+        sizeof vertex_t});
     },
     [=] (const test_task_data& data)
     {
-      auto  command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
-      for(auto& window_swapchain : vulkan::context().window_swapchains)
+      auto command_buffer = context().command_pool->allocateCommandBuffer();
+      for(auto& window_swapchain : context().window_swapchains)
       {
         command_buffer->begin           ();
         (*data.vertices->actual         ())->update<vertex_t>(0, {std::uint32_t(vertices.size()), vertices.data()}, command_buffer);
@@ -61,14 +64,14 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
           0.0f, 
           1.0f));
         command_buffer->setScissor      (0, vk::Rect2D({0, 0}, window_swapchain.swapchain->getExtent()));
-        command_buffer->draw            (std::uint32_t(draw_count), 1, 0, 0);
+        command_buffer->draw            (draw_count, 1, 0, 0);
         command_buffer->endRenderPass   ();
         command_buffer->end             ();
-        vulkan::context().graphics_queue->submit  (vkhlf::SubmitInfo{
+        context().graphics_queue->submit  (vkhlf::SubmitInfo{
           {window_swapchain.swapchain->getPresentSemaphore()}, 
           {vk::PipelineStageFlagBits::eColorAttachmentOutput}, 
           command_buffer, 
-          vulkan::context().render_complete_semaphore});
+          context().render_complete_semaphore});
       }
     });
 }
