@@ -132,10 +132,10 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       assimp_material->Get(AI_MATKEY_NAME, name);
       material->set_name(name.C_Str());
 
-      assimp_material->Get(AI_MATKEY_COLOR_AMBIENT , reinterpret_cast<aiColor3D&>(material->ambient));
-      assimp_material->Get(AI_MATKEY_COLOR_DIFFUSE , reinterpret_cast<aiColor3D&>(material->diffuse));
-      assimp_material->Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(material->ambient));
-      assimp_material->Get(AI_MATKEY_SHININESS     , reinterpret_cast<float&>    (material->ambient));
+      assimp_material->Get(AI_MATKEY_COLOR_AMBIENT , reinterpret_cast<aiColor3D&>(material->ambient  ));
+      assimp_material->Get(AI_MATKEY_COLOR_DIFFUSE , reinterpret_cast<aiColor3D&>(material->diffuse  ));
+      assimp_material->Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(material->specular ));
+      assimp_material->Get(AI_MATKEY_SHININESS     , reinterpret_cast<float&>    (material->shininess));
 
       load_texture(aiTextureType_AMBIENT , material->ambient_image );
       load_texture(aiTextureType_DIFFUSE , material->diffuse_image );
