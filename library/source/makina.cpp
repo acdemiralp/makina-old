@@ -18,6 +18,8 @@ std::unique_ptr<engine> make_default_engine()
   auto physics_system = engine->add_system<mak::physics_system>();
   auto renderer       = engine->add_system<mak::renderer>      ();
 
+  input_system->on_quit.connect(std::bind(&engine::stop, engine.get()));
+
   auto scene = std::make_unique<mak::scene>();
   {
     auto entity          = scene ->add_entity();
