@@ -6,7 +6,10 @@ namespace glsl
 {
 std::string test_vertex_shader = R"(
 #version 450
+
+#ifndef VULKAN
 #extension GL_ARB_explicit_attrib_location : enable
+#endif
 
 layout(location = 0) in  vec3 vertex;
 layout(location = 0) out vec3 color ;
@@ -26,7 +29,10 @@ void main()
 )";
 std::string test_fragment_shader = R"(
 #version 450
+
+#ifndef VULKAN
 #extension GL_ARB_explicit_attrib_location : enable
+#endif
 
 layout(location = 0) in  vec3 color     ;
 layout(location = 0) out vec4 frag_color;

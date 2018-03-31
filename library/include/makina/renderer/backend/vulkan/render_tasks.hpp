@@ -14,7 +14,8 @@ namespace vulkan
 {
 struct MAKINA_EXPORT test_task_data
 {
-
+  buffer_resource*   vertices;
+  pipeline_resource* pipeline;
 };
 struct MAKINA_EXPORT present_task_data
 {
