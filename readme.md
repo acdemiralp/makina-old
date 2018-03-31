@@ -34,7 +34,7 @@ Makina is a ”not-game engine (NGE)” which provides a subset of common game e
   - [ ] ospray/ospray
   - [x] VkHLF (Vulkan)
 - Audio
-  - [ ] FMOD
+  - [x] OpenAL
 - Physics
   - [x] Bullet
 - Networking
