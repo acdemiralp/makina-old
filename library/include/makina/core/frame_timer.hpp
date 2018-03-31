@@ -25,7 +25,7 @@ public:
   
   void       tick        ()
   {
-    auto time   = clock::now();
+    time_point time = clock::now();
     delta_time_ = time - time_;
     time_       = time;
   }
