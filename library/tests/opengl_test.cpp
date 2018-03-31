@@ -19,7 +19,6 @@ extern "C"
 #include <makina/core/scene.hpp>
 #include <makina/display/display_system.hpp>
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
-#include <makina/renderer/light.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/model_load.hpp>
@@ -54,7 +53,7 @@ TEST_CASE("OpenGL test.", "[makina]")
   std::random_device                    random_device   ;
   std::mt19937                          mersenne_twister(random_device());
   std::uniform_real_distribution<float> distribution    (-0.25f, 0.25f);
-  for(auto i = 0; i < 64; ++i)
+  for(auto i = 0; i < 8; ++i)
   {
     auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
     auto transform = entity->component<mak::transform>();
