@@ -1,33 +1,38 @@
 #ifndef MAKINA_SCRIPTING_BEHAVIOR_HPP_
 #define MAKINA_SCRIPTING_BEHAVIOR_HPP_
 
-#include <memory>
-#include <vector>
+#include <functional>
 
 #include <makina/core/frame_timer.hpp>
+#include <makina/core/scene.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
+class scripting_system;
+
 class MAKINA_EXPORT behavior
 {
 public:
-  behavior           ()                      = default;
+  explicit behavior  (
+    const std::function<void(scene*, entity*)>                        on_prepare,
+    const std::function<void(frame_timer::duration, scene*, entity*)> on_update )
+    : on_prepare_(on_prepare), on_update_(on_update)
+  {
+    
+  }
   behavior           (const behavior&  that) = default;
   behavior           (      behavior&& temp) = default;
   virtual ~behavior  ()                      = default;
   behavior& operator=(const behavior&  that) = default;
   behavior& operator=(      behavior&& temp) = default;
 
-  virtual void on_prepare()                            {}
-  virtual void on_update (frame_timer::duration delta) {}
-  
 protected:
-  // TODO: Each behavior may access its entity and its other components (as well as the scene? and the engine?).
-};
+  friend scripting_system;
 
-// Each entity may have a vector of behaviors.
-using behaviors = std::vector<std::unique_ptr<behavior>>;
+  std::function<void(scene*, entity*)>                        on_prepare_;
+  std::function<void(frame_timer::duration, scene*, entity*)> on_update_ ;
+};
 }
 
 #endif

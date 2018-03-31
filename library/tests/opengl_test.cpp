@@ -22,6 +22,7 @@ extern "C"
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/model_load.hpp>
+#include <makina/scripting/behavior.hpp>
 #include <makina/makina.hpp>
 
 TEST_CASE("OpenGL test.", "[makina]")
@@ -50,6 +51,17 @@ TEST_CASE("OpenGL test.", "[makina]")
   auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   
+  auto behaviors = engine->scene()->entities()[0]->add_component<mak::behaviors>();
+  behaviors->push_back(std::make_shared<mak::behavior>(
+    [] (mak::scene* scene, mak::entity* entity)
+    {
+    
+    }, 
+    [] (mak::frame_timer::duration duration, mak::scene* scene, mak::entity* entity)
+    {
+      entity->component<mak::transform>()->translate({0.0f, -0.01f, 0.0f});
+    }));
+
   std::random_device                    random_device   ;
   std::mt19937                          mersenne_twister(random_device());
   std::uniform_real_distribution<float> distribution    (-0.25f, 0.25f);
