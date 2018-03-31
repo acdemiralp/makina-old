@@ -13,10 +13,9 @@ template<typename derived>
 class MAKINA_EXPORT singleton
 {
 public:
-  template<typename... argument_types>
-  static derived& get(argument_types&&... arguments)
+  static derived& get()
   {
-    static derived instance(std::forward<argument_types>(arguments)...);
+    static derived instance;
     return instance;
   }
 };
