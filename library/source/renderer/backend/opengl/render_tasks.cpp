@@ -28,9 +28,7 @@ fg::render_task<test_task_data>*                     add_test_render_task       
     [&] (      test_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices     = builder.create<buffer_resource>      ("Test Shading Vertices"    , buffer_description        {GLsizeiptr(1e+6), GL_ARRAY_BUFFER});
-      data.program      = builder.create<program_resource>     ("Test Shading Program"     , program::description      {
-        "#version 420 \n in vec3 position; out vec3 color; void main() { color = position; gl_Position = vec4(position, 1.0); }", 
-        "#version 420 \n in vec3 color; out vec4 frag_color; void main() { frag_color = vec4(color.x + 0.5, 0.5, color.y + 0.5, 1.0); }"});
+      data.program      = builder.create<program_resource>     ("Test Shading Program"     , program::description      {test_vertex_shader, test_fragment_shader});
       data.vertex_array = builder.create<vertex_array_resource>("Test Shading Vertex Array", vertex_array::description {{{data.vertices, 3, GL_FLOAT}}});
       data.target       = builder.write(target);
     },

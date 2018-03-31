@@ -2,6 +2,39 @@
 
 namespace mak
 {
+std::string test_vertex_shader = R"(
+#version 450
+#extension GL_ARB_explicit_attrib_location : enable
+
+layout(location = 0) in  vec3 vertex; 
+layout(location = 0) out vec3 color ; 
+
+#ifdef VULKAN
+out gl_PerVertex
+{
+  vec4 gl_Position;
+}
+#endif
+
+void main() 
+{ 
+  color       = vertex           ; 
+  gl_Position = vec4(vertex, 1.0); 
+}
+)";
+std::string test_fragment_shader = R"(
+#version 450
+#extension GL_ARB_explicit_attrib_location : enable
+
+layout(location = 0) in  vec3 color     ; 
+layout(location = 0) out vec4 frag_color; 
+
+void main() 
+{ 
+  frag_color = vec4(color.x + 0.5f, 0.5f, color.y + 0.5f, 1.0f); 
+}
+)";
+
 std::string default_vertex_shader = R"(
 #version 450
 #extension GL_ARB_explicit_attrib_location : enable
