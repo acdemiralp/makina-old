@@ -22,22 +22,22 @@ struct MAKINA_EXPORT buffer_description
   vk::MemoryPropertyFlags             memory_property_flags;
 };
 
-using buffer_resource = fg::resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>;
+using buffer_resource = fg::resource<buffer_description, vkhlf::Buffer>;
 }
 
-// Fg API requires std::unique_ptr whereas vkhlf API requires std::shared_ptr.
 template<>
-inline std::unique_ptr<std::shared_ptr<vkhlf::Buffer>> fg::realize(const mak::buffer_description& description)
+inline std::unique_ptr<vkhlf::Buffer> fg::realize(const mak::buffer_description& description)
 {
-  return std::make_unique<std::shared_ptr<vkhlf::Buffer>>(mak::vulkan_context.logical_device->createBuffer(
-    description.flags                   ,
-    description.size                    ,
-    description.usage                   ,
-    description.sharing_mode            ,
-    description.queue_family_indices    ,
-    description.memory_property_flags   ,
-    mak::vulkan_context.buffer_allocator,
-    nullptr                             ));
+  return std::make_unique<vkhlf::Buffer>(
+    mak::vulkan_context().logical_device  ,
+    description.flags                     ,
+    description.size                      ,
+    description.usage                     ,
+    description.sharing_mode              ,
+    description.queue_family_indices      ,
+    description.memory_property_flags     ,
+    mak::vulkan_context().buffer_allocator,
+    nullptr                               );
 }
 
 #endif

@@ -26,12 +26,14 @@ _vulkan_context::_vulkan_context()
 #endif
 
   instance       = vkhlf::Instance::create(name, version, layers, extensions, nullptr);
+#ifndef NDEBUG
   debug_callback = instance->createDebugReportCallback(vk::DebugReportFlagsEXT(
     vk::DebugReportFlagBitsEXT::eWarning            |
     vk::DebugReportFlagBitsEXT::ePerformanceWarning |
     vk::DebugReportFlagBitsEXT::eError              |
     vk::DebugReportFlagBitsEXT::eDebug              ), 
     &vkhlf::debugReportCallback);
+#endif
 
   for (size_t i = 0; i < instance->getPhysicalDeviceCount(); ++i)
   {
@@ -171,5 +173,9 @@ void _vulkan_context::present_window_swapchains()
   }
 }
 
-_vulkan_context vulkan_context = _vulkan_context();
+_vulkan_context& vulkan_context()
+{
+  static _vulkan_context context;
+  return context;
+}
 }

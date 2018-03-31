@@ -24,7 +24,7 @@ struct MAKINA_EXPORT _vulkan_context
   _vulkan_context           ();
   _vulkan_context           (const _vulkan_context&  that) = default;
   _vulkan_context           (      _vulkan_context&& temp) = default;
-  virtual ~_vulkan_context  ()                            = default;
+  virtual ~_vulkan_context  ()                             = default;
   _vulkan_context& operator=(const _vulkan_context&  that) = default;
   _vulkan_context& operator=(      _vulkan_context&& temp) = default;
 
@@ -43,7 +43,7 @@ struct MAKINA_EXPORT _vulkan_context
   std::vector<window_swapchain>                 window_swapchains        ;
 };
 
-MAKINA_EXPORT extern _vulkan_context vulkan_context;
+MAKINA_EXPORT _vulkan_context& vulkan_context();
 }
 
 #endif

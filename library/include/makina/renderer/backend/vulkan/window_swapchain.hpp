@@ -4,11 +4,11 @@
 #include <cstdint>
 #include <memory>
 
-#include <di/systems/display/vulkan_window.hpp>
 #include <vkhlf/FramebufferSwapchain.h>
 #include <vkhlf/RenderPass.h>
 #include <vkhlf/Surface.h>
 #include <vulkan/vulkan.hpp>
+#include <di/systems/display/vulkan_window.hpp>
 
 #include <makina/export.hpp>
 

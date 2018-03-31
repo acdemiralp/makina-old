@@ -30,19 +30,19 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         vk::MemoryPropertyFlagBits::eDeviceLocal});
 
       data.pipeline = builder.create<pipeline_resource>("Test Pipeline", pipeline_description {
-        "test.vs", test_vertex_shader  ,
-        "test.fs", test_fragment_shader,
+        std::string("test.vs"), test_vertex_shader  ,
+        std::string("test.fs"), test_fragment_shader,
         vk::PrimitiveTopology::eTriangleStrip,
-        vulkan_context.window_swapchains[0].render_pass // Test task applies to the first window.
+        vulkan_context().window_swapchains[0].render_pass // Test task applies to the first window.
       });
     },
     [=] (const test_task_data& data)
     {
-      auto  command_buffer = vulkan_context.command_pool->allocateCommandBuffer();
-      for(auto& window_swapchain : vulkan_context.window_swapchains)
+      auto  command_buffer = vulkan_context().command_pool->allocateCommandBuffer();
+      for(auto& window_swapchain : vulkan_context().window_swapchains)
       {
         command_buffer->begin           ();
-        (*data.vertices->actual         ())->update<vertex_t>(0, {std::uint32_t(vertices.size()), vertices.data()}, command_buffer);
+        data.vertices->actual           ()->update<vertex_t>(0, {std::uint32_t(vertices.size()), vertices.data()}, command_buffer);
         command_buffer->beginRenderPass (
           window_swapchain.render_pass, 
           window_swapchain.swapchain->getFramebuffer(), 
@@ -53,7 +53,7 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
           }, 
           vk::SubpassContents::eInline);
         command_buffer->bindPipeline    (vk::PipelineBindPoint::eGraphics, *data.pipeline->actual());
-        command_buffer->bindVertexBuffer(0, *data.vertices->actual(), 0);
+        command_buffer->bindVertexBuffer(0, data.vertices->actual().get(), 0);
         command_buffer->setViewport     (0, vk::Viewport(
           0.0f, 
           0.0f, 
@@ -65,11 +65,11 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         command_buffer->draw            (std::uint32_t(draw_count), 1, 0, 0);
         command_buffer->endRenderPass   ();
         command_buffer->end             ();
-        vulkan_context.graphics_queue->submit  (vkhlf::SubmitInfo{
+        vulkan_context().graphics_queue->submit  (vkhlf::SubmitInfo{
           {window_swapchain.swapchain->getPresentSemaphore()}, 
           {vk::PipelineStageFlagBits::eColorAttachmentOutput}, 
           command_buffer, 
-          vulkan_context.render_complete_semaphore});
+          vulkan_context().render_complete_semaphore});
       }
     });
 }
@@ -83,7 +83,7 @@ fg::render_task<present_task_data>* add_present_render_task(renderer* framegraph
     },
     [ ] (const present_task_data& data)
     {
-      vulkan_context.present_window_swapchains();
+      vulkan_context().present_window_swapchains();
     });
 }
 }

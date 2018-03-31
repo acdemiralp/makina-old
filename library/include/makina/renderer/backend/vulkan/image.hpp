@@ -30,28 +30,29 @@ struct MAKINA_EXPORT image_description
   vk::MemoryPropertyFlags   memory_property_flags;
 };
 
-using image_resource = fg::resource<image_description, std::shared_ptr<vkhlf::Image>>;
+using image_resource = fg::resource<image_description, vkhlf::Image>;
 }
 
 template<>
-inline std::unique_ptr<std::shared_ptr<vkhlf::Image>> fg::realize(const mak::image_description& description)
+inline std::unique_ptr<vkhlf::Image> fg::realize(const mak::image_description& description)
 {
-  return std::make_unique<std::shared_ptr<vkhlf::Image>>(mak::vulkan_context.logical_device->createImage(
-    description.create_flags           ,
-    description.type                   ,
-    description.format                 ,
-    description.extent                 ,
-    description.mip_levels             ,
-    description.array_layers           ,
-    description.samples                ,
-    description.tiling                 ,
-    description.usage_flags            ,
-    description.sharing_mode           ,
-    description.queue_family_indices   ,
-    description.initial_layout         ,
-    description.memory_property_flags  ,
-    mak::vulkan_context.image_allocator,
-    nullptr                            ));
+  return std::make_unique<vkhlf::Image>(
+    mak::vulkan_context().logical_device ,
+    description.create_flags             ,
+    description.type                     ,
+    description.format                   ,
+    description.extent                   ,
+    description.mip_levels               ,
+    description.array_layers             ,
+    description.samples                  ,
+    description.tiling                   ,
+    description.usage_flags              ,
+    description.sharing_mode             ,
+    description.queue_family_indices     ,
+    description.initial_layout           ,
+    description.memory_property_flags    ,
+    mak::vulkan_context().image_allocator,
+    nullptr                              );
 }
 
 #endif

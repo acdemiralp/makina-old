@@ -2,6 +2,7 @@
 #define MAKINA_RENDERER_BACKEND_VULKAN_PIPELINE_HPP_
 
 #include <memory>
+#include <string>
 
 #include <fg/resource.hpp>
 #include <glm/glm.hpp>
@@ -18,7 +19,7 @@ struct MAKINA_EXPORT pipeline_description
   std::string                        fragment_shader_name  ;
   std::string                        fragment_shader_source;
   vk::PrimitiveTopology              primitive_topology    = vk::PrimitiveTopology::eTriangleList;
-  std::shared_ptr<vkhlf::RenderPass> render_pass           ;
+  std::shared_ptr<vkhlf::RenderPass> render_pass           = nullptr                             ;
 };
 
 using pipeline_resource = fg::resource<pipeline_description, std::shared_ptr<vkhlf::Pipeline>>;
@@ -53,17 +54,17 @@ inline std::unique_ptr<std::shared_ptr<vkhlf::Pipeline>> fg::realize(const mak::
     glm::vec3 vertex;
   };
 
-  return std::make_unique<std::shared_ptr<vkhlf::Pipeline>>(mak::vulkan_context.logical_device->createGraphicsPipeline(
-    mak::vulkan_context.logical_device->createPipelineCache(0, nullptr),
+  return nullptr; /* std::make_unique<std::shared_ptr<vkhlf::Pipeline>>(mak::vulkan_context().logical_device->createGraphicsPipeline(
+    mak::vulkan_context().logical_device->createPipelineCache(0, nullptr),
     {},
     {
       vkhlf::PipelineShaderStageCreateInfo(
         vk::ShaderStageFlagBits::eVertex  , 
-        mak::vulkan_context.logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex  , description.vertex_shader_source  )),
+        mak::vulkan_context().logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex  , description.vertex_shader_source  )),
         description.vertex_shader_name    ),
       vkhlf::PipelineShaderStageCreateInfo(
         vk::ShaderStageFlagBits::eFragment, 
-        mak::vulkan_context.logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, description.fragment_shader_source)),
+        mak::vulkan_context().logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, description.fragment_shader_source)),
         description.fragment_shader_name  )
     },
     vkhlf::PipelineVertexInputStateCreateInfo   (vk::VertexInputBindingDescription(0, sizeof(vertex_t), vk::VertexInputRate::eVertex), 
@@ -78,8 +79,8 @@ inline std::unique_ptr<std::shared_ptr<vkhlf::Pipeline>> fg::realize(const mak::
     vk   ::PipelineDepthStencilStateCreateInfo  ({}, true, true, vk::CompareOp::eLessOrEqual, false, false, stencil_op_state, stencil_op_state),
     vkhlf::PipelineColorBlendStateCreateInfo    (false, vk::LogicOp::eNoOp, color_blend_attachment_state, {1.0f, 1.0f, 1.0f, 1.0f}),
     vkhlf::PipelineDynamicStateCreateInfo       ({vk::DynamicState::eViewport, vk::DynamicState::eScissor}),
-    mak::vulkan_context.logical_device->createPipelineLayout(mak::vulkan_context.logical_device->createDescriptorSetLayout(std::vector<vkhlf::DescriptorSetLayoutBinding>()), nullptr),
-    description.render_pass));
+    mak::vulkan_context().logical_device->createPipelineLayout(mak::vulkan_context().logical_device->createDescriptorSetLayout(std::vector<vkhlf::DescriptorSetLayoutBinding>()), nullptr),
+    description.render_pass)); */
 }
 
 #endif
