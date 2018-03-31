@@ -73,9 +73,10 @@ vulkan_context::vulkan_context()
   if  (!physical_device) 
     throw std::runtime_error("Failed to find a physical device with presentation support.");
 
-  logical_device            = physical_device->createDevice   (vkhlf::DeviceQueueCreateInfo(0 /* queue family index */, 0.0f /* queue priorities */), nullptr, {VK_KHR_SWAPCHAIN_EXTENSION_NAME});
-  graphics_queue            = logical_device ->getQueue       (0 /* queue family index */, 0 /* queue index */);
-  render_complete_semaphore = logical_device ->createSemaphore();
+  logical_device            = physical_device->createDevice     (vkhlf::DeviceQueueCreateInfo(0 /* queue family index */, 0.0f /* queue priorities */), nullptr, {VK_KHR_SWAPCHAIN_EXTENSION_NAME});
+  graphics_queue            = logical_device ->getQueue         (0 /* queue family index */, 0 /* queue index */);
+  render_complete_semaphore = logical_device ->createSemaphore  ();
+  command_pool              = logical_device ->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
   buffer_allocator          = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(64  * 1024), nullptr);
   image_allocator           = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(128 * 1024), nullptr);
 }

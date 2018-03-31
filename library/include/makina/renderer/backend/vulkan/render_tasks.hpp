@@ -14,9 +14,8 @@ namespace mak
 {
 struct MAKINA_EXPORT test_task_data
 {
-  buffer_resource*      vertices;
-  pipeline_resource*    pipeline;
-  framebuffer_resource* target  ;
+  buffer_resource*   vertices;
+  pipeline_resource* pipeline;
 };
 struct MAKINA_EXPORT present_task_data
 {

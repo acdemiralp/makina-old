@@ -4,7 +4,8 @@
 #include <memory>
 
 #include <fg/resource.hpp>
-#include <vkhlf/Device.h>
+#include <glm/glm.hpp>
+#include <vkhlf/Pipeline.h>
 
 #include <makina/export.hpp>
 
@@ -12,16 +13,75 @@ namespace mak
 {
 struct MAKINA_EXPORT pipeline_description
 {
-
+  std::string                        vertex_shader_name    ;
+  std::string                        vertex_shader_source  ;
+  std::string                        fragment_shader_name  ;
+  std::string                        fragment_shader_source;
+  vk::PrimitiveTopology              primitive_topology    = vk::PrimitiveTopology::eTriangleList;
+  std::shared_ptr<vkhlf::RenderPass> render_pass           ;
 };
 
-using pipeline_resource = fg::resource<pipeline_description, vkhlf::Pipeline>;
+using pipeline_resource = fg::resource<pipeline_description, std::shared_ptr<vkhlf::Pipeline>>;
 }
 
 template<>
-inline std::unique_ptr<vkhlf::Buffer> fg::realize(const mak::pipeline_description& description)
+inline std::unique_ptr<std::shared_ptr<vkhlf::Pipeline>> fg::realize(const mak::pipeline_description& description)
 {
-  return nullptr;
+  auto& context = mak::vulkan_context::get();
+
+  const vk::StencilOpState stencil_op_state(
+    vk::StencilOp::eKeep           , 
+    vk::StencilOp::eKeep           , 
+    vk::StencilOp::eKeep           , 
+    vk::CompareOp::eAlways         , 
+    0                              , 
+    0                              , 
+    0                              );
+  const vk::PipelineColorBlendAttachmentState color_blend_attachment_state(
+    false                          , 
+    vk::BlendFactor::eZero         , 
+    vk::BlendFactor::eZero         , 
+    vk::BlendOp::eAdd              , 
+    vk::BlendFactor::eZero         , 
+    vk::BlendFactor::eZero         , 
+    vk::BlendOp::eAdd              , 
+    vk::ColorComponentFlagBits::eR | 
+    vk::ColorComponentFlagBits::eG | 
+    vk::ColorComponentFlagBits::eB | 
+    vk::ColorComponentFlagBits::eA );
+
+  struct vertex_t
+  {
+    glm::vec3 vertex;
+  };
+
+  return std::make_unique<std::shared_ptr<vkhlf::Pipeline>>(context.logical_device->createGraphicsPipeline(
+    context.logical_device->createPipelineCache(0, nullptr),
+    {},
+    {
+      vkhlf::PipelineShaderStageCreateInfo(
+        vk::ShaderStageFlagBits::eVertex  , 
+        context.logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex  , description.vertex_shader_source  )), 
+        description.vertex_shader_name    ),
+      vkhlf::PipelineShaderStageCreateInfo(
+        vk::ShaderStageFlagBits::eFragment, 
+        context.logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, description.fragment_shader_source)),
+        description.fragment_shader_name  )
+    },
+    vkhlf::PipelineVertexInputStateCreateInfo   (vk::VertexInputBindingDescription(0, sizeof(vertex_t), vk::VertexInputRate::eVertex), 
+    { 
+      vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32Sfloat, offsetof(vertex_t, vertex)) 
+    }),
+    vk   ::PipelineInputAssemblyStateCreateInfo ({}, description.primitive_topology),
+    nullptr,
+    vkhlf::PipelineViewportStateCreateInfo      ({}, {}),
+    vk   ::PipelineRasterizationStateCreateInfo ({}, true, false, vk::PolygonMode::eFill, vk::CullModeFlagBits::eBack, vk::FrontFace::eClockwise),
+    vkhlf::PipelineMultisampleStateCreateInfo   (vk::SampleCountFlagBits::e1, false, 0.0f, nullptr, false, false),
+    vk   ::PipelineDepthStencilStateCreateInfo  ({}, true, true, vk::CompareOp::eLessOrEqual, false, false, stencil_op_state, stencil_op_state),
+    vkhlf::PipelineColorBlendStateCreateInfo    (false, vk::LogicOp::eNoOp, color_blend_attachment_state, {1.0f, 1.0f, 1.0f, 1.0f}),
+    vkhlf::PipelineDynamicStateCreateInfo       ({vk::DynamicState::eViewport, vk::DynamicState::eScissor}),
+    context.logical_device->createPipelineLayout(context.logical_device->createDescriptorSetLayout(std::vector<vkhlf::DescriptorSetLayoutBinding>()), nullptr), 
+    description.render_pass));
 }
 
 #endif
