@@ -11,7 +11,9 @@
 
 namespace mak
 {
-// mak::framebuffer is a gl::framebuffer with in-built color and depth textures.
+namespace opengl
+{
+// A gl::framebuffer with in-built color and depth textures.
 class MAKINA_EXPORT framebuffer : public gl::framebuffer
 {
 public:
@@ -39,11 +41,12 @@ MAKINA_EXPORT framebuffer* default_framebuffer();
 
 using framebuffer_resource = fg::resource<framebuffer::description, framebuffer>;
 }
+}
 
 template<>
-inline std::unique_ptr<mak::framebuffer> fg::realize(const mak::framebuffer::description& description)
+inline std::unique_ptr<mak::opengl::framebuffer> fg::realize(const mak::opengl::framebuffer::description& description)
 {
-  return std::make_unique<mak::framebuffer>(description);
+  return std::make_unique<mak::opengl::framebuffer>(description);
 }
 
 #endif

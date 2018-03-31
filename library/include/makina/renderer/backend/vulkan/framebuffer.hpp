@@ -10,16 +10,19 @@
 
 namespace mak
 {
+namespace vulkan
+{
 struct MAKINA_EXPORT framebuffer_description
 {
 
 };
 
-using framebuffer_resource = fg::resource<framebuffer_description, std::shared_ptr<vkhlf::Framebuffer>>;
+using framebuffer_resource = fg::resource<framebuffer_description, vkhlf::Framebuffer>;
+}
 }
 
 template<>
-inline std::unique_ptr<std::shared_ptr<vkhlf::Buffer>> fg::realize(const mak::framebuffer_description& description)
+inline std::unique_ptr<vkhlf::Buffer> fg::realize(const mak::vulkan::framebuffer_description& description)
 {
   return nullptr;
 }

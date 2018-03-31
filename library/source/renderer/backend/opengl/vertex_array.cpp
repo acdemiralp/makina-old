@@ -2,6 +2,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 vertex_array::vertex_array(const description& description)
 {
   // Important: Vertex arrays must be realized after all of the referred buffers are realized.
@@ -45,5 +47,6 @@ void vertex_array::unbind() const
   for (auto i = 0; i < shader_storage_buffers_.size(); ++i)
     shader_storage_buffers_[i]->actual()->unbind_base(GL_SHADER_STORAGE_BUFFER, i);
   gl::vertex_array::unbind();
+}
 }
 }

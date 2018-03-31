@@ -4,6 +4,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 program::program(const description& description)
 {
   if (description.vertex_stage.size() > 0)
@@ -70,6 +72,6 @@ program::program(const description& description)
 
   if(info_log_length() > 0)
     logger->error(info_log());
-
+}
 }
 }

@@ -11,7 +11,9 @@
 
 namespace mak
 {
-// mak::program is a gl::program with in-built shaders.
+namespace opengl
+{
+// A gl::program with in-built shaders.
 class MAKINA_EXPORT program : public gl::program
 {
 public:
@@ -41,11 +43,12 @@ protected:
 };
 using program_resource = fg::resource<program::description, program>;
 }
+}
 
 template<>
-inline std::unique_ptr<mak::program> fg::realize(const mak::program::description& description)
+inline std::unique_ptr<mak::opengl::program> fg::realize(const mak::opengl::program::description& description)
 {
-  return std::make_unique<mak::program>(description);
+  return std::make_unique<mak::opengl::program>(description);
 }
 
 #endif

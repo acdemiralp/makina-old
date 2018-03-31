@@ -4,6 +4,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 framebuffer::framebuffer() : gl::framebuffer(0)
 {
 
@@ -22,5 +24,6 @@ framebuffer* default_framebuffer()
 {
   static auto default_framebuffer = framebuffer();
   return &default_framebuffer;
+}
 }
 }

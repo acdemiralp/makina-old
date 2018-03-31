@@ -2,6 +2,8 @@
 
 namespace mak
 {
+namespace glsl
+{
 std::string test_vertex_shader = R"(
 #version 450
 #extension GL_ARB_explicit_attrib_location : enable
@@ -456,4 +458,5 @@ void main()
   output_color = fs_input.color * texture(ui_texture, fs_input.texture_coordinate);
 }
 )";
+}
 }

@@ -14,6 +14,8 @@
 
 namespace mak
 {
+namespace vulkan
+{
 struct MAKINA_EXPORT window_swapchain
 {
   di::vulkan_window*                           window             = nullptr               ;
@@ -24,6 +26,7 @@ struct MAKINA_EXPORT window_swapchain
   vk::Format                                   color_format       = vk::Format::eUndefined;
   vk::Format                                   depth_format       = vk::Format::eUndefined;
 };
+}
 }
 
 #endif

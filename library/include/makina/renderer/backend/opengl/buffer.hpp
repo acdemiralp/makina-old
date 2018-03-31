@@ -8,6 +8,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 struct MAKINA_EXPORT buffer_description
 {
   GLsizeiptr size ;
@@ -15,9 +17,10 @@ struct MAKINA_EXPORT buffer_description
 };
 using buffer_resource = fg::resource<buffer_description, gl::buffer>;
 }
+}
 
 template<>
-inline std::unique_ptr<gl::buffer> fg::realize(const mak::buffer_description& description)
+inline std::unique_ptr<gl::buffer> fg::realize(const mak::opengl::buffer_description& description)
 {
   auto   buffer = std::make_unique<gl::buffer>();
   buffer->set_data_immutable(description.size);

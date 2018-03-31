@@ -9,7 +9,9 @@
 
 namespace mak
 {
-// A mak::vertex_array is a gl::vertex_array with support for recording shader storage and draw indirect buffers.
+namespace opengl
+{
+// A gl::vertex_array with support for recording shader storage and draw indirect buffers.
 class MAKINA_EXPORT vertex_array : public gl::vertex_array
 {
 public:
@@ -47,11 +49,12 @@ protected:
 };
 using vertex_array_resource = fg::resource<vertex_array::description, vertex_array>;
 }
+}
 
 template<>
-inline std::unique_ptr<mak::vertex_array> fg::realize(const mak::vertex_array::description& description)
+inline std::unique_ptr<mak::opengl::vertex_array> fg::realize(const mak::opengl::vertex_array::description& description)
 {
-  return std::make_unique<mak::vertex_array>(description);
+  return std::make_unique<mak::opengl::vertex_array>(description);
 }
 
 #endif

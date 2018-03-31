@@ -41,11 +41,11 @@ TEST_CASE("OpenGL test.", "[makina]")
   gl::initialize();
 
   const auto renderer   = engine->get_system<mak::renderer>();
-  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::framebuffer::description(), mak::default_framebuffer());
-  const auto upload_scene_render_task = add_upload_scene_render_task            (renderer);
-  const auto clear_render_task        = add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto pbr_render_task          = add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data());
-  const auto ui_render_task           = add_ui_render_task                      (renderer, backbuffer);
+  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer());
+  const auto upload_scene_render_task = mak::opengl::add_upload_scene_render_task            (renderer);
+  const auto clear_render_task        = mak::opengl::add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
+  const auto pbr_render_task          = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data());
+  const auto ui_render_task           = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();

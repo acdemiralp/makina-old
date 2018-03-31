@@ -8,6 +8,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 struct MAKINA_EXPORT sampler_description
 {
   std::array<GLenum, 3> wrap       = {GL_REPEAT, GL_REPEAT, GL_REPEAT};
@@ -16,9 +18,10 @@ struct MAKINA_EXPORT sampler_description
 };
 using sampler_resource = fg::resource<sampler_description, gl::sampler>;
 }
+}
 
 template<>
-inline std::unique_ptr<gl::sampler> fg::realize(const mak::sampler_description& description)
+inline std::unique_ptr<gl::sampler> fg::realize(const mak::opengl::sampler_description& description)
 {
   auto   sampler = std::make_unique<gl::sampler>();
   sampler->set_wrap_s    (description.wrap[0]);

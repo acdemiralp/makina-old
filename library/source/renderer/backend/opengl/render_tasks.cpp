@@ -21,6 +21,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 fg::render_task<test_task_data>*                     add_test_render_task                    (renderer* framegraph, framebuffer_resource* target)
 {
   return framegraph->add_render_task<test_task_data>(
@@ -28,7 +30,7 @@ fg::render_task<test_task_data>*                     add_test_render_task       
     [&] (      test_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices     = builder.create<buffer_resource>      ("Test Shading Vertices"    , buffer_description        {GLsizeiptr(1e+6), GL_ARRAY_BUFFER});
-      data.program      = builder.create<program_resource>     ("Test Shading Program"     , program::description      {test_vertex_shader, test_fragment_shader});
+      data.program      = builder.create<program_resource>     ("Test Shading Program"     , program::description      {glsl::test_vertex_shader, glsl::test_fragment_shader});
       data.vertex_array = builder.create<vertex_array_resource>("Test Shading Vertex Array", vertex_array::description {{{data.vertices, 3, GL_FLOAT}}});
       data.target       = builder.write(target);
     },
@@ -442,8 +444,8 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
 
       data.program      = builder.create<program_resource>     ("Phong Shading Program"     , program::description     
       {
-        default_vertex_shader, 
-        phong_fragment_shader
+        glsl::default_vertex_shader, 
+        glsl::phong_fragment_shader
       });
       data.vertex_array = builder.create<vertex_array_resource>("Phong Shading Vertex Array", vertex_array::description
       {
@@ -509,8 +511,8 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
 
       data.program      = builder.create<program_resource>     ("Physically Based Shading Program"     , program::description     
       {
-        default_vertex_shader, 
-        physically_based_fragment_shader
+        glsl::default_vertex_shader, 
+        glsl::physically_based_fragment_shader
       });
       data.vertex_array = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
       {
@@ -577,8 +579,8 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
       data.texture      = builder.read  <texture_2d_resource>  (retained_texture   );
       data.program      = builder.create<program_resource>     ("UI Program"     , program::description     
       {
-        ui_vertex_shader, 
-        ui_fragment_shader
+        glsl::ui_vertex_shader, 
+        glsl::ui_fragment_shader
       });
       data.vertex_array = builder.create<vertex_array_resource>("UI Vertex Array", vertex_array::description
       {
@@ -651,5 +653,6 @@ fg::render_task<ui_task_data>*                       add_ui_render_task         
 
       gl::print_error("Error in UI Pass");
     });
+}
 }
 }

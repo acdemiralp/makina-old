@@ -1,10 +1,12 @@
-#include <makina/renderer/backend/vulkan/vulkan_context.hpp>
+#include <makina/renderer/backend/vulkan/context.hpp>
 
 #include <stdexcept>
 
 namespace mak
 {
-_vulkan_context::_vulkan_context()
+namespace vulkan
+{
+_context::_context()
 {
   const auto               name       = typeid(*this).name();
   const auto               version    = VK_MAKE_VERSION(1, 0, 0);
@@ -83,7 +85,7 @@ _vulkan_context::_vulkan_context()
   image_allocator           = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(128 * 1024), nullptr);
 }
 
-void _vulkan_context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
+void _context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
 {
   for (auto& window : windows)
   {
@@ -164,7 +166,7 @@ void _vulkan_context::create_window_swapchains (const std::vector<di::vulkan_win
     });
   }
 }
-void _vulkan_context::present_window_swapchains()
+void _context::present_window_swapchains()
 {
   for (auto& window_swapchain : window_swapchains)
   {
@@ -173,9 +175,10 @@ void _vulkan_context::present_window_swapchains()
   }
 }
 
-_vulkan_context& vulkan_context()
+_context& context()
 {
-  static _vulkan_context context;
+  static _context context;
   return context;
+}
 }
 }

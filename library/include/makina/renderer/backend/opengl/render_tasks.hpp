@@ -14,6 +14,8 @@
 
 namespace mak
 {
+namespace opengl
+{
 struct MAKINA_EXPORT test_task_data
 {
   buffer_resource*                  vertices           ;
@@ -95,6 +97,7 @@ MAKINA_EXPORT fg::render_task<clear_task_data>*                    add_clear_ren
 MAKINA_EXPORT fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
 MAKINA_EXPORT fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
 MAKINA_EXPORT fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target);
+}
 }
 
 #endif

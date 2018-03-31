@@ -5,6 +5,8 @@
 
 namespace mak
 {
+namespace glsl
+{
 extern std::string test_vertex_shader              ;
 extern std::string test_fragment_shader            ;
 
@@ -14,6 +16,7 @@ extern std::string physically_based_fragment_shader;
 
 extern std::string ui_vertex_shader                ;
 extern std::string ui_fragment_shader              ;
+}
 }
 
 #endif
