@@ -5,18 +5,20 @@
 #include <makina/input/wasd_controller.hpp>
 #include <makina/physics/physics_system.hpp>
 #include <makina/renderer/renderer.hpp>
+#include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/ui_system.hpp>
 
 namespace mak
 {
 std::unique_ptr<engine> make_default_engine()
 {
-  auto engine         = std::make_unique<mak::engine>();
-  auto display_system = engine->add_system<mak::display_system>();
-  auto input_system   = engine->add_system<mak::input_system>  ();
-  auto ui_system      = engine->add_system<mak::ui_system>     (display_system, input_system);
-  auto physics_system = engine->add_system<mak::physics_system>();
-  auto renderer       = engine->add_system<mak::renderer>      ();
+  auto engine           = std::make_unique<mak::engine>            ();
+  auto display_system   = engine->add_system<mak::display_system>  ();
+  auto input_system     = engine->add_system<mak::input_system>    ();
+  auto scripting_system = engine->add_system<mak::scripting_system>();
+  auto ui_system        = engine->add_system<mak::ui_system>       (display_system, input_system);
+  auto physics_system   = engine->add_system<mak::physics_system>  ();
+  auto renderer         = engine->add_system<mak::renderer>        ();
 
   input_system->on_quit.connect(std::bind(&engine::stop, engine.get()));
 

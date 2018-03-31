@@ -11,10 +11,11 @@
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/scripting/behavior.hpp>
 
 namespace mak
 {
-using entity = ec::entity<controller, mesh_collider, rigidbody, light, mesh_render, projection, transform>;
+using entity = ec::entity<controller, mesh_collider, rigidbody, light, mesh_render, projection, transform, behaviors>;
 using scene  = ec::scene<entity>;
 }
 
