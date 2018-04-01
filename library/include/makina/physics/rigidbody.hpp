@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
 
 #include <makina/export.hpp>
 
@@ -14,8 +15,11 @@ class physics_system;
 class MAKINA_EXPORT rigidbody
 {
 public:
-  float mass    () const;
-  void  set_mass(const float value);
+  float     mass        () const;
+  void      set_mass    (const float      value);
+
+  glm::vec3 velocity    () const;
+  void      set_velocity(const glm::vec3& value);
 
 protected:
   friend physics_system;
