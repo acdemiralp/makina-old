@@ -67,6 +67,10 @@ add_conan_remote(
   https://api.bintray.com/conan/acdemiralp/makina        
   ${BINTRAY_USERNAME} 
   ${BINTRAY_API_KEY})
+  
+# There is no option to include FMOD from Conan at the moment.
+find_package  (FMOD REQUIRED)
+import_library(FMOD_INCLUDE_DIRS FMOD_LIBRARIES)
 
 # Necessary for correct linking order.
 find_package  (OpenGL REQUIRED)
