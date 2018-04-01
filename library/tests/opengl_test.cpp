@@ -77,6 +77,8 @@ TEST_CASE("OpenGL test.", "[makina]")
 
     if(i == 0)
     {
+      entity->remove_component<mak::rigidbody>();
+
       auto audio_source  = entity->add_component<mak::audio_source>();
       audio_source->set_clip   (&audio_clip);
       audio_source->set_looping(true);
