@@ -7,9 +7,6 @@ namespace mak
 {
 class MAKINA_EXPORT audio_listener
 {
-public:
-
-protected:
 
 };
 }

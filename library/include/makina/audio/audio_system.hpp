@@ -1,16 +1,18 @@
 #ifndef MAKINA_AUDIO_AUDIO_SYSTEM_HPP_
 #define MAKINA_AUDIO_AUDIO_SYSTEM_HPP_
 
+#include <AL/al.h>
+
+#include <makina/core/system.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
-class MAKINA_EXPORT audio_system
+class MAKINA_EXPORT audio_system : public system
 {
-public:
-
 protected:
-
+  void prepare(scene* scene)                              override;
+  void update (frame_timer::duration delta, scene* scene) override;
 };
 }
 
