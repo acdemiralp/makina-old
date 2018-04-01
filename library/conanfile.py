@@ -11,6 +11,7 @@ class MakinaConan(ConanFile):
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
     requires        = (("assimp/4.1.0@RWTH-VR/thirdparty"      ),
+                       ("bgfx/master@acdemiralp/makina"        ),
                        ("boost/1.66.0@conan/stable"            ),
                        ("bm/1.0.1@acdemiralp/makina"           ),
                        ("bullet/2.87@bincrafters/stable"       ),
