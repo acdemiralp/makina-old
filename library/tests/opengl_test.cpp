@@ -78,8 +78,8 @@ TEST_CASE("OpenGL test.", "[makina]")
     if(i == 0)
     {
       auto audio_source  = entity->add_component<mak::audio_source>();
-      audio_source->clip = &audio_clip;
-      audio_source->loop = true;
+      audio_source->set_clip(&audio_clip);
+      audio_source->set_loop(true);
     }
   }
   

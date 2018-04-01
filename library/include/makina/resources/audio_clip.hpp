@@ -12,7 +12,7 @@
 
 namespace mak
 {
-class audio_source;
+class audio_system;
 
 class MAKINA_EXPORT audio_clip : public named, public ra::resource<audio_clip>
 {
@@ -31,7 +31,7 @@ public:
   audio_clip& operator=(      audio_clip&& temp) noexcept;
 
 protected:
-  friend audio_source;
+  friend audio_system;
 
   FMOD::Sound* native_;
 };

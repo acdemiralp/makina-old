@@ -2,7 +2,7 @@
 
 namespace mak
 {
-audio_clip::audio_clip           (const description& description): named(description.filepath)
+audio_clip::audio_clip           (const description& description) : named(description.filepath)
 {
   fmod_context()->createSound(description.filepath.c_str(), description.support_3d ? FMOD_3D : FMOD_2D, nullptr, &native_);
 }

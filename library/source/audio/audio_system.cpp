@@ -7,11 +7,6 @@
 
 namespace mak
 {
-audio_system::audio_system()
-{
-
-}
-
 void audio_system::prepare(scene* scene)
 {
   if (scene->entities<audio_listener>().size() > 1)
@@ -20,13 +15,13 @@ void audio_system::prepare(scene* scene)
 void audio_system::update (frame_timer::duration delta, scene* scene)
 {
   auto listener_entities = scene->entities<audio_listener>();
-  if  (listener_entities.size() != 1) return;
+  if  (listener_entities.size() == 0) return;
   
   const auto listener_transform   = listener_entities[0]->component<transform>();
   const auto listener_rigidbody   = listener_entities[0]->component<rigidbody>();
-  auto       listener_translation = listener_transform->translation();
-  auto       listener_forward     = listener_transform->forward    ();
-  auto       listener_up          = listener_transform->up         ();
+  auto       listener_translation = listener_transform->translation(true);
+  auto       listener_forward     = listener_transform->forward    (true);
+  auto       listener_up          = listener_transform->up         (true);
   glm::vec3  listener_velocity    ;
   if (listener_rigidbody)
     listener_velocity = listener_rigidbody->velocity();
@@ -39,10 +34,23 @@ void audio_system::update (frame_timer::duration delta, scene* scene)
 
   for (auto source_entities : scene->entities<audio_source>())
   {
-    auto source_transform = source_entities[0].component<transform>   ();
-    auto source           = source_entities[0].component<audio_source>();
+    const auto source_transform   = source_entities[0].component<transform>   ();
+    const auto source_rigidbody   = source_entities[0].component<rigidbody>   ();
+    auto       source             = source_entities[0].component<audio_source>();
+    auto       source_translation = source_transform->translation(true);
+    glm::vec3  source_velocity    ;
+    if (source_rigidbody)
+      source_velocity = source_rigidbody->velocity();
+
+    if (!source->native_)
+      fmod_context()->playSound(source->clip_->native_, nullptr, false, &source->native_);
+
+    source->native_->set3DAttributes(
+      reinterpret_cast<FMOD_VECTOR*>(&source_translation),
+      reinterpret_cast<FMOD_VECTOR*>(&source_velocity   ));
 
     // TODO!
+
   }
 
   fmod_context()->update();
