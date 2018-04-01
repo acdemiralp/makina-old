@@ -9,13 +9,8 @@
 #include <makina/core/logger.hpp>
 #include <makina/resources/audio_clip.hpp>
 
-struct audio_clip_description
-{
-  std::string filepath;
-};
-
 template<>
-inline void ra::load(const std::string&            filepath   , std::optional<mak::audio_clip>* audio_clip)
+inline void ra::load(const mak::audio_clip::description& description, mak::audio_clip* audio_clip)
 {
   if (!audio_clip)
   {
@@ -23,18 +18,12 @@ inline void ra::load(const std::string&            filepath   , std::optional<ma
     return;
   }
 
-  audio_clip->emplace(filepath);
+  *audio_clip = mak::audio_clip(description);
 }
 template<>
-inline void ra::load(const audio_clip_description& description, std::optional<mak::audio_clip>* audio_clip)
+inline void ra::load(const std::string&                  filepath   , mak::audio_clip* audio_clip)
 {
-  if (!audio_clip)
-  {
-    mak::logger->error("Failed to load audio clip: Output is nullptr.");
-    return;
-  }
-
-  audio_clip->emplace(description.filepath);
+  ra::load<mak::audio_clip::description, mak::audio_clip>({filepath}, audio_clip);
 }
 
 #endif
