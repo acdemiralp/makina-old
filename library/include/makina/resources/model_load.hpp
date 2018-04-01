@@ -1,16 +1,16 @@
 #ifndef MAKINA_RESOURCES_MODEL_LOAD_HPP_
 #define MAKINA_RESOURCES_MODEL_LOAD_HPP_
 
+#include <filesystem>
+#include <functional>
+#include <memory>
+#include <string>
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <boost/lexical_cast.hpp>
 #include <ra/load.hpp>
-
-#include <filesystem>
-#include <functional>
-#include <memory>
-#include <string>
 
 #include <makina/core/logger.hpp>
 #include <makina/renderer/mesh_render.hpp>

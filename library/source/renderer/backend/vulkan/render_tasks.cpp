@@ -32,7 +32,7 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         "test.vs", glsl::test_vertex_shader  ,
         "test.fs", glsl::test_fragment_shader,
         vk::PrimitiveTopology::eTriangleStrip,
-        context().window_swapchains[0].render_pass, // Test task applies to the first window.
+        vulkan::context().window_swapchains[0].render_pass, // Test task applies to the first window.
         {
           vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32Sfloat, offsetof(vertex_t, vertex))
         },
@@ -40,8 +40,8 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
     },
     [=] (const test_task_data& data)
     {
-      auto command_buffer = context().command_pool->allocateCommandBuffer();
-      for(auto& window_swapchain : context().window_swapchains)
+      auto command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
+      for(auto& window_swapchain : vulkan::context().window_swapchains)
       {
         command_buffer->begin           ();
         (*data.vertices->actual         ())->update<vertex_t>(0, {std::uint32_t(vertices.size()), vertices.data()}, command_buffer);
@@ -67,11 +67,11 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         command_buffer->draw            (draw_count, 1, 0, 0);
         command_buffer->endRenderPass   ();
         command_buffer->end             ();
-        context().graphics_queue->submit  (vkhlf::SubmitInfo{
+        vulkan::context().graphics_queue->submit  (vkhlf::SubmitInfo{
           {window_swapchain.swapchain->getPresentSemaphore()}, 
           {vk::PipelineStageFlagBits::eColorAttachmentOutput}, 
           command_buffer, 
-          context().render_complete_semaphore});
+          vulkan::context().render_complete_semaphore});
       }
     });
 }
@@ -85,7 +85,7 @@ fg::render_task<present_task_data>* add_present_render_task(renderer* framegraph
     },
     [ ] (const present_task_data& data)
     {
-      context().present_window_swapchains();
+      vulkan::context().present_window_swapchains();
     });
 }
 }
