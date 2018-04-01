@@ -11,6 +11,14 @@ void audio_system::prepare(scene* scene)
 {
   if (scene->entities<audio_listener>().size() > 1)
     logger->warn("Multiple audio listeners in the scene! Only the first one will be utilized.");
+  
+  for (auto source_entity : scene->entities<audio_source>())
+  {
+    auto source = source_entity->component<audio_source>();
+    if (source->autoplay())
+      source->play();
+  }
+
 }
 void audio_system::update (frame_timer::duration delta, scene* scene)
 {
@@ -34,23 +42,17 @@ void audio_system::update (frame_timer::duration delta, scene* scene)
 
   for (auto source_entities : scene->entities<audio_source>())
   {
-    const auto source_transform   = source_entities[0].component<transform>   ();
-    const auto source_rigidbody   = source_entities[0].component<rigidbody>   ();
-    auto       source             = source_entities[0].component<audio_source>();
+    const auto source_transform   = source_entities->component<transform>   ();
+    const auto source_rigidbody   = source_entities->component<rigidbody>   ();
+    auto       source             = source_entities->component<audio_source>();
     auto       source_translation = source_transform->translation(true);
     glm::vec3  source_velocity    ;
     if (source_rigidbody)
       source_velocity = source_rigidbody->velocity();
-
-    if (!source->native_)
-      fmod_context()->playSound(source->clip_->native_, nullptr, false, &source->native_);
-
-    source->native_->set3DAttributes(
-      reinterpret_cast<FMOD_VECTOR*>(&source_translation),
-      reinterpret_cast<FMOD_VECTOR*>(&source_velocity   ));
-
-    // TODO!
-
+    if(source->native_)
+      source->native_->set3DAttributes(
+        reinterpret_cast<FMOD_VECTOR*>(&source_translation),
+        reinterpret_cast<FMOD_VECTOR*>(&source_velocity   ));
   }
 
   fmod_context()->update();

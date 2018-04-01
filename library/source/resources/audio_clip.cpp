@@ -1,10 +1,15 @@
 #include <makina/resources/audio_clip.hpp>
 
+#include <stdexcept>
+#include <utility>
+
 namespace mak
 {
 audio_clip::audio_clip           (const description& description) : named(description.filepath)
 {
-  fmod_context()->createSound(description.filepath.c_str(), description.support_3d ? FMOD_3D : FMOD_2D, nullptr, &native_);
+  const auto result = fmod_context()->createSound(description.filepath.c_str(), description.support_3d ? FMOD_3D : FMOD_2D, nullptr, &native_);
+  if (result != FMOD_OK)
+    throw std::runtime_error("Failed to load audio clip: " + description.filepath);
 }
 audio_clip::audio_clip           (audio_clip&& temp) noexcept: native_(std::move(temp.native_))
 {
