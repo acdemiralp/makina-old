@@ -21,6 +21,7 @@ extern "C"
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/resources/audio_clip_load.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/scripting/behavior.hpp>
 #include <makina/makina.hpp>
@@ -49,8 +50,11 @@ TEST_CASE("OpenGL test.", "[makina]")
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
+  model.load(mak::model::description{"data/model/cube/cube.obj", true});
   
+  auto& audio_clips = mak::registry->get<mak::audio_clip>().storage();
+  auto& audio_clip  = audio_clips.emplace_back(mak::audio_clip::description{"data/audio/test/test.mp3", true});
+
   auto behaviors = engine->scene()->entities()[0]->add_component<mak::behaviors>();
   behaviors->push_back(std::make_shared<mak::behavior>(
     [] (mak::scene* scene, mak::entity* entity)
@@ -70,6 +74,13 @@ TEST_CASE("OpenGL test.", "[makina]")
     auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
     auto transform = entity->component<mak::transform>();
     transform->set_translation(glm::vec3(distribution(mersenne_twister), distribution(mersenne_twister), distribution(mersenne_twister)));
+
+    if(i == 0)
+    {
+      auto audio_source  = entity->add_component<mak::audio_source>();
+      audio_source->clip = &audio_clip;
+      audio_source->loop = true;
+    }
   }
   
   engine->run();
