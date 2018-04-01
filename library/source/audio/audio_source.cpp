@@ -104,13 +104,13 @@ void                 audio_source::play        ()
 
   fmod_context()->playSound(clip_->native_, nullptr, true, &native_);
   native_->setMode            (looping_ ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
-  native_->setMode            (muted_   );
-  native_->setPaused          (paused_  );          
+  native_->setMode            (muted_   );        
   native_->setPan             (pan_     );
   native_->setPitch           (pitch_   );
   native_->setPriority        (priority_);
   native_->setVolume          (volume_  );
   native_->set3DMinMaxDistance(range_[0], range_[1]);
+  native_->setPaused          (paused_  );  
 }
 bool                 audio_source::playing     () const
 {

@@ -18,8 +18,8 @@ std::unique_ptr<engine> make_default_engine()
   auto input_system     = engine->add_system<mak::input_system>    ();
   auto ui_system        = engine->add_system<mak::ui_system>       (display_system, input_system);
   auto scripting_system = engine->add_system<mak::scripting_system>();
-  auto physics_system   = engine->add_system<mak::physics_system>  ();
   auto audio_system     = engine->add_system<mak::audio_system>    ();
+  auto physics_system   = engine->add_system<mak::physics_system>  ();
   auto renderer         = engine->add_system<mak::renderer>        ();
 
   input_system->on_quit.connect(std::bind(&engine::stop, engine.get()));

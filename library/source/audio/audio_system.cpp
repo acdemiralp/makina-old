@@ -18,7 +18,6 @@ void audio_system::prepare(scene* scene)
     if (source->autoplay())
       source->play();
   }
-
 }
 void audio_system::update (frame_timer::duration delta, scene* scene)
 {
