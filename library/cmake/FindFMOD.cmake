@@ -9,10 +9,13 @@ IF(FMOD_INCLUDE_DIR)
   SET(FMOD_FIND_QUIETLY TRUE)
 ENDIF(FMOD_INCLUDE_DIR)
 
+set(PROGRAM_FILES "PROGRAMFILES(X86)") 
+
 FIND_PATH(FMOD_INCLUDE_DIR "fmod_studio.hpp"
   PATHS
   $ENV{FMOD_HOME}/inc
   $ENV{EXTERNLIBS}/fmod/studio/inc
+  "$ENV{${PROGRAM_FILES}}/FMOD SoundSystem/FMOD Studio API Windows/api/studio/inc"
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -27,6 +30,7 @@ FIND_PATH(FMOD_LL_INCLUDE_DIR "fmod.h"
   PATHS
   $ENV{FMOD_HOME}/inc
   $ENV{EXTERNLIBS}/fmod/lowlevel/inc
+  "$ENV{${PROGRAM_FILES}}/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/inc"
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -45,6 +49,7 @@ FIND_LIBRARY(FMOD_LIBRARY NAMES ${FMOD_NAMES}
   PATHS
   $ENV{FMOD_HOME}
   $ENV{EXTERNLIBS}/fmod/studio/lib
+  "$ENV{${PROGRAM_FILES}}/FMOD SoundSystem/FMOD Studio API Windows/api/studio/lib"
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -64,6 +69,7 @@ FIND_LIBRARY(FMOD_EVENT_LIBRARY NAMES ${FMOD_EVENT_NAMES}
   PATHS
   $ENV{FMOD_HOME}
   $ENV{EXTERNLIBS}/fmod/lowlevel/lib
+  "$ENV{${PROGRAM_FILES}}/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/lib"
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -85,6 +91,7 @@ IF(MSVC)
     PATHS
     $ENV{FMOD_HOME}
     $ENV{EXTERNLIBS}/fmod/studio/lib
+    "$ENV{${PROGRAM_FILES}}/FMOD SoundSystem/FMOD Studio API Windows/api/studio/lib"
     PATH_SUFFIXES lib lib64
     DOC "fmod - Library (Debug)"
   )
@@ -92,6 +99,7 @@ IF(MSVC)
     PATHS
     $ENV{FMOD_HOME}
     $ENV{EXTERNLIBS}/fmod/lowlevel/lib
+    "$ENV{${PROGRAM_FILES}}/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/lib"
     PATH_SUFFIXES lib lib64
     DOC "fmod_event - Library (Debug)"
   )
