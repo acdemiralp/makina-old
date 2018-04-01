@@ -5,13 +5,14 @@
 
 #include <ra/registry.hpp>
 
+#include <makina/resources/audio_clip.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/model.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
-using registry_type = ra::registry<image, model>;
+using registry_type = ra::registry<audio_clip, image, model>;
 
 MAKINA_EXPORT extern std::unique_ptr<registry_type> registry;
 }
