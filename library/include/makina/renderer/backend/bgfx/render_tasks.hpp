@@ -1,9 +1,10 @@
 #ifndef MAKINA_RENDERER_BACKEND_BGFX_RENDER_TASKS_HPP_
 #define MAKINA_RENDERER_BACKEND_BGFX_RENDER_TASKS_HPP_
 
-#include <bgfx/bgfx.h>
 #include <fg/render_task.hpp>
 
+#include <makina/renderer/backend/bgfx/buffer.hpp>
+#include <makina/renderer/backend/bgfx/program.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/export.hpp>
 
@@ -13,7 +14,9 @@ namespace bgfx
 {
 struct MAKINA_EXPORT test_task_data
 {
-
+  buffer_resource*  vertices;
+  buffer_resource*  indices ;
+  program_resource* program ;
 };
 struct MAKINA_EXPORT present_task_data
 {
