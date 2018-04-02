@@ -41,12 +41,15 @@ void context::initialize  (::bgfx::RendererType::Enum renderer_type, di::window*
   });
   ::bgfx::reset(window->size()[0], window->size()[1], BGFX_RESET_VSYNC);
   
-  ::bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, 10u, 1.0f, 0u);
+  ::bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 10u, 1.0f);
   ::bgfx::setViewRect (0, 0u, 0u, window->size()[0], window->size()[1]);
 
 #ifndef NDEBUG
-  ::bgfx::setDebug(BGFX_DEBUG_STATS | BGFX_DEBUG_TEXT);
+  ::bgfx::setDebug(/* BGFX_DEBUG_STATS | */ BGFX_DEBUG_TEXT);
 #endif
+
+  ::bgfx::frame() ;
+  ::bgfx::touch(0);
 }
 void context::uninitialize()
 {

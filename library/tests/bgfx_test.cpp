@@ -42,7 +42,6 @@ TEST_CASE("BGFX test.", "[makina]")
   const auto renderer            = engine->get_system<mak::renderer>();
   auto       test_render_task    = mak::bgfx::add_test_render_task   (renderer); 
   auto       present_render_task = mak::bgfx::add_present_render_task(renderer);
-  test_render_task->set_cull_immune(true);
  
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
