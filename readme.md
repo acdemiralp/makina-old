@@ -29,6 +29,7 @@ Makina is a ”not-game engine (NGE)” which provides a subset of common game e
 - Rendering
   - [x] acdemiralp/fg
   - [x] acdemiralp/gl (GLEW + OpenGL)
+  - [x] bkaradzic/bgfx (DX9-12 + Metal + OpenGL + Vulkan)
   - [ ] DX12
   - [ ] OptiX
   - [ ] ospray/ospray
