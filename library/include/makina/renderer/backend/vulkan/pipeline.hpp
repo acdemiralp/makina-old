@@ -17,9 +17,7 @@ namespace vulkan
 {
 struct MAKINA_EXPORT pipeline_description
 {
-  std::string                                      vertex_shader_name    ;
   std::string                                      vertex_shader_source  ;
-  std::string                                      fragment_shader_name  ;
   std::string                                      fragment_shader_source;
   vk::PrimitiveTopology                            primitive_topology    = vk::PrimitiveTopology::eTriangleList;
   std::shared_ptr<vkhlf::RenderPass>               render_pass           = nullptr                             ;
@@ -59,8 +57,8 @@ inline std::unique_ptr<std::shared_ptr<vkhlf::Pipeline>> fg::realize(const mak::
     mak::vulkan::context().logical_device->createPipelineCache(0, nullptr),
     {},
     {
-      vkhlf::PipelineShaderStageCreateInfo(vk::ShaderStageFlagBits::eVertex  , mak::vulkan::context().logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex  , description.vertex_shader_source  )), description.vertex_shader_name  ),
-      vkhlf::PipelineShaderStageCreateInfo(vk::ShaderStageFlagBits::eFragment, mak::vulkan::context().logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, description.fragment_shader_source)), description.fragment_shader_name)
+      vkhlf::PipelineShaderStageCreateInfo(vk::ShaderStageFlagBits::eVertex  , mak::vulkan::context().logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex  , description.vertex_shader_source  )), "main"),
+      vkhlf::PipelineShaderStageCreateInfo(vk::ShaderStageFlagBits::eFragment, mak::vulkan::context().logical_device->createShaderModule(vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, description.fragment_shader_source)), "main")
     },
     vkhlf::PipelineVertexInputStateCreateInfo(vk::VertexInputBindingDescription(0, description.attribute_stride, vk::VertexInputRate::eVertex), description.attribute_descriptions),
     vk::PipelineInputAssemblyStateCreateInfo ({}, description.primitive_topology),

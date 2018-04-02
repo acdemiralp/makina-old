@@ -7,7 +7,9 @@ namespace glsl
 std::string test_vertex_shader = R"(
 #version 450
 
-#ifndef VULKAN
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
 #endif
 
@@ -18,7 +20,7 @@ layout(location = 0) out vec3 color ;
 out gl_PerVertex
 {
   vec4 gl_Position;
-}
+};
 #endif
 
 void main() 
@@ -30,7 +32,9 @@ void main()
 std::string test_fragment_shader = R"(
 #version 450
 
-#ifndef VULKAN
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
 #endif
 

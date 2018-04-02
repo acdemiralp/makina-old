@@ -13,7 +13,7 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
   {
     glm::vec3 vertex;
   };
-  std::vector<vertex_t> vertices {{{-1.0f, 1.0f, 0.0f}},{{1.0f, 1.0f, 0.0f}},{{1.0f, -1.0f, 0.0f}},{{-1.0f, -1.0f, 0.0f}},{{-1.0f, 1.0f, 0.0f}}};
+  std::vector<vertex_t> vertices {{{-1.0f, 1.0f, 0.0f}},{{1.0f, 1.0f, 0.0f}},{{1.0f, -1.0f, 0.0f}},{{-1.0f, 1.0f, 0.0f}},{{-1.0f, -1.0f, 0.0f}}};
   const std::uint32_t   draw_count = 5;
  
   return framegraph->add_render_task<test_task_data>(
@@ -29,8 +29,8 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         vk::MemoryPropertyFlagBits::eDeviceLocal });
  
       data.pipeline = builder.create<pipeline_resource>("Test Pipeline", pipeline_description{
-        "test.vs", glsl::test_vertex_shader  ,
-        "test.fs", glsl::test_fragment_shader,
+        glsl::test_vertex_shader  , 
+        glsl::test_fragment_shader,
         vk::PrimitiveTopology::eTriangleStrip,
         vulkan::context().window_swapchains[0].render_pass, // Test task applies to the first window.
         {
@@ -67,11 +67,7 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
         command_buffer->draw            (draw_count, 1, 0, 0);
         command_buffer->endRenderPass   ();
         command_buffer->end             ();
-        vulkan::context().graphics_queue->submit  (vkhlf::SubmitInfo{
-          {window_swapchain.swapchain->getPresentSemaphore()}, 
-          {vk::PipelineStageFlagBits::eColorAttachmentOutput}, 
-          command_buffer, 
-          vulkan::context().render_complete_semaphore});
+        vkhlf::submitAndWait(vulkan::context().graphics_queue, command_buffer);
       }
     });
 }
