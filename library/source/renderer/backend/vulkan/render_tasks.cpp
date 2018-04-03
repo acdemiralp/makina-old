@@ -73,19 +73,19 @@ fg::render_task<test_task_data>*                     add_test_render_task       
 }
 fg::render_task<upload_scene_task_data>*             add_upload_scene_render_task            (renderer* framegraph)
 {
-
+  return nullptr;
 }
 fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {
-
+  return nullptr;
 }
 fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {
-
+  return nullptr;
 }
 fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target)
 {
-
+  return nullptr;
 }
 fg::render_task<present_task_data>*                  add_present_render_task                 (renderer* framegraph)
 {
