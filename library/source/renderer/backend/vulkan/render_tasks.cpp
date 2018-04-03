@@ -7,7 +7,7 @@ namespace mak
 {
 namespace vulkan
 {
-fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph)
+fg::render_task<test_task_data>*                     add_test_render_task                    (renderer* framegraph)
 {
   struct vertex_t
   {
@@ -71,9 +71,25 @@ fg::render_task<test_task_data>*    add_test_render_task   (renderer* framegraph
       }
     });
 }
-fg::render_task<present_task_data>* add_present_render_task(renderer* framegraph)
+fg::render_task<upload_scene_task_data>*             add_upload_scene_render_task            (renderer* framegraph)
 {
-  return framegraph->add_render_task<present_task_data>(
+
+}
+fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
+{
+
+}
+fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
+{
+
+}
+fg::render_task<ui_task_data>*                       add_ui_render_task                      (renderer* framegraph, framebuffer_resource* target)
+{
+
+}
+fg::render_task<present_task_data>*                  add_present_render_task                 (renderer* framegraph)
+{
+  auto render_task = framegraph->add_render_task<present_task_data>(
     "Present Pass",
     [ ] (      present_task_data& data, fg::render_task_builder& builder)
     {
@@ -83,6 +99,8 @@ fg::render_task<present_task_data>* add_present_render_task(renderer* framegraph
     {
       vulkan::context().present_window_swapchains();
     });
+  render_task->set_cull_immune(true);
+  return render_task;
 }
 }
 }
