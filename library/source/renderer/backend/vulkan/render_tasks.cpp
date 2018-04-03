@@ -73,7 +73,16 @@ fg::render_task<test_task_data>*                     add_test_render_task       
 }
 fg::render_task<upload_scene_task_data>*             add_upload_scene_render_task            (renderer* framegraph)
 {
-  return nullptr;
+  return framegraph->add_render_task<upload_scene_task_data>(
+    "Upload Scene Pass",
+    [&](      upload_scene_task_data& data, fg::render_task_builder& builder)
+    {
+      
+    },
+    [=](const upload_scene_task_data& data)
+    {
+      
+    });
 }
 fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {

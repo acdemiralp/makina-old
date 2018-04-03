@@ -95,7 +95,7 @@ out vs_output_type
 out gl_PerVertex
 {
   vec4 gl_Position;
-}
+};
 #endif
 
 void main()
@@ -457,7 +457,7 @@ out vs_output_type
 out gl_PerVertex
 {
   vec4 gl_Position;
-}
+};
 #endif
 
 void main()
