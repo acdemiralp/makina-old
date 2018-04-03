@@ -49,7 +49,12 @@ void main()
 
 std::string default_vertex_shader = R"(
 #version 450
+
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
+#endif
 
 struct _transform
 {
@@ -108,9 +113,14 @@ void main()
 )";
 std::string phong_fragment_shader = R"(
 #version 450
+
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_bindless_texture : enable
 layout (bindless_sampler) uniform;
+#endif
 
 const uint light_type_ambient     = 0;
 const uint light_type_directional = 1;
@@ -235,9 +245,14 @@ void main()
 )";
 std::string physically_based_fragment_shader = R"(
 #version 450
+
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_bindless_texture : enable
 layout (bindless_sampler) uniform;
+#endif
 
 const uint  light_type_ambient     = 0;
 const uint  light_type_directional = 1;
@@ -419,7 +434,12 @@ void main()
 
 std::string ui_vertex_shader   = R"(
 #version 450
+
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
+#endif
 
 uniform mat4 projection;
 
@@ -449,9 +469,14 @@ void main()
 )";
 std::string ui_fragment_shader = R"(
 #version 450
+
+#ifdef VULKAN
+
+#else
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_bindless_texture : enable
 layout (bindless_sampler) uniform;
+#endif
 
 uniform sampler2D ui_texture;
 
