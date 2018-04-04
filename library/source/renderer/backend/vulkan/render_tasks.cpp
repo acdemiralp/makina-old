@@ -21,12 +21,7 @@ fg::render_task<test_task_data>*                     add_test_render_task       
     [&] (      test_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices = builder.create<buffer_resource>("Test Vertices", buffer_description{
-        vk::BufferCreateFlagBits(0),
-        vertices.size() * sizeof(vertex_t),
-        vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
-        vk::SharingMode::eExclusive,
-        nullptr,
-        vk::MemoryPropertyFlagBits::eDeviceLocal });
+        vertices.size() * sizeof(vertex_t), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer});
  
       data.pipeline = builder.create<pipeline_resource>("Test Pipeline", pipeline_description{
         glsl::test_vertex_shader  , 
@@ -73,13 +68,64 @@ fg::render_task<test_task_data>*                     add_test_render_task       
 }
 fg::render_task<upload_scene_task_data>*             add_upload_scene_render_task            (renderer* framegraph)
 {
+  // Shader types with std430 alignment.
+  struct _transform
+  {
+    glm::mat4    model         ;
+  };
+  struct _phong_material
+  {
+    glm::uvec4   use_texture   ; // ambient - diffuse - specular - unused
+    glm::vec4    ambient       ; // w is unused.
+    glm::vec4    diffuse       ; // w is unused.
+    glm::vec4    specular      ; // w is shininess.
+    glm::u64vec4 textures      ; // ambient - diffuse - specular - unused
+  };
+  struct _physically_based_material
+  {
+    glm::uvec4   use_texture   ; // albedo - metallicity - roughness - normal
+    glm::uvec4   use_texture_2 ; // ambient occlusion - unused - unused - unused
+    glm::vec4    albedo        ; // w is unused.
+    glm::vec4    properties    ; // metallicity - roughness - unused - unused
+    glm::u64vec4 textures      ; // albedo - metallicity - roughness - normal
+    glm::u64vec4 textures_2    ; // ambient occlusion - unused - unused - unused
+  };
+  struct _camera
+  {
+    glm::mat4    view          ;
+    glm::mat4    projection    ;
+  };             
+  struct _light  
+  {              
+    glm::uvec4   type          ; // y, z, w are unused.
+    glm::vec4    color         ; // w is unused.
+    glm::vec4    properties    ; // intensity - range - inner spot - outer spot
+    glm::vec4    position      ; // w is unused.
+    glm::vec4    direction     ; // w is unused.
+  };
+
+  const auto retained_vertices      = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Vertices"     , buffer_description{128e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer  });
+  const auto retained_indices       = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Indices"      , buffer_description{ 64e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer   });
+  const auto retained_transforms    = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Transforms"   , buffer_description{ 16e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eUniformBuffer });
+  const auto retained_materials     = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Materials"    , buffer_description{ 16e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eUniformBuffer });
+  const auto retained_cameras       = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Cameras"      , buffer_description{ 16e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eUniformBuffer });
+  const auto retained_lights        = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Lights"       , buffer_description{ 16e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eUniformBuffer });
+  const auto retained_draw_calls    = framegraph->add_retained_resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>("Scene Draw Calls"   , buffer_description{ 16e+6, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndirectBuffer});
+  const auto retained_parameter_map = framegraph->add_retained_resource<parameter_map::description, parameter_map>         ("Scene Parameter Map", parameter_map::description());
+  // Totals to 128 * 1 + 64 * 1 + 16 * 5 = 272 MB of GPU memory for buffers.
+
+  std::vector<image_resource*> retained_images(64);
+  for (auto i = 0; i < retained_images.size(); ++i)
+    retained_images[i] = framegraph->add_retained_resource<image_description, std::shared_ptr<vkhlf::Image>>("Scene Texture " + boost::lexical_cast<std::string>(i), image_description{}); // 2048x2048
+  // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
+
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
-    [&](      upload_scene_task_data& data, fg::render_task_builder& builder)
+    [&] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
       
     },
-    [=](const upload_scene_task_data& data)
+    [=] (const upload_scene_task_data& data)
     {
       
     });
