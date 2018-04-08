@@ -45,7 +45,7 @@ void context::initialize  (::bgfx::RendererType::Enum renderer_type, di::window*
   ::bgfx::setViewRect (0, 0u, 0u, window->size()[0], window->size()[1]);
 
 #ifndef NDEBUG
-  ::bgfx::setDebug(/* BGFX_DEBUG_STATS | */ BGFX_DEBUG_TEXT);
+  ::bgfx::setDebug(BGFX_DEBUG_STATS | BGFX_DEBUG_TEXT);
 #endif
 
   ::bgfx::frame() ;
