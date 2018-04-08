@@ -17,19 +17,20 @@ namespace vulkan
 {
 struct MAKINA_EXPORT image_description
 {
-  vk::ImageCreateFlags      create_flags         ;
-  vk::ImageType             type                 ;
-  vk::Format                format               ;
-  vk::Extent3D              extent               ;
-  std::uint32_t             mip_levels           ;
-  std::uint32_t             array_layers         ;
-  vk::SampleCountFlagBits   samples              ;
-  vk::ImageTiling           tiling               ;
-  vk::ImageUsageFlags       usage_flags          ;
-  vk::SharingMode           sharing_mode         ;
-  std::vector<std::uint32_t>queue_family_indices ;
-  vk::ImageLayout           initial_layout       ;
-  vk::MemoryPropertyFlags   memory_property_flags;
+  // Rearrangement of members is for convenience.
+  vk::ImageType                 type                  ;
+  vk::Extent3D                  size                  ;
+  vk::Format                    format                ;
+  vk::ImageUsageFlags           usage_flags           = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
+  vk::ImageCreateFlags          create_flags          = vk::ImageCreateFlagBits::eSparseBinding;
+  vk::ImageLayout               initial_layout        = vk::ImageLayout::eUndefined;
+  std::uint32_t                 mip_levels            = 1;
+  std::uint32_t                 array_layers          = 1;
+  vk::SampleCountFlagBits       samples               = vk::SampleCountFlagBits::e1;
+  vk::ImageTiling               tiling                = vk::ImageTiling::eOptimal;
+  vk::SharingMode               sharing_mode          = vk::SharingMode::eExclusive;
+  std::vector<std::uint32_t>    queue_family_indices  {0};
+  vk::MemoryPropertyFlags       memory_property_flags = vk::MemoryPropertyFlagBits::eDeviceLocal;
 };
 
 using image_resource = fg::resource<image_description, std::shared_ptr<vkhlf::Image>>;
@@ -43,7 +44,7 @@ inline std::unique_ptr<std::shared_ptr<vkhlf::Image>> fg::realize(const mak::vul
     description.create_flags              ,
     description.type                      ,
     description.format                    ,
-    description.extent                    ,
+    description.size                      ,
     description.mip_levels                ,
     description.array_layers              ,
     description.samples                   ,
