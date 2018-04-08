@@ -15,8 +15,9 @@ namespace opengl
 {
 fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebuffer_resource* target)
 {
-  const auto retained_attributes    = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Vertices"     , buffer_description{GLsizeiptr(4e+6), GL_ARRAY_BUFFER         });
-  const auto retained_indices       = framegraph->add_retained_resource<buffer_description        , gl::buffer>    ("UI Indices"      , buffer_description{GLsizeiptr(4e+6), GL_ELEMENT_ARRAY_BUFFER });
+  const auto retained_attributes    = framegraph->add_retained_resource<buffer_description, gl::buffer>("UI Vertices"  , buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
+  const auto retained_projection    = framegraph->add_retained_resource<buffer_description, gl::buffer>("UI Projection", buffer_description{sizeof(glm::mat4), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_indices       = framegraph->add_retained_resource<buffer_description, gl::buffer>("UI Indices"   , buffer_description{GLsizeiptr(4e+6) , GL_ELEMENT_ARRAY_BUFFER });
 
   auto& io = ImGui::GetIO();
   std::uint8_t* pixels;
@@ -32,6 +33,7 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
     [&] (      ui_task_data& data, fg::render_task_builder& builder)
     {
       data.attributes   = builder.read  <buffer_resource>      (retained_attributes);
+      data.projection   = builder.read  <buffer_resource>      (retained_projection);
       data.indices      = builder.read  <buffer_resource>      (retained_indices   );
       data.texture      = builder.read  <texture_2d_resource>  (retained_texture   );
       data.program      = builder.create<program_resource>     ("UI Program"     , program::description     
@@ -46,7 +48,9 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
           {data.attributes, 2, GL_FLOAT},
           {data.attributes, 4, GL_UNSIGNED_BYTE}
         }, 
-        {}, 
+        {
+          data.projection
+        }, 
         data.indices
       });
       data.target = builder.write(target);
@@ -65,10 +69,11 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
 
       gl::texture_handle handle(*data.texture->actual());
       if (!handle.is_resident()) handle.set_resident(true);
+      program->set_uniform_handle(0, handle);
 
-      program->set_uniform       (program->uniform_location("projection"), glm::ortho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, 0.0f, 1.0f));
-      program->set_uniform_handle(program->uniform_location("ui_texture"), handle);
-      
+      const auto projection = glm::ortho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, 0.0f, 1.0f);
+      data.projection->actual()->set_sub_data(0, sizeof glm::mat4, &projection);
+    
       vertex_array->set_vertex_buffer   (0, *data.attributes->actual(), 0, sizeof ImDrawVert);
       vertex_array->set_vertex_buffer   (1, *data.attributes->actual(), 0, sizeof ImDrawVert);
       vertex_array->set_vertex_buffer   (2, *data.attributes->actual(), 0, sizeof ImDrawVert);

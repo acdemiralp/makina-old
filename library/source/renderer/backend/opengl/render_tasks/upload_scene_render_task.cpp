@@ -28,7 +28,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     glm::vec4    ambient       ; // w is unused.
     glm::vec4    diffuse       ; // w is unused.
     glm::vec4    specular      ; // w is shininess.
-    glm::u64vec4 textures      ; // ambient - diffuse - specular - unused
+    glm::uvec4   texture_ids   ; // ambient - diffuse - specular - unused
   };
   struct _physically_based_material
   {
@@ -36,8 +36,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     glm::uvec4   use_texture_2 ; // ambient occlusion - unused - unused - unused
     glm::vec4    albedo        ; // w is unused.
     glm::vec4    properties    ; // metallicity - roughness - unused - unused
-    glm::u64vec4 textures      ; // albedo - metallicity - roughness - normal
-    glm::u64vec4 textures_2    ; // ambient occlusion - unused - unused - unused
+    glm::uvec4   textures_ids  ; // albedo - metallicity - roughness - normal
+    glm::uvec4   textures_ids_2; // ambient occlusion - unused - unused - unused
   };
   struct _camera
   {
@@ -53,25 +53,23 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     glm::vec4    direction     ; // w is unused.
   };
 
-  const glm::uvec2 texture_size {2048, 2048};
+  const glm::uvec3 texture_size {2048, 2048, 64};
+  
+  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, parameter_map>("Scene Parameter Map"      , parameter_map::description());
 
-  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
-  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER });
-  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-  const auto retained_cameras             = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-  const auto retained_lights              = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
-  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER });
+  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_cameras             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_lights              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
   // Totals to 64 * 5 + 16 * 5 = 400 MB of GPU memory for buffers.
 
-  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, mak::parameter_map>("Scene Parameter Map", parameter_map::description());
-
-  std::vector<texture_2d_resource*> retained_textures(64);
-  for (auto i = 0; i < retained_textures.size(); ++i)
-    retained_textures[i] = framegraph->add_retained_resource<texture_description, gl::texture_2d>("Scene Texture " + boost::lexical_cast<std::string>(i), texture_description {{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), 1}, GL_RGBA8});
+  const auto retained_texture_array       = framegraph->add_retained_resource<texture_description, gl::texture_2d_array>("Scene Texture Array"      , texture_description{{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), static_cast<int>(texture_size[2])}, GL_RGBA8});
   // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
 
   // TODO: Optimize GPU uploads through scene caching.
@@ -79,20 +77,18 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     "Upload Scene Pass",
     [=] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices            = builder.write<buffer_resource>       (retained_vertices           );
-      data.normals             = builder.write<buffer_resource>       (retained_normals            );
-      data.texture_coordinates = builder.write<buffer_resource>       (retained_texture_coordinates);
-      data.instance_attributes = builder.write<buffer_resource>       (retained_instance_attributes);
-      data.indices             = builder.write<buffer_resource>       (retained_indices            );
-      data.transforms          = builder.write<buffer_resource>       (retained_transforms         );
-      data.materials           = builder.write<buffer_resource>       (retained_materials          );
-      data.cameras             = builder.write<buffer_resource>       (retained_cameras            );
-      data.lights              = builder.write<buffer_resource>       (retained_lights             );
-      data.draw_calls          = builder.write<buffer_resource>       (retained_draw_calls         );
-      data.parameter_map       = builder.write<parameter_map_resource>(retained_parameter_map      );
-      data.textures.resize(64);
-      for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.write<texture_2d_resource>(retained_textures[i]);
+      data.vertices            = builder.write<buffer_resource>          (retained_vertices           );
+      data.normals             = builder.write<buffer_resource>          (retained_normals            );
+      data.texture_coordinates = builder.write<buffer_resource>          (retained_texture_coordinates);
+      data.instance_attributes = builder.write<buffer_resource>          (retained_instance_attributes);
+      data.indices             = builder.write<buffer_resource>          (retained_indices            );
+      data.transforms          = builder.write<buffer_resource>          (retained_transforms         );
+      data.materials           = builder.write<buffer_resource>          (retained_materials          );
+      data.cameras             = builder.write<buffer_resource>          (retained_cameras            );
+      data.lights              = builder.write<buffer_resource>          (retained_lights             );
+      data.draw_calls          = builder.write<buffer_resource>          (retained_draw_calls         );
+      data.parameter_map       = builder.write<parameter_map_resource>   (retained_parameter_map      );
+      data.textures            = builder.write<texture_2d_array_resource>(retained_texture_array      );
     },
     [=] (const upload_scene_task_data& data)
     {
@@ -110,6 +106,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       GLuint texture_offset     = 0;
       GLuint first_index_offset = 0;
       GLuint base_vertex_offset = 0;
+
       for (auto i = 0; i < mesh_render_entities.size(); ++i)
       {
         const auto& entity      = mesh_render_entities[i];
@@ -121,94 +118,89 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         auto pbr_material   = dynamic_cast<mak::physically_based_material*>(mesh_render->material);
         if  (pbr_material)
         {
-          std::optional<gl::texture_handle> albedo_handle, metallicity_handle, roughness_handle, normal_handle, ambient_occlusion_handle;
+          std::optional<std::uint32_t> albedo_offset, metallicity_offset, roughness_offset, normal_offset, ambient_occlusion_offset;
           if (pbr_material->albedo_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            albedo_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset, 
               pbr_material->albedo_image->dimensions()[0],
               pbr_material->albedo_image->dimensions()[1],
+              1,
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               pbr_material->albedo_image->pixels().data);
-            albedo_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!albedo_handle->is_resident())
-              albedo_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->metallicity_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            metallicity_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->metallicity_image->dimensions()[0],
               pbr_material->metallicity_image->dimensions()[1],
+              1,
               GL_RED, 
               GL_UNSIGNED_BYTE, 
               pbr_material->metallicity_image->pixels().data);
-            metallicity_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!metallicity_handle->is_resident())
-              metallicity_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->roughness_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            roughness_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->roughness_image->dimensions()[0],
               pbr_material->roughness_image->dimensions()[1],
+              1,
               GL_RED, 
               GL_UNSIGNED_BYTE, 
               pbr_material->roughness_image->pixels().data);
-            roughness_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!roughness_handle->is_resident())
-              roughness_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->normal_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            normal_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->normal_image->dimensions()[0],
               pbr_material->normal_image->dimensions()[1],
+              1,
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               pbr_material->normal_image->pixels().data);
-            normal_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!normal_handle->is_resident())
-              normal_handle->set_resident(true);
             texture_offset++;
           }
           if (pbr_material->ambient_occlusion_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            ambient_occlusion_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->ambient_occlusion_image->dimensions()[0],
               pbr_material->ambient_occlusion_image->dimensions()[1],
+              1,
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               pbr_material->ambient_occlusion_image->pixels().data);
-            ambient_occlusion_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!ambient_occlusion_handle->is_resident())
-              ambient_occlusion_handle->set_resident(true);
             texture_offset++;
           }
 
           pbr_materials.push_back(_physically_based_material {
             glm::uvec4 
             {
-              static_cast<std::uint32_t>(albedo_handle           .has_value()),
-              static_cast<std::uint32_t>(metallicity_handle      .has_value()),
-              static_cast<std::uint32_t>(roughness_handle        .has_value()),
-              static_cast<std::uint32_t>(normal_handle           .has_value())
+              static_cast<std::uint32_t>(albedo_offset           .has_value()),
+              static_cast<std::uint32_t>(metallicity_offset      .has_value()),
+              static_cast<std::uint32_t>(roughness_offset        .has_value()),
+              static_cast<std::uint32_t>(normal_offset           .has_value())
             },
             glm::uvec4
             {
-              static_cast<std::uint32_t>(ambient_occlusion_handle.has_value()), 0, 0, 0
+              static_cast<std::uint32_t>(ambient_occlusion_offset.has_value()), 0, 0, 0
             },
-            glm::vec4   (pbr_material->albedo, 0.0f),
-            glm::vec4   (pbr_material->metallicity, pbr_material->roughness, 0.0f, 0.0f),
-            glm::u64vec4(
-              albedo_handle            ? albedo_handle           ->id() : 0,
-              metallicity_handle       ? metallicity_handle      ->id() : 0,
-              roughness_handle         ? roughness_handle        ->id() : 0,
-              normal_handle            ? normal_handle           ->id() : 0),
-            glm::u64vec4(
-              ambient_occlusion_handle ? ambient_occlusion_handle->id() : 0, 0, 0, 0)
+            glm::vec4 (pbr_material->albedo, 0.0f),
+            glm::vec4 (pbr_material->metallicity, pbr_material->roughness, 0.0f, 0.0f),
+            glm::uvec4(
+              albedo_offset            ? *albedo_offset            : 0,
+              metallicity_offset       ? *metallicity_offset       : 0,
+              roughness_offset         ? *roughness_offset         : 0,
+              normal_offset            ? *normal_offset            : 0),
+            glm::uvec4(
+              ambient_occlusion_offset ? *ambient_occlusion_offset : 0, 0, 0, 0)
           });
 
           if      (pbr_material->albedo_image )
@@ -225,62 +217,59 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         auto phong_material = dynamic_cast<mak::phong_material*>(mesh_render->material);
         if  (phong_material)
         {
-          std::optional<gl::texture_handle> ambient_handle, diffuse_handle, specular_handle;
+          std::optional<std::uint32_t> ambient_offset, diffuse_offset, specular_offset;
           if (phong_material->ambient_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            ambient_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               phong_material->ambient_image->dimensions()[0], 
               phong_material->ambient_image->dimensions()[1], 
+              1,
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               phong_material->ambient_image->pixels().data);
-            ambient_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!ambient_handle->is_resident())
-              ambient_handle->set_resident(true);
             texture_offset++;
           }
           if (phong_material->diffuse_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            diffuse_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               phong_material->diffuse_image->dimensions()[0], 
               phong_material->diffuse_image->dimensions()[1], 
+              1,
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               phong_material->diffuse_image->pixels().data);
-            diffuse_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!diffuse_handle->is_resident())
-              diffuse_handle->set_resident(true);
             texture_offset++;
           }
           if (phong_material->specular_image)
           {
-            data.textures[texture_offset]->actual()->set_sub_image(0, 0, 0, 
+            specular_offset = texture_offset;
+            data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               phong_material->specular_image->dimensions()[0], 
               phong_material->specular_image->dimensions()[1], 
+              1,
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               phong_material->specular_image->pixels().data);
-            specular_handle.emplace(*data.textures[texture_offset]->actual());
-            if(!specular_handle->is_resident())
-              specular_handle->set_resident(true);
             texture_offset++;
           }
 
           phong_materials .push_back(_phong_material {
             glm::uvec4 
             {
-              static_cast<std::uint32_t>(ambient_handle .has_value()),
-              static_cast<std::uint32_t>(diffuse_handle .has_value()),
-              static_cast<std::uint32_t>(specular_handle.has_value()),
+              static_cast<std::uint32_t>(ambient_offset .has_value()),
+              static_cast<std::uint32_t>(diffuse_offset .has_value()),
+              static_cast<std::uint32_t>(specular_offset.has_value()),
               0
             },
             glm::vec4   (phong_material->ambient , 0.0f),
             glm::vec4   (phong_material->diffuse , 0.0f),
             glm::vec4   (phong_material->specular, phong_material->shininess),
             glm::u64vec4(
-              ambient_handle  ? ambient_handle ->id() : 0, 
-              diffuse_handle  ? diffuse_handle ->id() : 0, 
-              specular_handle ? specular_handle->id() : 0, 
+              ambient_offset  ? *ambient_offset  : 0,
+              diffuse_offset  ? *diffuse_offset  : 0,
+              specular_offset ? *specular_offset : 0,
               0)
           });
           

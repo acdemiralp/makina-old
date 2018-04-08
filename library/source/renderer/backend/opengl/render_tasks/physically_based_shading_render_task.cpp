@@ -29,16 +29,13 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.lights              = builder.read(scene_data.lights              );
       data.draw_calls          = builder.read(scene_data.draw_calls          );
       data.parameter_map       = builder.read(scene_data.parameter_map       );
-      data.textures.resize(scene_data.textures.size());
-      for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.read(scene_data.textures[i]);
-
-      data.program      = builder.create<program_resource>     ("Physically Based Shading Program"     , program::description     
+      data.textures            = builder.read(scene_data.textures            );
+      data.program             = builder.create<program_resource>     ("Physically Based Shading Program"     , program::description     
       {
         glsl::default_vertex_shader, 
         glsl::physically_based_fragment_shader
       });
-      data.vertex_array = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
+      data.vertex_array        = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
       {
         { 
           {data.vertices           , 3, GL_FLOAT       }, 
@@ -55,13 +52,17 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
         data.indices,
         data.draw_calls
       });
-      data.target       = builder.write(target);
+      data.target              = builder.write(target);
     },
     [=] (const physically_based_shading_task_data& data)
     {
       data.program     ->actual()->use   ();
       data.vertex_array->actual()->bind  ();
       data.target      ->actual()->bind  ();
+
+      gl::texture_handle handle(*data.textures->actual());
+      if (!handle.is_resident()) handle.set_resident(true);
+      data.program->actual()->set_uniform_handle(0, handle);
 
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );

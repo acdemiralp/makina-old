@@ -12,11 +12,11 @@ namespace mak
 {
 namespace opengl
 {
-fg::render_task<phong_task_data>*                    add_phong_render_task                   (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
+fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {
-  return framegraph->add_render_task<phong_task_data>(
+  return framegraph->add_render_task<phong_shading_task_data>(
     "Phong Shading Pass",
-    [&] (      phong_task_data& data, fg::render_task_builder& builder)
+    [&] (      phong_shading_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices            = builder.read(scene_data.vertices            );
       data.normals             = builder.read(scene_data.normals             );
@@ -29,16 +29,13 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
       data.lights              = builder.read(scene_data.lights              );
       data.draw_calls          = builder.read(scene_data.draw_calls          );
       data.parameter_map       = builder.read(scene_data.parameter_map       );
-      data.textures.resize(scene_data.textures.size());
-      for (auto i = 0; i < data.textures.size(); ++i)
-        data.textures[i] = builder.read(scene_data.textures[i]);
-
-      data.program      = builder.create<program_resource>     ("Phong Shading Program"     , program::description     
+      data.textures            = builder.read(scene_data.textures            );
+      data.program             = builder.create<program_resource>     ("Phong Shading Program"     , program::description     
       {
         glsl::default_vertex_shader, 
         glsl::phong_fragment_shader
       });
-      data.vertex_array = builder.create<vertex_array_resource>("Phong Shading Vertex Array", vertex_array::description
+      data.vertex_array        = builder.create<vertex_array_resource>("Phong Shading Vertex Array", vertex_array::description
       {
         { 
           {data.vertices           , 3, GL_FLOAT       }, 
@@ -55,13 +52,17 @@ fg::render_task<phong_task_data>*                    add_phong_render_task      
         data.indices,
         data.draw_calls
       });
-      data.target       = builder.write(target);
+      data.target              = builder.write(target);
     },
-    [=] (const phong_task_data& data)
+    [=] (const phong_shading_task_data& data)
     {
       data.program     ->actual()->use   ();
       data.vertex_array->actual()->bind  ();
       data.target      ->actual()->bind  ();
+      
+      gl::texture_handle handle(*data.textures->actual());
+      if (!handle.is_resident()) handle.set_resident(true);
+      data.program->actual()->set_uniform_handle(0, handle);
 
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );

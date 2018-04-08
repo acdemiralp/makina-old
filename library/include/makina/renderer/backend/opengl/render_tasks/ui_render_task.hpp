@@ -16,6 +16,7 @@ namespace opengl
 struct MAKINA_EXPORT ui_task_data
 {
   buffer_resource*       attributes  ;
+  buffer_resource*       projection  ;
   buffer_resource*       indices     ;
   texture_2d_resource*   texture     ;
                          
