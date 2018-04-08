@@ -40,6 +40,7 @@ TEST_CASE("Vulkan test.", "[makina]")
 
   const auto renderer                      = engine->get_system<mak::renderer>();
   const auto upload_scene_task             = mak::vulkan::add_upload_scene_render_task            (renderer);
+  const auto skybox_task                   = mak::vulkan::add_test_render_task                    (renderer);
   const auto physically_based_shading_task = mak::vulkan::add_physically_based_shading_render_task(renderer, nullptr, upload_scene_task->data());
   const auto ui_task                       = mak::vulkan::add_ui_render_task                      (renderer, nullptr);
   const auto present_render_task           = mak::vulkan::add_present_render_task                 (renderer);

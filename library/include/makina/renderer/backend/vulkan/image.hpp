@@ -7,6 +7,7 @@
 
 #include <fg/resource.hpp>
 #include <vkhlf/Image.h>
+#include <vkhlf/ImageView.h>
 
 #include <makina/renderer/backend/vulkan/context.hpp>
 #include <makina/export.hpp>

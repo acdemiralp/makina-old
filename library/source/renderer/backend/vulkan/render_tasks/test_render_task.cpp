@@ -21,7 +21,7 @@ fg::render_task<test_task_data>* add_test_render_task(renderer* framegraph)
   std::vector<vertex_t> vertices {{{-1.0f, 1.0f, 0.0f}},{{1.0f, 1.0f, 0.0f}},{{1.0f, -1.0f, 0.0f}},{{-1.0f, 1.0f, 0.0f}},{{-1.0f, -1.0f, 0.0f}}};
   const std::uint32_t   draw_count = 5;
  
-  return framegraph->add_render_task<test_task_data>(
+  auto render_task = framegraph->add_render_task<test_task_data>(
     "Test Pass",
     [&] (      test_task_data& data, fg::render_task_builder& builder)
     {
@@ -70,6 +70,8 @@ fg::render_task<test_task_data>* add_test_render_task(renderer* framegraph)
         vkhlf::submitAndWait(vulkan::context().graphics_queue, command_buffer);
       }
     });
+  render_task->set_cull_immune(true);
+  return render_task;
 }
 }
 }
