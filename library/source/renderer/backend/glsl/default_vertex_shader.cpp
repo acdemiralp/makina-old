@@ -1,3 +1,10 @@
+#include <makina/renderer/backend/glsl/default_vertex_shader.hpp>
+
+namespace mak
+{
+namespace glsl
+{
+std::string default_vertex_shader = R"(
 #version 450
 
 #ifdef VULKAN
@@ -58,4 +65,7 @@ void main()
   vs_output.material_index     = instance_attribute.y;
 
   gl_Position = cameras[cameras_metadata.y].projection * trans_vertex;
+}
+)";
+}
 }

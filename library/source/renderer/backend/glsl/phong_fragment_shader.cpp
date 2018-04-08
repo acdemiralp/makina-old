@@ -1,3 +1,10 @@
+#include <makina/renderer/backend/glsl/phong_fragment_shader.hpp>
+
+namespace mak
+{
+namespace glsl
+{
+std::string phong_fragment_shader = R"(
 #version 450
 
 #ifdef VULKAN
@@ -126,4 +133,7 @@ void main()
   // color = pow (color, vec3(1.0 / 2.2)); 
 
   output_color = vec4(color, 1.0);
+}
+)";
+}
 }

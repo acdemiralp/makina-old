@@ -1,3 +1,10 @@
+#include <makina/renderer/backend/glsl/ui_fragment_shader.hpp>
+
+namespace mak
+{
+namespace glsl
+{
+std::string ui_fragment_shader = R"(
 #version 450
 
 #ifdef VULKAN
@@ -21,4 +28,7 @@ layout(location = 0) out vec4 output_color;
 void main()
 {
   output_color = fs_input.color * texture(ui_texture, fs_input.texture_coordinate);
+}
+)";
+}
 }

@@ -1,3 +1,10 @@
+#include <makina/renderer/backend/glsl/ui_vertex_shader.hpp>
+
+namespace mak
+{
+namespace glsl
+{
+std::string ui_vertex_shader = R"(
 #version 450
 
 #ifdef VULKAN
@@ -33,4 +40,7 @@ void main()
   vs_output.texture_coordinate = texture_coordinate;
   vs_output.color              = color             ;
   gl_Position                  = projection * vec4(vertex, 0.0f, 1.0f);
+}
+)";
+}
 }

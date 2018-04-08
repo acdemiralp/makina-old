@@ -1,4 +1,4 @@
-#include <makina/renderer/backend/shaderc/shader_sources.hpp>
+#include <makina/renderer/backend/shaderc/test_shader.hpp>
 
 namespace mak
 {
