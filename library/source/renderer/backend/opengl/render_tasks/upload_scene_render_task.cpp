@@ -106,7 +106,6 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       GLuint texture_offset     = 0;
       GLuint first_index_offset = 0;
       GLuint base_vertex_offset = 0;
-
       for (auto i = 0; i < mesh_render_entities.size(); ++i)
       {
         const auto& entity      = mesh_render_entities[i];
@@ -121,7 +120,6 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           std::optional<std::uint32_t> albedo_offset, metallicity_offset, roughness_offset, normal_offset, ambient_occlusion_offset;
           if (pbr_material->albedo_image)
           {
-            albedo_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset, 
               pbr_material->albedo_image->dimensions()[0],
               pbr_material->albedo_image->dimensions()[1],
@@ -129,11 +127,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               pbr_material->albedo_image->pixels().data);
-            texture_offset++;
+            albedo_offset = texture_offset++;
           }
           if (pbr_material->metallicity_image)
           {
-            metallicity_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->metallicity_image->dimensions()[0],
               pbr_material->metallicity_image->dimensions()[1],
@@ -141,11 +138,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_RED, 
               GL_UNSIGNED_BYTE, 
               pbr_material->metallicity_image->pixels().data);
-            texture_offset++;
+            metallicity_offset = texture_offset++;
           }
           if (pbr_material->roughness_image)
           {
-            roughness_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->roughness_image->dimensions()[0],
               pbr_material->roughness_image->dimensions()[1],
@@ -153,11 +149,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_RED, 
               GL_UNSIGNED_BYTE, 
               pbr_material->roughness_image->pixels().data);
-            texture_offset++;
+            roughness_offset = texture_offset++;
           }
           if (pbr_material->normal_image)
           {
-            normal_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->normal_image->dimensions()[0],
               pbr_material->normal_image->dimensions()[1],
@@ -165,11 +160,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               pbr_material->normal_image->pixels().data);
-            texture_offset++;
+            normal_offset = texture_offset++;
           }
           if (pbr_material->ambient_occlusion_image)
           {
-            ambient_occlusion_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               pbr_material->ambient_occlusion_image->dimensions()[0],
               pbr_material->ambient_occlusion_image->dimensions()[1],
@@ -177,7 +171,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               pbr_material->ambient_occlusion_image->pixels().data);
-            texture_offset++;
+            ambient_occlusion_offset = texture_offset++;
           }
 
           pbr_materials.push_back(_physically_based_material {
@@ -220,7 +214,6 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           std::optional<std::uint32_t> ambient_offset, diffuse_offset, specular_offset;
           if (phong_material->ambient_image)
           {
-            ambient_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               phong_material->ambient_image->dimensions()[0], 
               phong_material->ambient_image->dimensions()[1], 
@@ -228,11 +221,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               phong_material->ambient_image->pixels().data);
-            texture_offset++;
+            ambient_offset = texture_offset++;
           }
           if (phong_material->diffuse_image)
           {
-            diffuse_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               phong_material->diffuse_image->dimensions()[0], 
               phong_material->diffuse_image->dimensions()[1], 
@@ -240,11 +232,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               phong_material->diffuse_image->pixels().data);
-            texture_offset++;
+            diffuse_offset = texture_offset++;
           }
           if (phong_material->specular_image)
           {
-            specular_offset = texture_offset;
             data.textures->actual()->set_sub_image(0, 0, 0, texture_offset,
               phong_material->specular_image->dimensions()[0], 
               phong_material->specular_image->dimensions()[1], 
@@ -252,7 +243,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               GL_BGRA, 
               GL_UNSIGNED_BYTE, 
               phong_material->specular_image->pixels().data);
-            texture_offset++;
+            specular_offset = texture_offset++;
           }
 
           phong_materials .push_back(_phong_material {
