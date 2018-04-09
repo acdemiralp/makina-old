@@ -19,8 +19,7 @@ void load_image(mak::image* source, std::shared_ptr<vkhlf::Buffer> intermediate,
   auto  image_view     = target->createImageView(vk::ImageViewType::e2DArray, single_channel ? vk::Format::eR8Unorm : vk::Format::eB8G8R8A8Unorm);
   auto  command_buffer = context.command_pool->allocateCommandBuffer();
   command_buffer->begin();
-  // TODO: Copy source into intermediate.
-  // TODO: Copy intermediate to image_view with offset.
+  // TODO: Copy source into intermediate. Copy intermediate to image_view with offset.
   command_buffer->end  ();
   vkhlf::submitAndWait(context.graphics_queue, command_buffer);
 }
