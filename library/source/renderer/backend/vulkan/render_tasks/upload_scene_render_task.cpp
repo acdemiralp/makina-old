@@ -13,6 +13,18 @@ namespace mak
 {
 namespace vulkan
 {
+void load_image(mak::image* source, std::shared_ptr<vkhlf::Buffer> intermediate, std::shared_ptr<vkhlf::Image> target, std::size_t offset, const bool single_channel = false)
+{
+  auto& context        = vulkan::context();
+  auto  image_view     = target->createImageView(vk::ImageViewType::e2DArray, single_channel ? vk::Format::eR8Unorm : vk::Format::eB8G8R8A8Unorm);
+  auto  command_buffer = context.command_pool->allocateCommandBuffer();
+  command_buffer->begin();
+  // TODO: Copy source into intermediate.
+  // TODO: Copy intermediate to image_view with offset.
+  command_buffer->end  ();
+  vkhlf::submitAndWait(context.graphics_queue, command_buffer);
+}
+
 fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph)
 {
   // Shader vertex type.
@@ -81,16 +93,17 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     "Upload Scene Pass",
     [&] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices      = builder.write<buffer_resource>       (retained_vertices     );
-      data.indices       = builder.write<buffer_resource>       (retained_indices      );
-      data.transforms    = builder.write<buffer_resource>       (retained_transforms   );
-      data.materials     = builder.write<buffer_resource>       (retained_materials    );
-      data.cameras       = builder.write<buffer_resource>       (retained_cameras      );
-      data.lights        = builder.write<buffer_resource>       (retained_lights       );
-      data.draw_calls    = builder.write<buffer_resource>       (retained_draw_calls   );
-      data.images        = builder.write<image_resource>        (retained_images       );
-      data.sampler       = builder.write<sampler_resource>      (retained_sampler      );
-      data.parameter_map = builder.write<parameter_map_resource>(retained_parameter_map);
+      data.intermediates = builder.create<buffer_resource>       ("Scene Intermediates", buffer_description{vk::DeviceSize(8e+6), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent});
+      data.vertices      = builder.write <buffer_resource>       (retained_vertices     );
+      data.indices       = builder.write <buffer_resource>       (retained_indices      );
+      data.transforms    = builder.write <buffer_resource>       (retained_transforms   );
+      data.materials     = builder.write <buffer_resource>       (retained_materials    );
+      data.cameras       = builder.write <buffer_resource>       (retained_cameras      );
+      data.lights        = builder.write <buffer_resource>       (retained_lights       );
+      data.draw_calls    = builder.write <buffer_resource>       (retained_draw_calls   );
+      data.images        = builder.write <image_resource>        (retained_images       );
+      data.sampler       = builder.write <sampler_resource>      (retained_sampler      );
+      data.parameter_map = builder.write <parameter_map_resource>(retained_parameter_map);
     },
     [=] (const upload_scene_task_data& data)
     {
@@ -107,8 +120,6 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto lights               = std::vector<_light>                        ();
       auto draw_calls           = std::vector<vk::DrawIndexedIndirectCommand>();
 
-      auto image_view           = (*data.images->actual())->createImageView(vk::ImageViewType::e2DArray, vk::Format::eR8G8B8A8Unorm);
-      
       std::uint32_t texture_offset     = 0;
       std::uint32_t first_index_offset = 0;
       std::int32_t  base_vertex_offset = 0;
@@ -126,59 +137,27 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           std::optional<std::uint32_t> albedo_offset, metallicity_offset, roughness_offset, normal_offset, ambient_occlusion_offset;
           if (pbr_material->albedo_image)
           {
-            //image_view->setSubImage
-            //  
-            //  set_sub_image(0, 0, 0, texture_offset, 
-            //  pbr_material->albedo_image->dimensions()[0],
-            //  pbr_material->albedo_image->dimensions()[1],
-            //  1,
-            //  GL_BGRA, 
-            //  GL_UNSIGNED_BYTE, 
-            //  pbr_material->albedo_image->pixels().data);
+            load_image(pbr_material->albedo_image           .get(), *data.intermediates->actual(), *data.images->actual(), texture_offset);
             albedo_offset = texture_offset++;
           }
           if (pbr_material->metallicity_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  pbr_material->metallicity_image->dimensions()[0],
-            //  pbr_material->metallicity_image->dimensions()[1],
-            //  1,
-            //  GL_RED, 
-            //  GL_UNSIGNED_BYTE, 
-            //  pbr_material->metallicity_image->pixels().data);
+            load_image(pbr_material->metallicity_image      .get(), *data.intermediates->actual(), *data.images->actual(), texture_offset, true);
             metallicity_offset = texture_offset++;
           }
           if (pbr_material->roughness_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  pbr_material->roughness_image->dimensions()[0],
-            //  pbr_material->roughness_image->dimensions()[1],
-            //  1,
-            //  GL_RED, 
-            //  GL_UNSIGNED_BYTE, 
-            //  pbr_material->roughness_image->pixels().data);
+            load_image(pbr_material->roughness_image        .get(), *data.intermediates->actual(), *data.images->actual(), texture_offset, true);
             roughness_offset = texture_offset++;
           }
           if (pbr_material->normal_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  pbr_material->normal_image->dimensions()[0],
-            //  pbr_material->normal_image->dimensions()[1],
-            //  1,
-            //  GL_BGRA, 
-            //  GL_UNSIGNED_BYTE, 
-            //  pbr_material->normal_image->pixels().data);
+            load_image(pbr_material->normal_image           .get(), *data.intermediates->actual(), *data.images->actual(), texture_offset);
             normal_offset = texture_offset++;
           }
           if (pbr_material->ambient_occlusion_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  pbr_material->ambient_occlusion_image->dimensions()[0],
-            //  pbr_material->ambient_occlusion_image->dimensions()[1],
-            //  1,
-            //  GL_BGRA, 
-            //  GL_UNSIGNED_BYTE, 
-            //  pbr_material->ambient_occlusion_image->pixels().data);
+            load_image(pbr_material->ambient_occlusion_image.get(), *data.intermediates->actual(), *data.images->actual(), texture_offset);
             ambient_occlusion_offset = texture_offset++;
           }
 
@@ -222,35 +201,17 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           std::optional<std::uint32_t> ambient_offset, diffuse_offset, specular_offset;
           if (phong_material->ambient_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  phong_material->ambient_image->dimensions()[0], 
-            //  phong_material->ambient_image->dimensions()[1], 
-            //  1,
-            //  GL_BGRA, 
-            //  GL_UNSIGNED_BYTE, 
-            //  phong_material->ambient_image->pixels().data);
+            load_image(phong_material->ambient_image .get(), *data.intermediates->actual(), *data.images->actual(), texture_offset);
             ambient_offset = texture_offset++;
           }
           if (phong_material->diffuse_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  phong_material->diffuse_image->dimensions()[0], 
-            //  phong_material->diffuse_image->dimensions()[1], 
-            //  1,
-            //  GL_BGRA, 
-            //  GL_UNSIGNED_BYTE, 
-            //  phong_material->diffuse_image->pixels().data);
+            load_image(phong_material->diffuse_image .get(), *data.intermediates->actual(), *data.images->actual(), texture_offset);
             diffuse_offset = texture_offset++;
           }
           if (phong_material->specular_image)
           {
-            //data.images->actual()->set_sub_image(0, 0, 0, texture_offset,
-            //  phong_material->specular_image->dimensions()[0], 
-            //  phong_material->specular_image->dimensions()[1], 
-            //  1,
-            //  GL_BGRA, 
-            //  GL_UNSIGNED_BYTE, 
-            //  phong_material->specular_image->pixels().data);
+            load_image(phong_material->specular_image.get(), *data.intermediates->actual(), *data.images->actual(), texture_offset);
             specular_offset = texture_offset++;
           }
 

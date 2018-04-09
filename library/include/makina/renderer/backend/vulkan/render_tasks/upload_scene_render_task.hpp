@@ -22,6 +22,7 @@ struct MAKINA_EXPORT upload_scene_task_data
   buffer_resource*        cameras      ;
   buffer_resource*        lights       ;
   buffer_resource*        draw_calls   ;
+  buffer_resource*        intermediates;
   image_resource*         images       ;
   sampler_resource*       sampler      ;
   parameter_map_resource* parameter_map;

@@ -19,10 +19,10 @@ struct MAKINA_EXPORT buffer_description
   // Rearrangement of members is for convenience.
   vk::DeviceSize                      size                  ;                        
   vk::BufferUsageFlags                usage_flags           ;
-  vk::BufferCreateFlags               create_flags          = vk::BufferCreateFlagBits(0);
-  vk::SharingMode                     sharing_mode          = vk::SharingMode::eExclusive;
-  vk::ArrayProxy<const std::uint32_t> queue_family_indices  = nullptr;
   vk::MemoryPropertyFlags             memory_property_flags = vk::MemoryPropertyFlagBits::eDeviceLocal;
+  vk::SharingMode                     sharing_mode          = vk::SharingMode::eExclusive;
+  vk::BufferCreateFlags               create_flags          = vk::BufferCreateFlagBits(0);
+  vk::ArrayProxy<const std::uint32_t> queue_family_indices  = nullptr;
 };
 
 using buffer_resource = fg::resource<buffer_description, std::shared_ptr<vkhlf::Buffer>>;
