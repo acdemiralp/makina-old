@@ -15,13 +15,12 @@ namespace vulkan
 {
 void load_image(mak::image* source, std::shared_ptr<vkhlf::Buffer> intermediate, std::shared_ptr<vkhlf::Image> target, std::size_t offset, const bool single_channel = false)
 {
-  auto& context        = vulkan::context();
-  auto  image_view     = target->createImageView(vk::ImageViewType::e2DArray, single_channel ? vk::Format::eR8Unorm : vk::Format::eB8G8R8A8Unorm);
-  auto  command_buffer = context.command_pool->allocateCommandBuffer();
-  command_buffer->begin();
-  // TODO: Copy source into intermediate. Copy intermediate to image_view with offset.
-  command_buffer->end  ();
-  vkhlf::submitAndWait(context.graphics_queue, command_buffer);
+  auto command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
+  command_buffer->begin               ();
+  intermediate  ->update<std::uint8_t>(0, {static_cast<std::uint32_t>(source->pixels().size), source->pixels().data}, command_buffer);
+  command_buffer->copyBufferToImage   (intermediate, target, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 0), vk::Offset3D(0, 0, offset), vk::Extent3D(source->dimensions()[0], source->dimensions()[1], 1)));
+  command_buffer->end                 ();
+  vkhlf::submitAndWait                (vulkan::context().graphics_queue, command_buffer);
 }
 
 fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph)
@@ -92,7 +91,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     "Upload Scene Pass",
     [&] (      upload_scene_task_data& data, fg::render_task_builder& builder)
     {
-      data.intermediates = builder.create<buffer_resource>       ("Scene Intermediates", buffer_description{vk::DeviceSize(8e+6), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent});
+      data.intermediates = builder.create<buffer_resource>       ("Scene Intermediates", buffer_description{vk::DeviceSize(32e+6), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent});
       data.vertices      = builder.write <buffer_resource>       (retained_vertices     );
       data.indices       = builder.write <buffer_resource>       (retained_indices      );
       data.transforms    = builder.write <buffer_resource>       (retained_transforms   );
