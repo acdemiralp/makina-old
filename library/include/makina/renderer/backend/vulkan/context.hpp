@@ -7,6 +7,7 @@
 #include <di/systems/display/vulkan_window.hpp>
 #include <vkhlf/CommandPool.h>
 #include <vkhlf/DebugReportCallback.h>
+#include <vkhlf/DescriptorPool.h>
 #include <vkhlf/DeviceMemoryAllocator.h>
 #include <vkhlf/Device.h>
 #include <vkhlf/Instance.h>
@@ -41,6 +42,8 @@ struct MAKINA_EXPORT _context
   std::shared_ptr<vkhlf::Semaphore>             render_complete_semaphore;
   std::shared_ptr<vkhlf::DeviceMemoryAllocator> buffer_allocator         ;
   std::shared_ptr<vkhlf::DeviceMemoryAllocator> image_allocator          ;
+  std::shared_ptr<vkhlf::DescriptorPool>        uniform_descriptor_pool  ;
+  std::shared_ptr<vkhlf::DescriptorPool>        storage_descriptor_pool  ;
   std::shared_ptr<vkhlf::CommandPool>           command_pool             ;
   std::vector<window_swapchain>                 window_swapchains        ;
 };

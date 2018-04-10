@@ -83,6 +83,8 @@ _context::_context()
   command_pool              = logical_device ->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
   buffer_allocator          = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(64  * 1024), nullptr);
   image_allocator           = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(128 * 1024), nullptr);
+  uniform_descriptor_pool   = logical_device->createDescriptorPool({}, 32, {{vk::DescriptorType::eUniformBufferDynamic, 32}});
+  storage_descriptor_pool   = logical_device->createDescriptorPool({}, 32, {{vk::DescriptorType::eStorageBufferDynamic, 32}});
 }
 
 void _context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
@@ -164,6 +166,8 @@ void _context::create_window_swapchains (const std::vector<di::vulkan_window*>& 
         window_swapchain.depth_format,
         window_swapchain.render_pass );
     });
+
+    window_swapchain.framebuffer = window_swapchain.swapchain->getFramebuffer();
   }
 }
 void _context::present_window_swapchains()

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <fg/resource.hpp>
+#include <vkhlf/Allocator.h>
 #include <vkhlf/Framebuffer.h>
 
 #include <makina/renderer/backend/vulkan/context.hpp>

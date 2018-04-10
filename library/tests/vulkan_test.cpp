@@ -39,11 +39,12 @@ TEST_CASE("Vulkan test.", "[makina]")
   fi::initialize();
 
   const auto renderer                      = engine->get_system<mak::renderer>();
+  auto       backbuffer                    = renderer->add_retained_resource("Backbuffer", mak::vulkan::framebuffer_description{}, &mak::vulkan::context().window_swapchains[0].framebuffer);
   const auto upload_scene_task             = mak::vulkan::add_upload_scene_render_task            (renderer);
   const auto skybox_task                   = mak::vulkan::add_test_render_task                    (renderer);
-  const auto physically_based_shading_task = mak::vulkan::add_physically_based_shading_render_task(renderer, nullptr, upload_scene_task->data());
-  const auto ui_task                       = mak::vulkan::add_ui_render_task                      (renderer, nullptr);
-  const auto present_render_task           = mak::vulkan::add_present_render_task                 (renderer);
+  const auto physically_based_shading_task = mak::vulkan::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_task->data());
+  const auto ui_task                       = mak::vulkan::add_ui_render_task                      (renderer, backbuffer);
+  const auto present_render_task           = mak::vulkan::add_present_render_task                 (renderer, backbuffer);
  
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
