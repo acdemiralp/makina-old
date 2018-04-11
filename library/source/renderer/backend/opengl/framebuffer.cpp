@@ -20,6 +20,15 @@ framebuffer::framebuffer(const description& description) : gl::framebuffer()
     throw std::runtime_error("The render target framebuffer is incomplete!");
 }
 
+gl::texture_2d* framebuffer::color_texture()
+{
+  return &color_texture_;
+}
+gl::texture_2d* framebuffer::depth_texture()
+{
+  return &depth_texture_;
+}
+
 framebuffer* default_framebuffer()
 {
   static auto default_framebuffer = framebuffer();

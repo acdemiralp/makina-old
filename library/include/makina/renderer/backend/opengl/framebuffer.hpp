@@ -31,6 +31,9 @@ public:
   virtual ~framebuffer()                           = default;
   framebuffer& operator=(const framebuffer&  that) = delete ;
   framebuffer& operator=(      framebuffer&& temp) = default;
+  
+  gl::texture_2d* color_texture();
+  gl::texture_2d* depth_texture();
 
 protected:
   gl::texture_2d color_texture_;
