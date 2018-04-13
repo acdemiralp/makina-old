@@ -21,6 +21,10 @@ std::unique_ptr<engine> make_default_engine()
   auto audio_system     = engine->add_system<mak::audio_system>    ();
   auto physics_system   = engine->add_system<mak::physics_system>  ();
   auto renderer         = engine->add_system<mak::renderer>        ();
+  scripting_system->set_async(true);
+  audio_system    ->set_async(true);
+  physics_system  ->set_async(true);
+  physics_system  ->add_dependency(scripting_system);
 
   input_system->on_quit.connect(std::bind(&engine::stop, engine.get()));
 
