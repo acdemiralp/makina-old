@@ -11,12 +11,13 @@ namespace mak
 {
 struct MAKINA_EXPORT flow_node_data
 {
-  bool                  prepare = false  ;
-  mak::scene*           scene   = nullptr;
-  frame_timer::duration duration;
+  bool                  prepare  = false  ;
+  scene*                scene    = nullptr;
+  frame_timer::duration duration = frame_timer::duration();
 };
 
-using flow_node = tbb::flow::function_node<flow_node_data, flow_node_data>;
+using entry_node = tbb::flow::broadcast_node<flow_node_data>;
+using flow_node  = tbb::flow::function_node <flow_node_data, flow_node_data>;
 }
 
 #endif
