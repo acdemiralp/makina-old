@@ -33,7 +33,6 @@ class MakinaConan(ConanFile):
                        ("spdlog/0.16.3@bincrafters/stable"     ),
                        ("splinter/3.0@acdemiralp/makina"       ),
                        ("TBB/4.4.4@conan/testing"              ),
-                       ("transwarp/1.2.1@acdemiralp/makina"    ),
                        ("vkhlf/master@acdemiralp/makina"       )) 
     options         = {"shared": [True, False]} 
     default_options = "shared=True"
