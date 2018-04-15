@@ -19,10 +19,15 @@
 
 namespace mak
 {
+struct metadata
+{
+  std::string name;
+};
+
 class behavior  ;
 using behaviors = std::vector<std::shared_ptr<behavior>>;
 
-using entity    = ec::entity<audio_listener, audio_source, controller, mesh_collider, rigidbody, light, mesh_render, projection, transform, behaviors>;
+using entity    = ec::entity<metadata, audio_listener, audio_source, controller, mesh_collider, rigidbody, light, mesh_render, projection, transform, behaviors>;
 using scene     = ec::scene<entity>;
 }
 
