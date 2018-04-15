@@ -80,11 +80,15 @@ _context::_context()
   logical_device            = physical_device->createDevice     (vkhlf::DeviceQueueCreateInfo(0 /* queue family index */, 0.0f /* queue priorities */), nullptr, {VK_KHR_SWAPCHAIN_EXTENSION_NAME});
   graphics_queue            = logical_device ->getQueue         (0 /* queue family index */, 0 /* queue index */);
   render_complete_semaphore = logical_device ->createSemaphore  ();
-  command_pool              = logical_device ->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
   buffer_allocator          = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(64  * 1024), nullptr);
   image_allocator           = std::make_shared<vkhlf::DeviceMemoryAllocator>(logical_device, vk::DeviceSize(128 * 1024), nullptr);
-  uniform_descriptor_pool   = logical_device->createDescriptorPool({}, 32, {{vk::DescriptorType::eUniformBufferDynamic, 32}});
-  storage_descriptor_pool   = logical_device->createDescriptorPool({}, 32, {{vk::DescriptorType::eStorageBufferDynamic, 32}});
+  descriptor_pool           = logical_device ->createDescriptorPool({}, 256, 
+  {
+    {vk::DescriptorType::eUniformBufferDynamic, 256}, 
+    {vk::DescriptorType::eStorageBufferDynamic, 256}, 
+    {vk::DescriptorType::eCombinedImageSampler, 256}
+  });
+  command_pool              = logical_device ->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 }
 
 void _context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)

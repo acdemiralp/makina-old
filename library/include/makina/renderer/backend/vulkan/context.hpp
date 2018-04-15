@@ -34,18 +34,17 @@ struct MAKINA_EXPORT _context
   void create_window_swapchains (const std::vector<di::vulkan_window*>& windows);
   void present_window_swapchains();
 
-  std::shared_ptr<vkhlf::Instance>              instance                 ;
-  std::shared_ptr<vkhlf::DebugReportCallback>   debug_callback           ;
-  std::shared_ptr<vkhlf::PhysicalDevice>        physical_device          ;
-  std::shared_ptr<vkhlf::Device>                logical_device           ;
-  std::shared_ptr<vkhlf::Queue>                 graphics_queue           ;
-  std::shared_ptr<vkhlf::Semaphore>             render_complete_semaphore;
-  std::shared_ptr<vkhlf::DeviceMemoryAllocator> buffer_allocator         ;
-  std::shared_ptr<vkhlf::DeviceMemoryAllocator> image_allocator          ;
-  std::shared_ptr<vkhlf::DescriptorPool>        uniform_descriptor_pool  ;
-  std::shared_ptr<vkhlf::DescriptorPool>        storage_descriptor_pool  ;
-  std::shared_ptr<vkhlf::CommandPool>           command_pool             ;
-  std::vector<window_swapchain>                 window_swapchains        ;
+  std::shared_ptr<vkhlf::Instance>              instance                     ;
+  std::shared_ptr<vkhlf::DebugReportCallback>   debug_callback               ;
+  std::shared_ptr<vkhlf::PhysicalDevice>        physical_device              ;
+  std::shared_ptr<vkhlf::Device>                logical_device               ;
+  std::shared_ptr<vkhlf::Queue>                 graphics_queue               ;
+  std::shared_ptr<vkhlf::Semaphore>             render_complete_semaphore    ;
+  std::shared_ptr<vkhlf::DeviceMemoryAllocator> buffer_allocator             ;
+  std::shared_ptr<vkhlf::DeviceMemoryAllocator> image_allocator              ;
+  std::shared_ptr<vkhlf::DescriptorPool>        descriptor_pool              ;
+  std::shared_ptr<vkhlf::CommandPool>           command_pool                 ;
+  std::vector<window_swapchain>                 window_swapchains            ;
 };
 
 MAKINA_EXPORT _context& context();
