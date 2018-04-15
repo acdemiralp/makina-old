@@ -30,15 +30,15 @@ struct MAKINA_EXPORT sampler_description
   bool                                  unnormalized       = false;
 };
 
-using sampler_resource = fg::resource<sampler_description, vkhlf::Sampler>;
+using sampler_resource = fg::resource<sampler_description, std::shared_ptr<vkhlf::Sampler>>;
 }
 }
 
 template<>
-inline std::unique_ptr<vkhlf::Sampler> fg::realize(const mak::vulkan::sampler_description& description)
+inline std::unique_ptr<std::shared_ptr<vkhlf::Sampler>> fg::realize(const mak::vulkan::sampler_description& description)
 {
-  return std::make_unique<vkhlf::Sampler>(
-    mak::vulkan::context().logical_device ,
+  return std::make_unique<std::shared_ptr<vkhlf::Sampler>>(
+    mak::vulkan::context().logical_device->createSampler(
     description.mag_filter                ,
     description.min_filter                ,
     description.mipmap_mode               ,
@@ -54,7 +54,7 @@ inline std::unique_ptr<vkhlf::Sampler> fg::realize(const mak::vulkan::sampler_de
     description.lod_range[1]              ,
     description.border_color              ,
     description.unnormalized              ,
-    nullptr                               );
+    nullptr                               ));
 }
 
 #endif
