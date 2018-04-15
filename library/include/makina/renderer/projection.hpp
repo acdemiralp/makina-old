@@ -15,6 +15,7 @@ class MAKINA_EXPORT projection
 public:
   void             set_perspective(const float fov_y, const float aspect_ratio, std::array<float, 2> z_range);
   void             set_orthogonal (const di::rectangle<float> rectangle       , std::array<float, 2> z_range);
+  void             set_matrix     (const glm::mat4& matrix);
   const glm::mat4& matrix         () const;
 
 protected:
