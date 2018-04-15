@@ -11,9 +11,10 @@ std::string ui_vertex_shader = R"(
 
 #else
 #extension GL_ARB_explicit_attrib_location : enable
+#extension GL_KHR_vulkan_glsl : enable
 #endif
 
-layout(std430, binding = 0) readonly buffer _projection
+layout(std430, set = 0, binding = 0) readonly buffer _projection
 {
   mat4 projection;
 };

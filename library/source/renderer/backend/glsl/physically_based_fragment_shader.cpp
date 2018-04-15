@@ -12,6 +12,7 @@ std::string physically_based_fragment_shader = R"(
 #else
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_bindless_texture : enable
+#extension GL_KHR_vulkan_glsl : enable
 layout (bindless_sampler) uniform;
 #endif
 
@@ -48,23 +49,23 @@ struct _light
   vec4      direction                ; // w is unused.
 };                                   
 
-layout(std430, binding = 1) readonly buffer material
+layout(std430, set = 0, binding = 1) readonly buffer material
 {
   uvec4     materials_metadata; // x size
   _material materials[]       ;
 };
-layout(std430, binding = 2) readonly buffer camera
+layout(std430, set = 0, binding = 2) readonly buffer camera
 {
   uvec4     cameras_metadata  ; // x size, y index
   _camera   cameras[]         ;
 };
-layout(std430, binding = 3) readonly buffer light
+layout(std430, set = 0, binding = 3) readonly buffer light
 {
   uvec4     lights_metadata   ; // x size
   _light    lights[]          ;
 };
 
-layout(binding = 0) uniform sampler2DArray images;
+layout(set = 0, binding = 4) uniform sampler2DArray images;
 
 layout(location = 0) in vs_output_type 
 {

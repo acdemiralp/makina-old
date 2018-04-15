@@ -12,10 +12,11 @@ std::string ui_fragment_shader = R"(
 #else
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_bindless_texture : enable
+#extension GL_KHR_vulkan_glsl : enable
 layout (bindless_sampler) uniform;
 #endif
 
-layout(binding = 0) uniform sampler2D ui_texture;
+layout(set = 0, binding = 1) uniform sampler2D ui_texture;
 
 layout(location = 0) in vs_output_type 
 {
