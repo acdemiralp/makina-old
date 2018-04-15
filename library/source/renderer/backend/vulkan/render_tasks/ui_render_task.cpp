@@ -76,15 +76,14 @@ fg::render_task<ui_task_data>* add_ui_render_task(renderer* framegraph, framebuf
         vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 1u, 0u, 1u, vk::DescriptorType::eCombinedImageSampler,
           vkhlf::DescriptorImageInfo(*data.sampler->actual(), (*data.image->actual())->createImageView(vk::ImageViewType::e2DArray, vk::Format::eR8G8B8A8Unorm), vk::ImageLayout::eShaderReadOnlyOptimal), nullptr)
       }, {});
-
-      auto command_buffer   = context().command_pool->allocateCommandBuffer();
-      auto window_swapchain = context().window_swapchains[0];
-
+      
       load_image(pixels, {std::uint32_t(width), std::uint32_t(height)}, *data.intermediates->actual(), *data.image->actual(), 0, false);
       io.Fonts->TexID = reinterpret_cast<void*>(std::intptr_t((*data.image->actual())->operator vk::Image().operator VkImage()));
 
       const auto projection = glm::ortho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, 0.0f, 1.0f);
       
+      auto command_buffer   = context().command_pool->allocateCommandBuffer();
+      auto window_swapchain = context().window_swapchains[0];
       command_buffer->begin           ();
       command_buffer->beginRenderPass (
         window_swapchain.render_pass, 

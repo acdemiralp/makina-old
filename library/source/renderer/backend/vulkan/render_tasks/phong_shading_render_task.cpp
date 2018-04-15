@@ -80,8 +80,7 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
       }, {});
       
       auto command_buffer   = context().command_pool->allocateCommandBuffer();
-      auto window_swapchain = context().window_swapchains[0];
-    
+      auto window_swapchain = context().window_swapchains[0];   
       command_buffer->begin           ();
       command_buffer->beginRenderPass (
         window_swapchain.render_pass, 

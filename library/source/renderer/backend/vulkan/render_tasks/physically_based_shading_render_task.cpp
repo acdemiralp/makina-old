@@ -27,10 +27,10 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
     {
       auto descriptor_set_layout = context().logical_device->createDescriptorSetLayout(std::vector<vkhlf::DescriptorSetLayoutBinding> 
       {
-        vkhlf::DescriptorSetLayoutBinding {0, vk::DescriptorType::eStorageBufferDynamic, vk::ShaderStageFlagBits::eVertex                                     , nullptr},
-        vkhlf::DescriptorSetLayoutBinding {1, vk::DescriptorType::eStorageBufferDynamic,                                    vk::ShaderStageFlagBits::eFragment, nullptr},
-        vkhlf::DescriptorSetLayoutBinding {2, vk::DescriptorType::eStorageBufferDynamic, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, nullptr},
-        vkhlf::DescriptorSetLayoutBinding {3, vk::DescriptorType::eStorageBufferDynamic,                                    vk::ShaderStageFlagBits::eFragment, nullptr},
+        vkhlf::DescriptorSetLayoutBinding {0, vk::DescriptorType::eStorageBuffer       , vk::ShaderStageFlagBits::eVertex                                     , nullptr},
+        vkhlf::DescriptorSetLayoutBinding {1, vk::DescriptorType::eStorageBuffer       ,                                    vk::ShaderStageFlagBits::eFragment, nullptr},
+        vkhlf::DescriptorSetLayoutBinding {2, vk::DescriptorType::eStorageBuffer       , vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, nullptr},
+        vkhlf::DescriptorSetLayoutBinding {3, vk::DescriptorType::eStorageBuffer       ,                                    vk::ShaderStageFlagBits::eFragment, nullptr},
         vkhlf::DescriptorSetLayoutBinding {4, vk::DescriptorType::eCombinedImageSampler,                                    vk::ShaderStageFlagBits::eFragment, nullptr}
       });
 
@@ -67,21 +67,20 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
     {
       context().logical_device->updateDescriptorSets(std::vector<vkhlf::WriteDescriptorSet>
       {
-        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 0u, 0u, 1u, vk::DescriptorType::eStorageBufferDynamic, nullptr, 
+        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 0u, 0u, 1u, vk::DescriptorType::eStorageBuffer, nullptr, 
           vkhlf::DescriptorBufferInfo{*data.transforms->actual(), 0, (*data.transforms->actual())->getSize()}),
-        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 1u, 0u, 1u, vk::DescriptorType::eStorageBufferDynamic, nullptr, 
+        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 1u, 0u, 1u, vk::DescriptorType::eStorageBuffer, nullptr, 
           vkhlf::DescriptorBufferInfo{*data.materials ->actual(), 0, (*data.materials ->actual())->getSize()}),
-        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 2u, 0u, 1u, vk::DescriptorType::eStorageBufferDynamic, nullptr, 
+        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 2u, 0u, 1u, vk::DescriptorType::eStorageBuffer, nullptr, 
           vkhlf::DescriptorBufferInfo{*data.cameras   ->actual(), 0, (*data.cameras   ->actual())->getSize()}),
-        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 3u, 0u, 1u, vk::DescriptorType::eStorageBufferDynamic, nullptr,
+        vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 3u, 0u, 1u, vk::DescriptorType::eStorageBuffer, nullptr,
           vkhlf::DescriptorBufferInfo{*data.lights    ->actual(), 0, (*data.lights    ->actual())->getSize()}),
         vkhlf::WriteDescriptorSet(data.pipeline->description().descriptor_sets[0], 4u, 0u, 1u, vk::DescriptorType::eCombinedImageSampler,
           vkhlf::DescriptorImageInfo(*data.sampler->actual(), (*data.images ->actual())->createImageView(vk::ImageViewType::e2DArray, vk::Format::eR8G8B8A8Unorm), vk::ImageLayout::eShaderReadOnlyOptimal), nullptr)
       }, {});
       
       auto command_buffer   = context().command_pool->allocateCommandBuffer();
-      auto window_swapchain = context().window_swapchains[0];
-    
+      auto window_swapchain = context().window_swapchains[0];  
       command_buffer->begin           ();
       command_buffer->beginRenderPass (
         window_swapchain.render_pass, 
@@ -95,7 +94,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       command_buffer->bindPipeline      (vk::PipelineBindPoint::eGraphics, *data.pipeline->actual());
       command_buffer->bindVertexBuffer  (0, *data.vertices->actual(), 0);
       command_buffer->bindIndexBuffer   (   *data.indices ->actual(), 0, vk::IndexType::eUint32);
-      command_buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, data.pipeline->description().pipeline_layout, 0u, data.pipeline->description().descriptor_sets, {0, 0, 0});
+      command_buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, data.pipeline->description().pipeline_layout, 0u, data.pipeline->description().descriptor_sets, {});
       command_buffer->setViewport       (0, vk::Viewport(
         0.0f, 
         0.0f, 
