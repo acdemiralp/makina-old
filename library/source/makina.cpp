@@ -5,6 +5,7 @@
 #include <makina/input/input_system.hpp>
 #include <makina/input/wasd_controller.hpp>
 #include <makina/physics/physics_system.hpp>
+#include <makina/renderer/animation_system.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/ui_system.hpp>
@@ -21,12 +22,14 @@ std::unique_ptr<engine> make_default_engine()
   auto scripting_system          = engine->add_system<mak::scripting_system>();
   auto audio_system              = engine->add_system<mak::audio_system>    ();
   auto physics_system            = engine->add_system<mak::physics_system>  ();
+  auto animation_system          = engine->add_system<mak::animation_system>();
   if (mak::vr_system::available()) engine->add_system<mak::vr_system>       ();
   auto renderer                  = engine->add_system<mak::renderer>        ();
   input_system    ->set_async(true);
   scripting_system->set_async(true);
   audio_system    ->set_async(true);
   physics_system  ->set_async(true);
+  animation_system->set_async(true);
 
   input_system->on_quit.connect(std::bind(&engine::stop, engine.get()));
 

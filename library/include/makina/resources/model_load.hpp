@@ -13,6 +13,7 @@
 #include <ra/load.hpp>
 
 #include <makina/core/logger.hpp>
+#include <makina/renderer/animator.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/animation_clip.hpp>
@@ -221,6 +222,13 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       mesh_render  ->mesh     = model->meshes   [mesh_index].get();
       mesh_render  ->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
       mesh_collider->set_mesh ( model->meshes   [mesh_index].get());
+
+      if (model->animation_clips.size() > 0 && model->rigs.size() > 0)
+      {
+        auto animator  = entity->add_component<mak::animator>();
+        animator->clip =  model->animation_clips[0].get();
+        animator->rig  = &model->rigs           [0];
+      }
     }
   
     for (auto i = 0; i < node->mNumChildren; ++i)

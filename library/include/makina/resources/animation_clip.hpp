@@ -17,9 +17,8 @@ struct MAKINA_EXPORT animation_clip : public named
 {
   enum class wrap_mode
   {
-    once     ,
-    loop     ,
-    ping_pong,
+    once,
+    loop,
     clamp  
   };
 
