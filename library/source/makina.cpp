@@ -22,7 +22,6 @@ std::unique_ptr<engine> make_default_engine()
   auto physics_system   = engine->add_system<mak::physics_system>  ();
   auto renderer         = engine->add_system<mak::renderer>        ();
   input_system    ->set_async(true);
-  ui_system       ->set_async(true);
   scripting_system->set_async(true);
   audio_system    ->set_async(true);
   physics_system  ->set_async(true);
