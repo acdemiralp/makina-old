@@ -72,20 +72,20 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
   
   const glm::uvec3 texture_size {2048, 2048, 64};
 
-  const auto retained_vertices      = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Vertices"     , buffer_description{vk::DeviceSize(128e+6), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer  });
-  const auto retained_indices       = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Indices"      , buffer_description{vk::DeviceSize( 64e+6), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer   });
-  const auto retained_transforms    = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Transforms"   , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
-  const auto retained_materials     = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Materials"    , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
-  const auto retained_cameras       = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Cameras"      , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
-  const auto retained_lights        = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Lights"       , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
-  const auto retained_draw_calls    = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>>("Scene Draw Calls"   , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndirectBuffer});
+  const auto retained_vertices      = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Vertices"     , buffer_description{vk::DeviceSize(128e+6), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer  });
+  const auto retained_indices       = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Indices"      , buffer_description{vk::DeviceSize( 64e+6), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer   });
+  const auto retained_transforms    = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Transforms"   , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
+  const auto retained_materials     = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Materials"    , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
+  const auto retained_cameras       = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Cameras"      , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
+  const auto retained_lights        = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Lights"       , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst                                           });
+  const auto retained_draw_calls    = framegraph->add_retained_resource<buffer_description , std::shared_ptr<vkhlf::Buffer>> ("Scene Draw Calls"   , buffer_description{vk::DeviceSize( 16e+6), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndirectBuffer});
   // Totals to 128 * 1 + 64 * 1 + 16 * 5 = 272 MB of GPU memory for buffers.
 
-  const auto retained_images        = framegraph->add_retained_resource<image_description  , std::shared_ptr<vkhlf::Image>> ("Scene Images"       , image_description  {vk::ImageType::e3D , vk::Extent3D(texture_size[0], texture_size[1], texture_size[2]), vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled});
-  const auto retained_sampler       = framegraph->add_retained_resource<sampler_description, vkhlf::Sampler>                ("Scene Sampler"      , sampler_description{vk::Filter::eLinear, vk::Filter::eLinear});
+  const auto retained_images        = framegraph->add_retained_resource<image_description  , std::shared_ptr<vkhlf::Image>>  ("Scene Images"       , image_description  {vk::ImageType::e3D , vk::Extent3D(texture_size[0], texture_size[1], texture_size[2]), vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled});
+  const auto retained_sampler       = framegraph->add_retained_resource<sampler_description, std::shared_ptr<vkhlf::Sampler>>("Scene Sampler"      , sampler_description{vk::Filter::eLinear, vk::Filter::eLinear});
   // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
 
-  const auto retained_parameter_map = framegraph->add_retained_resource<parameter_map::description, parameter_map>          ("Scene Parameter Map", parameter_map::description());
+  const auto retained_parameter_map = framegraph->add_retained_resource<parameter_map::description, parameter_map>           ("Scene Parameter Map", parameter_map::description());
 
   return framegraph->add_render_task<upload_scene_task_data>(
     "Upload Scene Pass",
@@ -253,10 +253,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         draw_calls.push_back(vk::DrawIndexedIndirectCommand
         {
           static_cast<std::uint32_t>(indices.size()),
-          1u,
-          first_index_offset,
-          base_vertex_offset,
-          static_cast<std::uint32_t>(i)
+          1u,                                        
+          first_index_offset,                        
+          base_vertex_offset,                        
+          static_cast<std::uint32_t>(i)              
         });
 
         first_index_offset += static_cast<std::uint32_t>(indices .size());
@@ -285,6 +285,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           glm::vec4 (transform->forward    (true), 0.0f)
         });
       }
+
+      data.parameter_map->actual()->set("draw_count", draw_calls.size());
 
       auto command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
       command_buffer->begin();
