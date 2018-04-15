@@ -6,6 +6,8 @@
 
 #include <fg/resource.hpp>
 #include <glm/vec3.hpp>
+#include <vkhlf/DescriptorSet.h>
+#include <vkhlf/DescriptorSetLayout.h>
 #include <vkhlf/Pipeline.h>
 
 #include <makina/renderer/backend/vulkan/context.hpp>
@@ -17,12 +19,14 @@ namespace vulkan
 {
 struct MAKINA_EXPORT pipeline_description
 {
-  std::string                                      vertex_shader_source  ;
-  std::string                                      fragment_shader_source;
-  vk::PrimitiveTopology                            primitive_topology    = vk::PrimitiveTopology::eTriangleList;
-  std::shared_ptr<vkhlf::RenderPass>               render_pass           = nullptr                             ;
-  std::vector<vk::VertexInputAttributeDescription> attribute_descriptions;
-  std::uint32_t                                    attribute_stride      ;
+  std::string                                        vertex_shader_source  ;
+  std::string                                        fragment_shader_source;
+  vk::PrimitiveTopology                              primitive_topology    ;
+  std::shared_ptr<vkhlf::RenderPass>                 render_pass           ;
+  std::vector<vk::VertexInputAttributeDescription>   attribute_descriptions;
+  std::uint32_t                                      attribute_stride      ;
+  std::vector<std::shared_ptr<vkhlf::DescriptorSet>> descriptor_sets       ;
+  std::shared_ptr<vkhlf::PipelineLayout>             pipeline_layout       ;
 };
 
 using pipeline_resource = fg::resource<pipeline_description, std::shared_ptr<vkhlf::Pipeline>>;
@@ -69,7 +73,7 @@ inline std::unique_ptr<std::shared_ptr<vkhlf::Pipeline>> fg::realize(const mak::
     vk::PipelineDepthStencilStateCreateInfo  ({}, true, true, vk::CompareOp::eLessOrEqual, false, false, stencil_op_state, stencil_op_state),
     vkhlf::PipelineColorBlendStateCreateInfo (false, vk::LogicOp::eNoOp, color_blend_attachment_state, {1.0f, 1.0f, 1.0f, 1.0f}),
     vkhlf::PipelineDynamicStateCreateInfo    ({vk::DynamicState::eViewport, vk::DynamicState::eScissor}),
-    mak::vulkan::context().logical_device->createPipelineLayout(mak::vulkan::context().logical_device->createDescriptorSetLayout(std::vector<vkhlf::DescriptorSetLayoutBinding>()), nullptr),
+    description.pipeline_layout,
     description.render_pass));
 }
 
