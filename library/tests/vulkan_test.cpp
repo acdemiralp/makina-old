@@ -26,7 +26,6 @@ extern "C"
 TEST_CASE("Vulkan test.", "[makina]")
 {
   auto engine = mak::make_default_engine();
-  engine->remove_system<mak::ui_system>(); // UI system needs GPU texture allocators to be available.
   
   const auto display_system = engine->get_system<mak::display_system>();
   const auto window         = display_system->create_vulkan_window(
