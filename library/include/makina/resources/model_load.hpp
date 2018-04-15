@@ -15,10 +15,12 @@
 #include <makina/core/logger.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/resources/animation_clip.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/model.hpp>
 #include <makina/resources/phong_material.hpp>
 #include <makina/resources/physically_based_material.hpp>
+#include <glm/gtc/type_ptr.inl>
 
 template<>
 inline void ra::load(const mak::model::description& description, mak::model* model)
@@ -73,6 +75,32 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       auto& face = assimp_mesh->mFaces[j];
       mesh->indices.insert(mesh->indices.end(), {face.mIndices[0], face.mIndices[1], face.mIndices[2]});
     }
+
+    if (assimp_mesh->HasBones()) 
+    {
+      auto& rig = model->rigs.emplace_back();
+
+      mesh->bone_ids       .resize(assimp_mesh->mNumVertices);
+      mesh->bone_weights   .resize(assimp_mesh->mNumVertices);
+      std::vector<unsigned> counts(assimp_mesh->mNumVertices);
+
+      for (auto j = 0; j < assimp_mesh->mNumBones; ++j) 
+      {
+        const auto& assimp_bone = assimp_mesh->mBones[j];
+
+        auto& bone = rig.emplace_back();
+        bone.set_name      (assimp_bone->mName.C_Str());
+        bone.offset_matrix = glm::transpose(glm::make_mat4(&assimp_bone->mOffsetMatrix[0][0]));
+
+        for (auto k = 0; k < assimp_bone->mNumWeights; ++k)
+        {
+          auto* weight = &assimp_bone->mWeights[k];
+          mesh->bone_ids    [weight->mVertexId][counts[weight->mVertexId]] = j;
+          mesh->bone_weights[weight->mVertexId][counts[weight->mVertexId]] = weight->mWeight;
+          counts[weight->mVertexId]++;
+        }
+      }
+    }
   }
 
   for (auto i = 0; i < scene->mNumMaterials; ++i)
@@ -87,9 +115,9 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
         if(relative_filepath.data[0] == '*')
         {
           auto texture = scene->mTextures[boost::lexical_cast<int>(relative_filepath.data[1])];
-          image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight});
-          image->to_32_bits();
-          // TODO: Extract compressed textures.
+          //image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight});
+          //image->to_32_bits();
+          // TODO: Handle compressed textures.
         }
         else
         {
@@ -143,19 +171,45 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     }
   }
 
+  for (auto i = 0; i < scene->mNumAnimations; ++i)
+  {
+    model->animation_clips.push_back(std::make_unique<mak::animation_clip>());
+    auto       animation_clip        = model->animation_clips.back().get();
+    const auto assimp_animation_clip = scene->mAnimations[i];
+    animation_clip->set_name(assimp_animation_clip->mName.C_Str());
+    animation_clip->framerate = assimp_animation_clip->mTicksPerSecond;
+    animation_clip->length    = assimp_animation_clip->mDuration      ;
+    animation_clip->wrap_mode = mak::animation_clip::wrap_mode::loop  ;
+
+    for (auto j = 0; j < assimp_animation_clip->mNumChannels; ++j) 
+    {
+      auto position_curve = mak::animation_curve<glm::vec3, float>();
+      auto scaling_curve  = mak::animation_curve<glm::vec3, float>();
+      auto rotation_curve = mak::animation_curve<glm::quat, float>();
+
+      const auto assimp_curve = assimp_animation_clip->mChannels[j];
+      for (auto k = 0; k < assimp_curve->mNumPositionKeys; k++)
+        position_curve.keyframes.push_back({float(assimp_curve->mPositionKeys[k].mTime), glm::vec3(assimp_curve->mPositionKeys[k].mValue.x, assimp_curve->mPositionKeys[k].mValue.y, assimp_curve->mPositionKeys[k].mValue.z)});
+      for (auto k = 0; k < assimp_curve->mNumRotationKeys; k++)
+        rotation_curve.keyframes.push_back({float(assimp_curve->mRotationKeys[k].mTime), glm::quat(assimp_curve->mRotationKeys[k].mValue.x, assimp_curve->mRotationKeys[k].mValue.y, assimp_curve->mRotationKeys[k].mValue.z, assimp_curve->mRotationKeys[k].mValue.w)});
+      for (auto k = 0; k < assimp_curve->mNumScalingKeys; k++)
+        scaling_curve .keyframes.push_back({float(assimp_curve->mScalingKeys [k].mTime), glm::vec3(assimp_curve->mScalingKeys [k].mValue.x, assimp_curve->mScalingKeys [k].mValue.y, assimp_curve->mScalingKeys [k].mValue.z)});
+
+      animation_clip->translation_curves[assimp_curve->mNodeName.C_Str()] = position_curve;
+      animation_clip->rotation_curves   [assimp_curve->mNodeName.C_Str()] = rotation_curve;
+      animation_clip->scaling_curves    [assimp_curve->mNodeName.C_Str()] = scaling_curve ;
+    }
+  }
+
   model->scene = std::make_unique<mak::scene>();
   std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
   hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
   {
-    auto& matrix    = node->mTransformation;
-  
-    auto  entity    = model->scene->add_entity();
-    auto  transform = entity->add_component<mak::transform>();
-    transform->set_matrix(glm::mat4(
-      {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0]},
-      {matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1]},
-      {matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2]},
-      {matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]}));
+    auto entity     = model->scene->add_entity();
+    auto metadata   = entity->add_component<mak::metadata> ();
+    auto transform  = entity->add_component<mak::transform>();
+    metadata ->name = node->mName.C_Str();
+    transform->set_matrix(glm::transpose(glm::make_mat4(&node->mTransformation[0][0])));
     transform->set_parent(parent);
   
     if (node->mNumMeshes > 0)

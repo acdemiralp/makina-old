@@ -5,13 +5,11 @@
 
 namespace mak
 {
-template<typename parameter_type = float, typename temporal_type = float>
+template<typename parameter_type, typename temporal_type>
 struct MAKINA_EXPORT keyframe
 {
-  temporal_type  time        = temporal_type (0);
-  parameter_type value       = parameter_type(0);
-  parameter_type in_tangent  = parameter_type(0);
-  parameter_type out_tangent = parameter_type(0);
+  temporal_type  time ;
+  parameter_type value;
 };
 }
 

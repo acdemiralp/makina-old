@@ -22,6 +22,8 @@ struct MAKINA_EXPORT mesh : public named
   std::vector<glm::vec3>     tangents           ;
   std::vector<glm::vec3>     bitangents         ;
   std::vector<std::uint32_t> indices            ;
+  std::vector<glm::uvec4>    bone_ids           ;
+  std::vector<glm::vec4>     bone_weights       ;
 };
 }
 
