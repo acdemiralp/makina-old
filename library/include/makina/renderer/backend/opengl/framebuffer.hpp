@@ -20,7 +20,7 @@ public:
   struct MAKINA_EXPORT description
   {
     std::array<GLsizei, 2> size;
-    GLenum                 color_format = GL_RGBA;
+    GLenum                 color_format = GL_RGBA8;
     GLenum                 depth_format = GL_DEPTH_COMPONENT24;
   };
 

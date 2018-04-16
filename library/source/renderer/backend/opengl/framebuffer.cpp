@@ -10,10 +10,10 @@ framebuffer::framebuffer() : gl::framebuffer(0)
 {
 
 }
-framebuffer::framebuffer(const description& description) : gl::framebuffer()
+framebuffer::framebuffer(const description& description)
 {
-  color_texture_.set_storage(0, description.color_format, description.size[0], description.size[1]);
-  depth_texture_.set_storage(0, description.depth_format, description.size[0], description.size[1]);
+  color_texture_.set_storage(1, description.color_format, description.size[0], description.size[1]);
+  depth_texture_.set_storage(1, description.depth_format, description.size[0], description.size[1]);
   attach_texture(GL_COLOR_ATTACHMENT0, color_texture_, 0);
   attach_texture(GL_DEPTH_ATTACHMENT , depth_texture_, 0);
   if (!is_complete())
