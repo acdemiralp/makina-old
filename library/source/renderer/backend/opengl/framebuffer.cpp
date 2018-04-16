@@ -29,6 +29,11 @@ gl::texture_2d* framebuffer::depth_texture()
   return &depth_texture_;
 }
 
+bool framebuffer::is_default() const
+{
+  return id_ == 0;
+}
+
 framebuffer* default_framebuffer()
 {
   static auto default_framebuffer = framebuffer();

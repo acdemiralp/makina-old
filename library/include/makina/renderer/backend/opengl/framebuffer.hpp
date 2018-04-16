@@ -35,6 +35,8 @@ public:
   gl::texture_2d* color_texture();
   gl::texture_2d* depth_texture();
 
+  bool is_default() const;
+
 protected:
   gl::texture_2d color_texture_;
   gl::texture_2d depth_texture_;
