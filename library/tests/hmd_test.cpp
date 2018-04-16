@@ -48,6 +48,8 @@ TEST_CASE("HMD test.", "[makina]")
   fi::initialize();
   gl::initialize();
 
+  // TODO: Solve the projection to render target assignment problem.
+
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer(window));
   const auto create_hmd_textures_render_task = mak::opengl::add_create_hmd_textures_render_task     (renderer, vr_system->hmds()[0]);
