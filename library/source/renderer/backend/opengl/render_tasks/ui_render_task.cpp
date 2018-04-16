@@ -86,6 +86,7 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
       gl::set_polygon_face_culling_enabled(false);
       gl::set_depth_test_enabled          (false);
       gl::set_scissor_test_enabled        (true );
+      gl::set_viewport                    ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
       
       ImGui::Render();
       auto draw_data = ImGui::GetDrawData();

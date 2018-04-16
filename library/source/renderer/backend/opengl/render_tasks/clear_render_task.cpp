@@ -1,5 +1,7 @@
 #include <makina/renderer/backend/opengl/render_tasks/clear_render_task.hpp>
 
+#include <gl/viewport.hpp>
+
 namespace mak
 {
 namespace opengl
@@ -14,6 +16,7 @@ fg::render_task<clear_task_data>* add_clear_render_task(renderer* framegraph, fr
     },
     [=] (const clear_task_data& data)
     {
+      gl::set_viewport({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
       data.target->actual()->clear_color(std::array<float, 4>{color[0], color[1], color[2], color[3]});
       data.target->actual()->clear_depth_and_stencil(depth, 0);
 

@@ -2,6 +2,7 @@
 
 #include <gl/auxiliary/glm_uniforms.hpp>
 #include <gl/draw_commands.hpp>
+#include <gl/viewport.hpp>
 
 #include <makina/renderer/backend/glsl/test_fragment_shader.hpp>
 #include <makina/renderer/backend/glsl/test_vertex_shader.hpp>
@@ -29,8 +30,9 @@ namespace opengl
       
       std::vector<glm::vec3> points = {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, 1.0f, 0.0f}};
       data.vertices->actual()->set_sub_data(0, sizeof(glm::vec3) * points.size(), points.data());
-
-      gl::draw_arrays(GL_TRIANGLE_STRIP, 0, 5);
+      
+      gl::set_viewport({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
+      gl::draw_arrays (GL_TRIANGLE_STRIP, 0, 5);
 
       data.target      ->actual()->unbind();
       data.vertex_array->actual()->unbind();
