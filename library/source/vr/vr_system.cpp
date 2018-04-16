@@ -9,7 +9,7 @@
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
 #include <makina/resources/model.hpp>
-#include <makina/resources/phong_material.hpp>
+#include <makina/resources/physically_based_material.hpp>
 
 namespace mak
 {
@@ -34,10 +34,10 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   if (!openvr_texture) 
     return nullptr;
 
-  model->meshes   .push_back(std::make_unique<mak::mesh>          ());
-  model->materials.push_back(std::make_unique<mak::phong_material>()); // TODO: Add support for other type of materials.
+  model->meshes   .push_back(std::make_unique<mak::mesh>                     ());
+  model->materials.push_back(std::make_unique<mak::physically_based_material>()); // TODO: Add support for other type of materials.
   auto mesh     = model->meshes.back().get();
-  auto material = dynamic_cast<mak::phong_material*>(model->materials.back().get());
+  auto material = dynamic_cast<mak::physically_based_material*>(model->materials.back().get());
   mesh    ->vertices           .assign   (reinterpret_cast<glm::vec3*>(&openvr_model->vertices.front()), reinterpret_cast<glm::vec3*>(&openvr_model->vertices.back()));
   mesh    ->normals            .assign   (reinterpret_cast<glm::vec3*>(&openvr_model->normals .front()), reinterpret_cast<glm::vec3*>(&openvr_model->normals .back()));
   mesh    ->texture_coordinates.reserve  (openvr_model->texture_coordinates.size());
@@ -45,10 +45,9 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
     mesh  ->texture_coordinates.push_back(glm::vec3(texture_coordinate[0], texture_coordinate[1], 0.0f));
   mesh    ->indices            .reserve  (openvr_model->indices.size());
   for (auto i = 0; i < openvr_model->indices.size(); i+=3)
-    mesh  ->indices            .insert   (mesh->indices.back(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
-  material->ambient            = glm::vec3(0.2, 0.2, 0.2);
-  material->diffuse_image      = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap);
-  material->diffuse_image->to_32_bits();
+    mesh  ->indices            .insert   (mesh->indices.end(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
+  material->albedo_image      = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap);
+  material->albedo_image->to_32_bits();
 
   auto entity           = scene->add_entity();
   auto transform        = entity->add_component<mak::transform>  ();
