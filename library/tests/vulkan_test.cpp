@@ -47,7 +47,7 @@ TEST_CASE("Vulkan test.", "[makina]")
  
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{std::string("data/model/nightsaber/nightsaber.fbx"), true});
+  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   auto  entity = engine->scene()->copy_entity(model.scene->entities()[1]);
   
   engine->run();
