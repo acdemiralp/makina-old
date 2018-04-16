@@ -37,6 +37,13 @@ TEST_CASE("HMD test.", "[makina]")
     std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
   window->set_swap_mode(di::opengl_swap_mode::vertical_sync);
+  window->set_resizable(true);
+
+  const auto projection = engine->scene()->entities<mak::projection>()[0]->component<mak::projection>();
+  window->on_resize.connect([projection] (const std::array<std::size_t, 2>& size)
+  {
+    projection->set_perspective(60.0f, float(size[0]) / float(size[1]), {0.3f, 1000.0f});
+  });
 
   fi::initialize();
   gl::initialize();
@@ -54,7 +61,7 @@ TEST_CASE("HMD test.", "[makina]")
   
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), false});
+  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   engine->scene()->copy_entity(model.scene->entities()[1]);
   
   engine->run();
