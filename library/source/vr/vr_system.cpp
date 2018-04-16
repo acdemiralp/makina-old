@@ -44,7 +44,9 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   for (auto& texture_coordinate : openvr_model->texture_coordinates)
     mesh  ->texture_coordinates.push_back(glm::vec3(texture_coordinate[0], texture_coordinate[1], 0.0f));
   mesh    ->indices            .assign   (openvr_model->indices.begin(), openvr_model->indices.end());
-  material->diffuse_image      = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size);
+  material->ambient            = glm::vec3(0.2, 0.2, 0.2);
+  material->diffuse_image      = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap);
+  material->diffuse_image->to_32_bits();
 
   auto entity           = scene->add_entity();
   auto transform        = entity->add_component<mak::transform>  ();
@@ -57,16 +59,16 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
     const auto hmd = dynamic_cast<di::hmd*>(tracking_device);
     {
       auto eye            = scene ->add_entity();
-      auto eye_transform  = entity->add_component<mak::transform> ();
-      auto eye_projection = entity->add_component<mak::projection>();
+      auto eye_transform  = eye   ->add_component<mak::transform> ();
+      auto eye_projection = eye   ->add_component<mak::projection>();
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::left )));
       eye_projection->set_matrix(convert_to_glm_matrix(hmd->projection_matrix    (di::eye::left , 0.1f, 10000.0f)));
     }
     {
       auto eye            = scene ->add_entity();
-      auto eye_transform  = entity->add_component<mak::transform> ();
-      auto eye_projection = entity->add_component<mak::projection>();
+      auto eye_transform  = eye   ->add_component<mak::transform> ();
+      auto eye_projection = eye   ->add_component<mak::projection>();
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::right)));
       eye_projection->set_matrix(convert_to_glm_matrix(hmd->projection_matrix    (di::eye::right, 0.1f, 10000.0f)));
