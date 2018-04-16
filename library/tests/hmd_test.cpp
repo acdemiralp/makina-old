@@ -47,12 +47,10 @@ TEST_CASE("HMD test.", "[makina]")
   const auto create_hmd_textures_render_task = mak::opengl::add_create_hmd_textures_render_task(renderer, vr_system->hmds()[0]);
   const auto upload_scene_render_task        = mak::opengl::add_upload_scene_render_task       (renderer);
   const auto left_clear_render_task          = mak::opengl::add_clear_render_task              (renderer, create_hmd_textures_render_task->data().left , {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto left_pbr_render_task            = mak::opengl::add_phong_shading_render_task      (renderer, create_hmd_textures_render_task->data().left , upload_scene_render_task->data());
+  const auto left_phong_render_task          = mak::opengl::add_phong_shading_render_task      (renderer, create_hmd_textures_render_task->data().left , upload_scene_render_task->data());
   const auto right_clear_render_task         = mak::opengl::add_clear_render_task              (renderer, create_hmd_textures_render_task->data().right, {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto right_pbr_render_task           = mak::opengl::add_phong_shading_render_task      (renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data());
-  const auto mirror_clear_render_task        = mak::opengl::add_clear_render_task              (renderer, backbuffer                                   , {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto mirror_pbr_render_task          = mak::opengl::add_phong_shading_render_task      (renderer, backbuffer                                   , upload_scene_render_task->data());
-  //const auto blit_render_task              = mak::opengl::add_blit_render_task               (renderer, create_hmd_textures_render_task->data().left , backbuffer);
+  const auto right_phong_render_task         = mak::opengl::add_phong_shading_render_task      (renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data());
+  const auto blit_render_task                = mak::opengl::add_blit_render_task               (renderer, create_hmd_textures_render_task->data().left , backbuffer);
   const auto submit_hmd_textures_render_task = mak::opengl::add_submit_hmd_textures_render_task(renderer, vr_system->hmds()[0], create_hmd_textures_render_task->data());
   
   auto& models = mak::registry->get<mak::model>().storage();
