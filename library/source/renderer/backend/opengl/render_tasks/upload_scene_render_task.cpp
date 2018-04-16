@@ -328,21 +328,21 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         });
       }
 
-      auto transforms_size = static_cast<GLuint>(transforms     .size());
-      auto materials_size  = static_cast<GLuint>(pbr_materials  .size() > 0 ? pbr_materials.size() : phong_materials.size());
-      auto cameras_size    = static_cast<GLuint>(cameras        .size());
-      auto lights_size     = static_cast<GLuint>(lights         .size());
-      data.transforms   ->actual()->set_sub_data(0               , sizeof GLuint                             , &transforms_size );
-      data.materials    ->actual()->set_sub_data(0               , sizeof GLuint                             , &materials_size  );
-      data.cameras      ->actual()->set_sub_data(0               , sizeof GLuint                             , &cameras_size    );
-      data.lights       ->actual()->set_sub_data(0               , sizeof GLuint                             , &lights_size     );
-      data.transforms   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform                         * transforms_size  , transforms     .data());
+      auto transforms_metadata = glm::uvec4(transforms   .size(), 0u, 0u, 0u);
+      auto materials_metadata  = glm::uvec4(pbr_materials.size() > 0 ? pbr_materials.size() : phong_materials.size(), 0u, 0u, 0u);
+      auto cameras_metadata    = glm::uvec4(cameras      .size(), 0u, 0u, 0u);
+      auto lights_metadata     = glm::uvec4(lights       .size(), 0u, 0u, 0u);
+      data.transforms   ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &transforms_metadata);
+      data.materials    ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &materials_metadata );
+      data.cameras      ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &cameras_metadata   );
+      data.lights       ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &lights_metadata    );
+      data.transforms   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform                         * transforms_metadata.x, transforms     .data());
       pbr_materials.size() > 0                                                                               
-      ? data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _physically_based_material         * materials_size   , pbr_materials  .data()) 
-      : data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _phong_material                    * materials_size   , phong_materials.data());
-      data.cameras      ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera                            * cameras_size     , cameras        .data());
-      data.lights       ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light                             * lights_size      , lights         .data());
-      data.draw_calls   ->actual()->set_sub_data(0               , sizeof gl::draw_elements_indirect_command * draw_calls.size(), draw_calls     .data());
+      ? data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _physically_based_material         * materials_metadata .x, pbr_materials  .data())
+      : data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _phong_material                    * materials_metadata .x, phong_materials.data());
+      data.cameras      ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera                            * cameras_metadata   .x, cameras        .data());
+      data.lights       ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light                             * lights_metadata    .x, lights         .data());
+      data.draw_calls   ->actual()->set_sub_data(0               , sizeof gl::draw_elements_indirect_command * draw_calls.size()    , draw_calls     .data());
       data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size());
 
       gl::print_error("Error in Upload Scene Pass");
