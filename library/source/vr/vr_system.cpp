@@ -35,7 +35,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
     return nullptr;
 
   model->meshes   .push_back(std::make_unique<mak::mesh>          ());
-  model->materials.push_back(std::make_unique<mak::phong_material>());
+  model->materials.push_back(std::make_unique<mak::phong_material>()); // TODO: Add support for other type of materials.
   auto mesh     = model->meshes.back().get();
   auto material = dynamic_cast<mak::phong_material*>(model->materials.back().get());
   mesh    ->vertices           .assign   (reinterpret_cast<glm::vec3*>(&openvr_model->vertices.front()), reinterpret_cast<glm::vec3*>(&openvr_model->vertices.back()));
