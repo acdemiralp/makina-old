@@ -43,7 +43,9 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   mesh    ->texture_coordinates.reserve  (openvr_model->texture_coordinates.size());
   for (auto& texture_coordinate : openvr_model->texture_coordinates)
     mesh  ->texture_coordinates.push_back(glm::vec3(texture_coordinate[0], texture_coordinate[1], 0.0f));
-  mesh    ->indices            .assign   (openvr_model->indices.begin(), openvr_model->indices.end());
+  mesh    ->indices            .reserve  (openvr_model->indices.size());
+  for (auto i = 0; i < openvr_model->indices.size(); i+=3)
+    mesh  ->indices            .insert   (mesh->indices.back(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
   material->ambient            = glm::vec3(0.2, 0.2, 0.2);
   material->diffuse_image      = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap);
   material->diffuse_image->to_32_bits();
