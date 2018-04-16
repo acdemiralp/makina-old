@@ -4,7 +4,6 @@
 #include <makina/renderer/backend/glsl/phong_fragment_shader.hpp>
 
 #include <vkhlf/DescriptorSet.h>
-#include <vulkan/vulkan.hpp>
 
 namespace mak
 {
