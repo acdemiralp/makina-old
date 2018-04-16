@@ -42,19 +42,22 @@ TEST_CASE("HMD test.", "[makina]")
   gl::initialize();
 
   const auto renderer   = engine->get_system<mak::renderer>();
-  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer());
+  const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description{{800, 600}}, mak::opengl::default_framebuffer());
   
-  const auto create_hmd_textures_render_task = mak::opengl::add_create_hmd_textures_render_task     (renderer, vr_system->hmds()[0]);
-  const auto upload_scene_render_task        = mak::opengl::add_upload_scene_render_task            (renderer);
-  const auto left_clear_render_task          = mak::opengl::add_clear_render_task                   (renderer, create_hmd_textures_render_task->data().left , {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto left_pbr_render_task            = mak::opengl::add_physically_based_shading_render_task(renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data());
-  const auto right_clear_render_task         = mak::opengl::add_clear_render_task                   (renderer, create_hmd_textures_render_task->data().left , {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto right_pbr_render_task           = mak::opengl::add_physically_based_shading_render_task(renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data());
-  const auto submit_hmd_textures_render_task = mak::opengl::add_submit_hmd_textures_render_task     (renderer, vr_system->hmds()[0], create_hmd_textures_render_task->data());
+  const auto create_hmd_textures_render_task = mak::opengl::add_create_hmd_textures_render_task(renderer, vr_system->hmds()[0]);
+  const auto upload_scene_render_task        = mak::opengl::add_upload_scene_render_task       (renderer);
+  const auto left_clear_render_task          = mak::opengl::add_clear_render_task              (renderer, create_hmd_textures_render_task->data().left , {0.1F, 0.1F, 0.1F, 1.0F});
+  const auto left_pbr_render_task            = mak::opengl::add_phong_shading_render_task      (renderer, create_hmd_textures_render_task->data().left , upload_scene_render_task->data());
+  const auto right_clear_render_task         = mak::opengl::add_clear_render_task              (renderer, create_hmd_textures_render_task->data().right, {0.1F, 0.1F, 0.1F, 1.0F});
+  const auto right_pbr_render_task           = mak::opengl::add_phong_shading_render_task      (renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data());
+  const auto mirror_clear_render_task        = mak::opengl::add_clear_render_task              (renderer, backbuffer                                   , {0.1F, 0.1F, 0.1F, 1.0F});
+  const auto mirror_pbr_render_task          = mak::opengl::add_phong_shading_render_task      (renderer, backbuffer                                   , upload_scene_render_task->data());
+  //const auto blit_render_task              = mak::opengl::add_blit_render_task               (renderer, create_hmd_textures_render_task->data().left , backbuffer);
+  const auto submit_hmd_textures_render_task = mak::opengl::add_submit_hmd_textures_render_task(renderer, vr_system->hmds()[0], create_hmd_textures_render_task->data());
   
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{std::string("data/model/setesh/setesh.obj"), true});
+  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   engine->scene()->copy_entity(model.scene->entities()[1]);
   
   engine->run();

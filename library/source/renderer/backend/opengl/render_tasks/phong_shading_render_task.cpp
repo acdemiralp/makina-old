@@ -4,6 +4,7 @@
 #include <gl/draw_commands.hpp>
 #include <gl/per_fragment_ops.hpp>
 #include <gl/rasterization.hpp>
+#include <gl/viewport.hpp>
 
 #include <makina/renderer/backend/glsl/default_vertex_shader.hpp>
 #include <makina/renderer/backend/glsl/phong_fragment_shader.hpp>
@@ -71,6 +72,8 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
       gl::set_polygon_face_culling_enabled(true   );
       gl::set_front_face                  (GL_CW  );
       gl::set_cull_face                   (GL_BACK);
+      // TODO: Viewport and camera selection.
+      // gl::set_viewport                 ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
       gl::multi_draw_elements_indirect    (GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
 
       data.target      ->actual()->unbind();
