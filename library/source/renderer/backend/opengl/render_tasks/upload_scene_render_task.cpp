@@ -289,7 +289,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         data.vertices           ->actual()->set_sub_data(sizeof vertices           [0] * base_vertex_offset, sizeof vertices           [0] * vertices           .size(), vertices           .data());
         data.normals            ->actual()->set_sub_data(sizeof normals            [0] * base_vertex_offset, sizeof normals            [0] * normals            .size(), normals            .data());
         data.texture_coordinates->actual()->set_sub_data(sizeof texture_coordinates[0] * base_vertex_offset, sizeof texture_coordinates[0] * texture_coordinates.size(), transformed_texture_coordinates.data());
-        data.indices            ->actual()->set_sub_data(sizeof indices            [0] * base_vertex_offset, sizeof indices            [0] * indices            .size(), indices            .data());
+        data.indices            ->actual()->set_sub_data(sizeof indices            [0] * first_index_offset, sizeof indices            [0] * indices            .size(), indices            .data());
         data.instance_attributes->actual()->set_sub_data(sizeof std::array<std::uint32_t, 2> * i           , sizeof std::array<std::uint32_t, 2>                       , instance_attribute .data());
 
         draw_calls.push_back(gl::draw_elements_indirect_command
