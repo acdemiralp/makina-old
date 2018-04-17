@@ -2,6 +2,7 @@
 #define MAKINA_CORE_SCENE_HPP_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <ec/entity.hpp>
@@ -22,7 +23,8 @@ namespace mak
 {
 struct metadata
 {
-  std::string name;
+  std::string              name;
+  std::vector<std::string> tags;
 };
 
 class behavior  ;
