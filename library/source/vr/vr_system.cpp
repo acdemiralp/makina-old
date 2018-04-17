@@ -15,13 +15,21 @@ namespace mak
 {
 namespace detail
 {
+glm::mat4  handedness_conversion_matrix ()
+{
+  return glm::mat4(
+    1.0f,  0.0f,  0.0f,  0.0f,
+    0.0f,  1.0f,  0.0f,  0.0f,
+    0.0f,  0.0f, -1.0f,  0.0f,
+    0.0f,  0.0f,  0.0f,  1.0f);
+}
 glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
 {
-  return glm::transpose(glm::mat4(glm::make_mat3x4(matrix.data())));
+  return handedness_conversion_matrix() * glm::transpose(glm::mat4(glm::make_mat3x4(matrix.data()))) * handedness_conversion_matrix();
 }
 glm::mat4  convert_to_glm_matrix        (const std::array<float, 16>& matrix)
 {
-  return glm::transpose(glm::make_mat4(matrix.data()));
+  return handedness_conversion_matrix() * glm::transpose(glm::make_mat4(matrix.data()))              * handedness_conversion_matrix();
 }
 template <di::tracking_device_type type>
 transform* create_tracking_device_entity(di::tracking_device<type>* tracking_device, model* model, scene* scene)
@@ -38,15 +46,21 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   model->materials.push_back(std::make_unique<mak::physically_based_material>()); // TODO: Add support for other type of materials.
   auto mesh     = model->meshes.back().get();
   auto material = dynamic_cast<mak::physically_based_material*>(model->materials.back().get());
-  mesh    ->vertices           .assign   (reinterpret_cast<glm::vec3*>(&openvr_model->vertices.front()), reinterpret_cast<glm::vec3*>(&openvr_model->vertices.back()));
-  mesh    ->normals            .assign   (reinterpret_cast<glm::vec3*>(&openvr_model->normals .front()), reinterpret_cast<glm::vec3*>(&openvr_model->normals .back()));
-  mesh    ->texture_coordinates.reserve  (openvr_model->texture_coordinates.size());
+  mesh->vertices           .reserve(openvr_model->vertices           .size());
+  mesh->normals            .reserve(openvr_model->normals            .size());
+  mesh->texture_coordinates.reserve(openvr_model->texture_coordinates.size());
+  mesh->indices            .reserve(openvr_model->indices            .size());
+
+  for (auto& vertex : openvr_model->vertices)
+    mesh  ->vertices           .push_back({vertex[0], vertex[1], -vertex[2]});
+  for (auto& normal : openvr_model->normals )
+    mesh  ->normals            .push_back({normal[0], normal[1], -normal[2]});
   for (auto& texture_coordinate : openvr_model->texture_coordinates)
-    mesh  ->texture_coordinates.push_back(glm::vec3(texture_coordinate[0], texture_coordinate[1], 0.0f));
-  mesh    ->indices            .reserve  (openvr_model->indices.size());
+    mesh  ->texture_coordinates.push_back({texture_coordinate[0], texture_coordinate[1], 0.0f});
   for (auto i = 0; i < openvr_model->indices.size(); i+=3)
-    mesh  ->indices            .insert   (mesh->indices.end(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
-  material->albedo_image      = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap);
+    mesh  ->indices            .insert(mesh->indices.end(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
+
+  material->albedo_image = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap, 32, std::array<fi::color_mask, 3>{fi::color_mask::red, fi::color_mask::green, fi::color_mask::blue});
   material->albedo_image->to_32_bits();
 
   auto entity           = scene->add_entity();
