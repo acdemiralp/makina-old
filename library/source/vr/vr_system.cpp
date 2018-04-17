@@ -108,6 +108,12 @@ void vr_system::prepare(                             scene* scene)
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
 
+  hmd_transform_map_                    .clear();
+  controller_transform_map_             .clear();
+  tracking_reference_transform_map_     .clear();
+  display_redirect_transform_map_       .clear();
+  generic_tracking_device_transform_map_.clear();
+
   for (auto device : hmds                    ())
     hmd_transform_map_                    [device] = detail::create_tracking_device_entity(device, &model, scene);
   for (auto device : controllers             ())
