@@ -35,7 +35,7 @@ struct MAKINA_EXPORT phong_shading_task_data
   framebuffer_resource*      target             ;
 };
 
-MAKINA_EXPORT fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
+MAKINA_EXPORT fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag = std::string());
 }
 }
 

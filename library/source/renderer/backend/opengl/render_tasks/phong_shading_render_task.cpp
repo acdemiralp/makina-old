@@ -13,7 +13,7 @@ namespace mak
 {
 namespace opengl
 {
-fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
+fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
 {
   return framegraph->add_render_task<phong_shading_task_data>(
     "Phong Shading Pass",
@@ -60,6 +60,14 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
       data.program     ->actual()->use   ();
       data.vertex_array->actual()->bind  ();
       data.target      ->actual()->bind  ();
+    
+      if(!camera_tag.empty())
+      {
+        auto cameras = framegraph->scene_cache()->entities<metadata, projection>();
+        for (std::uint32_t i = 0; i < cameras.size(); ++i)
+          if (cameras[i]->component<metadata>()->contains_tag(camera_tag))
+            data.cameras->actual()->set_sub_data(sizeof glm::uint, sizeof glm::uint, &i);
+      }
       
       gl::texture_handle handle(*data.textures->actual());
       if (!handle.is_resident()) handle.set_resident(true);

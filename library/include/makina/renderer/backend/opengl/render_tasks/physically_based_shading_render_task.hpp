@@ -35,7 +35,7 @@ struct MAKINA_EXPORT physically_based_shading_task_data
   framebuffer_resource*      target             ;
 };
 
-MAKINA_EXPORT fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data);
+MAKINA_EXPORT fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag = std::string());
 }
 }
 
