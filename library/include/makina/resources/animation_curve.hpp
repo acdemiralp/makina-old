@@ -23,7 +23,7 @@ struct MAKINA_EXPORT animation_curve
         return spherical ? glm::slerp(start.value, end.value, t) : glm::lerp(start.value, end.value, t);
       }
     }
-    return parameter_type(0);
+    return parameter_type();
   }
 
   std::vector<keyframe<parameter_type, temporal_type>> keyframes;

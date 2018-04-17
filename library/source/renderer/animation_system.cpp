@@ -29,19 +29,13 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
         animator->time -= animator->clip->length;
     }
 
-    // TODO: LERP/SLERP curves and apply to corresponding children of the animator entity.
+    // TODO: Apply to corresponding children of the animator entity.
     for (auto curve : animator->clip->translation_curves)
-    {
-      
-    }
+      curve.second.evaluate(animator->time);
     for (auto curve : animator->clip->rotation_curves   )
-    {
-
-    }
+      curve.second.evaluate(animator->time, true);
     for (auto curve : animator->clip->scaling_curves    )
-    {
-
-    }
+      curve.second.evaluate(animator->time);
   }
 }
 }
