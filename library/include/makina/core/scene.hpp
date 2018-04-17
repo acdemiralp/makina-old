@@ -23,6 +23,11 @@ namespace mak
 {
 struct metadata
 {
+  bool contains_tag(const std::string& tag)
+  {
+    return std::find(tags.begin(), tags.end(), tag) != tags.end();
+  }
+
   std::string              name;
   std::vector<std::string> tags;
 };
