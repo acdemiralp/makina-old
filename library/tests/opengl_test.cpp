@@ -53,7 +53,7 @@ TEST_CASE("OpenGL test.", "[makina]")
   const auto upload_scene_render_task = mak::opengl::add_upload_scene_render_task            (renderer);
   const auto clear_render_task        = mak::opengl::add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto skybox_render_task       = mak::opengl::add_test_render_task                    (renderer, backbuffer);
-  const auto pbr_render_task          = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data());
+  const auto pbr_render_task          = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data(), "default_camera");
   const auto ui_render_task           = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
@@ -62,17 +62,6 @@ TEST_CASE("OpenGL test.", "[makina]")
   
   auto& audio_clips = mak::registry->get<mak::audio_clip>().storage();
   auto& audio_clip  = audio_clips.emplace_back(mak::audio_clip::description{"data/audio/test/test.mp3", true});
-
-  auto behaviors = engine->scene()->entities()[0]->add_component<mak::behaviors>();
-  behaviors->push_back(std::make_shared<mak::behavior>(
-    [] (mak::scene* scene, mak::entity* entity)
-    {
-    
-    }, 
-    [] (mak::frame_timer::duration duration, mak::scene* scene, mak::entity* entity)
-    {
-      entity->component<mak::transform>()->translate({0.0f, -0.01f, 0.0f});
-    }));
 
   std::random_device                    random_device   ;
   std::mt19937                          mersenne_twister(random_device());

@@ -48,16 +48,14 @@ TEST_CASE("HMD test.", "[makina]")
   fi::initialize();
   gl::initialize();
 
-  // TODO: Solve the projection to render target assignment problem.
-
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer(window));
   const auto create_hmd_textures_render_task = mak::opengl::add_create_hmd_textures_render_task     (renderer, vr_system->hmds()[0]);
   const auto upload_scene_render_task        = mak::opengl::add_upload_scene_render_task            (renderer);
   const auto left_clear_render_task          = mak::opengl::add_clear_render_task                   (renderer, create_hmd_textures_render_task->data().left , {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto left_pbr_render_task            = mak::opengl::add_physically_based_shading_render_task(renderer, create_hmd_textures_render_task->data().left , upload_scene_render_task->data());
+  const auto left_pbr_render_task            = mak::opengl::add_physically_based_shading_render_task(renderer, create_hmd_textures_render_task->data().left , upload_scene_render_task->data(), "hmd_left_camera" );
   const auto right_clear_render_task         = mak::opengl::add_clear_render_task                   (renderer, create_hmd_textures_render_task->data().right, {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto right_pbr_render_task           = mak::opengl::add_physically_based_shading_render_task(renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data());
+  const auto right_pbr_render_task           = mak::opengl::add_physically_based_shading_render_task(renderer, create_hmd_textures_render_task->data().right, upload_scene_render_task->data(), "hmd_right_camera");
   const auto blit_render_task                = mak::opengl::add_blit_render_task                    (renderer, create_hmd_textures_render_task->data().left , backbuffer);
   const auto submit_hmd_textures_render_task = mak::opengl::add_submit_hmd_textures_render_task     (renderer, vr_system->hmds()[0], create_hmd_textures_render_task->data());
   
