@@ -25,7 +25,6 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.normals              = builder.read(scene_data.normals            );
       data.bone_ids             = builder.read(scene_data.bone_ids           );
       data.bone_weights         = builder.read(scene_data.bone_weights       );
-      data.instance_attributes  = builder.read(scene_data.instance_attributes);
       data.indices              = builder.read(scene_data.indices            );
       data.transforms           = builder.read(scene_data.transforms         );
       data.rigs                 = builder.read(scene_data.rigs               );
@@ -43,11 +42,10 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.vertex_array         = builder.create<vertex_array_resource>      ("Skeletal Animation Vertex Array"           , vertex_array::description
       {
         { 
-          {data.vertices           , 3, GL_FLOAT       }, 
-          {data.normals            , 3, GL_FLOAT       }, 
-          {data.bone_ids           , 4, GL_UNSIGNED_INT}, 
-          {data.bone_weights       , 4, GL_FLOAT       }, 
-          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 1}
+          {data.vertices    , 3, GL_FLOAT       }, 
+          {data.normals     , 3, GL_FLOAT       }, 
+          {data.bone_ids    , 4, GL_UNSIGNED_INT}, 
+          {data.bone_weights, 4, GL_FLOAT       }
         }, 
         {
           data.transforms, 
@@ -59,8 +57,6 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
     },
     [=] (const skeletal_animation_task_data& data)
     {
-      data.program           ->actual()->set_transform_feedback_varyings({"output_vertex", "output_normal"}, GL_SEPARATE_ATTRIBS);
-      data.program           ->actual()->link  ();
       data.program           ->actual()->use   ();
       data.vertex_array      ->actual()->bind  ();
       data.transform_feedback->actual()->begin (GL_TRIANGLES);
