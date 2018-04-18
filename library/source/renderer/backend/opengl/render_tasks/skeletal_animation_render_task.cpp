@@ -45,8 +45,8 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
         { 
           {data.vertices           , 3, GL_FLOAT       }, 
           {data.normals            , 3, GL_FLOAT       }, 
-          {data.bone_weights       , 4, GL_FLOAT       }, 
           {data.bone_ids           , 4, GL_UNSIGNED_INT}, 
+          {data.bone_weights       , 4, GL_FLOAT       }, 
           {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 1}
         }, 
         {
