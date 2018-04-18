@@ -16,12 +16,15 @@ struct MAKINA_EXPORT upload_scene_task_data
   buffer_resource*           vertices           ;
   buffer_resource*           normals            ;
   buffer_resource*           texture_coordinates;
+  buffer_resource*           bone_ids           ;
+  buffer_resource*           bone_weights       ;
   buffer_resource*           instance_attributes;
   buffer_resource*           indices            ;
   buffer_resource*           transforms         ;
   buffer_resource*           materials          ;
   buffer_resource*           cameras            ;
   buffer_resource*           lights             ;
+  buffer_resource*           rigs               ;
   buffer_resource*           draw_calls         ;
   parameter_map_resource*    parameter_map      ;
   texture_2d_array_resource* textures           ;

@@ -52,6 +52,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     glm::vec4    position      ; // w is unused.
     glm::vec4    direction     ; // w is unused.
   };
+  struct _rig
+  {
+    glm::mat4    offset        ;
+  };
 
   const glm::uvec3 texture_size {2048, 2048, 64};
   
@@ -60,14 +64,17 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
   const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Vertices"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
   const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Normals"            , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
   const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Texture Coordinates", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_bone_ids            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Bone Ids"           , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
+  const auto retained_bone_weights        = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Bone Weights"       , buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
   const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Instance Attributes", buffer_description{GLsizeiptr(64e+6), GL_ARRAY_BUFFER         });
   const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Indices"            , buffer_description{GLsizeiptr(64e+6), GL_ELEMENT_ARRAY_BUFFER });
   const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Transforms"         , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
   const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Materials"          , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
   const auto retained_cameras             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Cameras"            , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
   const auto retained_lights              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Lights"             , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_rigs                = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Rigs"               , buffer_description{GLsizeiptr(16e+6), GL_SHADER_STORAGE_BUFFER});
   const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Scene Draw Calls"         , buffer_description{GLsizeiptr(16e+6), GL_DRAW_INDIRECT_BUFFER });
-  // Totals to 64 * 5 + 16 * 5 = 400 MB of GPU memory for buffers.
+  // Totals to 64 * 7 + 16 * 6 = 544 MB of GPU memory for buffers.
 
   const auto retained_texture_array       = framegraph->add_retained_resource<texture_description, gl::texture_2d_array>("Scene Texture Array"      , texture_description{{static_cast<int>(texture_size[0]), static_cast<int>(texture_size[1]), static_cast<int>(texture_size[2])}, GL_RGBA8});
   // Totals to 64 * 16.77 = 1073 MB of GPU memory for textures.
@@ -80,12 +87,15 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       data.vertices            = builder.write<buffer_resource>          (retained_vertices           );
       data.normals             = builder.write<buffer_resource>          (retained_normals            );
       data.texture_coordinates = builder.write<buffer_resource>          (retained_texture_coordinates);
+      data.bone_ids            = builder.write<buffer_resource>          (retained_bone_ids           );
+      data.bone_weights        = builder.write<buffer_resource>          (retained_bone_weights       );
       data.instance_attributes = builder.write<buffer_resource>          (retained_instance_attributes);
       data.indices             = builder.write<buffer_resource>          (retained_indices            );
       data.transforms          = builder.write<buffer_resource>          (retained_transforms         );
       data.materials           = builder.write<buffer_resource>          (retained_materials          );
       data.cameras             = builder.write<buffer_resource>          (retained_cameras            );
       data.lights              = builder.write<buffer_resource>          (retained_lights             );
+      data.rigs                = builder.write<buffer_resource>          (retained_rigs               );
       data.draw_calls          = builder.write<buffer_resource>          (retained_draw_calls         );
       data.parameter_map       = builder.write<parameter_map_resource>   (retained_parameter_map      );
       data.textures            = builder.write<texture_2d_array_resource>(retained_texture_array      );
@@ -101,6 +111,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto phong_materials      = std::vector<_phong_material>                   ();
       auto cameras              = std::vector<_camera>                           ();
       auto lights               = std::vector<_light>                            ();
+      auto rigs                 = std::vector<_rig>                              (); // TODO: Fill rigs!
       auto draw_calls           = std::vector<gl::draw_elements_indirect_command>();
 
       GLuint texture_offset     = 0;
@@ -277,6 +288,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const auto& vertices            = mesh_render->mesh->vertices           ;
         const auto& normals             = mesh_render->mesh->normals            ;
         const auto& texture_coordinates = mesh_render->mesh->texture_coordinates;
+        const auto& bone_ids            = mesh_render->mesh->bone_ids           ;
+        const auto& bone_weights        = mesh_render->mesh->bone_weights       ;
         const auto& indices             = mesh_render->mesh->indices            ;
         const std::array<std::uint32_t, 2> instance_attribute {i, i};
 
@@ -286,11 +299,13 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           return texture_coordinate * texture_coordinate_scale;
         });
 
-        data.vertices           ->actual()->set_sub_data(sizeof vertices           [0] * base_vertex_offset, sizeof vertices           [0] * vertices           .size(), vertices           .data());
-        data.normals            ->actual()->set_sub_data(sizeof normals            [0] * base_vertex_offset, sizeof normals            [0] * normals            .size(), normals            .data());
+        data.vertices           ->actual()->set_sub_data(sizeof vertices           [0] * base_vertex_offset, sizeof vertices           [0] * vertices           .size(), vertices                       .data());
+        data.normals            ->actual()->set_sub_data(sizeof normals            [0] * base_vertex_offset, sizeof normals            [0] * normals            .size(), normals                        .data());
         data.texture_coordinates->actual()->set_sub_data(sizeof texture_coordinates[0] * base_vertex_offset, sizeof texture_coordinates[0] * texture_coordinates.size(), transformed_texture_coordinates.data());
-        data.indices            ->actual()->set_sub_data(sizeof indices            [0] * first_index_offset, sizeof indices            [0] * indices            .size(), indices            .data());
-        data.instance_attributes->actual()->set_sub_data(sizeof std::array<std::uint32_t, 2> * i           , sizeof std::array<std::uint32_t, 2>                       , instance_attribute .data());
+        data.bone_ids           ->actual()->set_sub_data(sizeof bone_ids           [0] * base_vertex_offset, sizeof bone_ids           [0] * bone_ids           .size(), bone_ids                       .data());
+        data.bone_weights       ->actual()->set_sub_data(sizeof bone_weights       [0] * base_vertex_offset, sizeof bone_weights       [0] * bone_weights       .size(), bone_weights                   .data());
+        data.indices            ->actual()->set_sub_data(sizeof indices            [0] * first_index_offset, sizeof indices            [0] * indices            .size(), indices                        .data());
+        data.instance_attributes->actual()->set_sub_data(sizeof std::array<std::uint32_t, 2> * i           , sizeof std::array<std::uint32_t, 2>                       , instance_attribute             .data());
 
         draw_calls.push_back(gl::draw_elements_indirect_command
         {
@@ -332,16 +347,19 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto materials_metadata  = glm::uvec4(pbr_materials.size() > 0 ? pbr_materials.size() : phong_materials.size(), 0u, 0u, 0u);
       auto cameras_metadata    = glm::uvec4(cameras      .size(), 0u, 0u, 0u);
       auto lights_metadata     = glm::uvec4(lights       .size(), 0u, 0u, 0u);
+      auto rigs_metadata       = glm::uvec4(rigs         .size(), 0u, 0u, 0u);
       data.transforms   ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &transforms_metadata);
       data.materials    ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &materials_metadata );
       data.cameras      ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &cameras_metadata   );
       data.lights       ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &lights_metadata    );
+      data.rigs         ->actual()->set_sub_data(0               , sizeof glm::vec4                          , &rigs_metadata      );
       data.transforms   ->actual()->set_sub_data(sizeof glm::vec4, sizeof _transform                         * transforms_metadata.x, transforms     .data());
       pbr_materials.size() > 0                                                                               
       ? data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _physically_based_material         * materials_metadata .x, pbr_materials  .data())
       : data.materials  ->actual()->set_sub_data(sizeof glm::vec4, sizeof _phong_material                    * materials_metadata .x, phong_materials.data());
       data.cameras      ->actual()->set_sub_data(sizeof glm::vec4, sizeof _camera                            * cameras_metadata   .x, cameras        .data());
       data.lights       ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light                             * lights_metadata    .x, lights         .data());
+      data.rigs         ->actual()->set_sub_data(sizeof glm::vec4, sizeof _rig                               * rigs_metadata      .x, rigs           .data());
       data.draw_calls   ->actual()->set_sub_data(0               , sizeof gl::draw_elements_indirect_command * draw_calls.size()    , draw_calls     .data());
       data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size());
 
