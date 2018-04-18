@@ -40,7 +40,7 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       {
         glsl::skeletal_animation_vertex_shader
       });
-      data.vertex_array         = builder.create<vertex_array_resource>      ("Phong Shading Vertex Array"           , vertex_array::description
+      data.vertex_array         = builder.create<vertex_array_resource>      ("Skeletal Animation Vertex Array"           , vertex_array::description
       {
         { 
           {data.vertices           , 3, GL_FLOAT       }, 
