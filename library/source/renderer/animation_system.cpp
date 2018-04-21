@@ -31,11 +31,11 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
 
     // TODO: Apply to corresponding children of the animator entity.
     for (auto curve : animator->clip->translation_curves)
-      curve.second.interpolate(animator->time);
+      curve.second.lerp (animator->time);
     for (auto curve : animator->clip->rotation_curves   )
-      curve.second.mix        (animator->time);
+      curve.second.slerp(animator->time);
     for (auto curve : animator->clip->scaling_curves    )
-      curve.second.interpolate(animator->time);
+      curve.second.lerp (animator->time);
   }
 }
 }

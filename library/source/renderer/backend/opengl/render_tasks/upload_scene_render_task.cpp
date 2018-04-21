@@ -120,6 +120,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       for (auto i = 0; i < mesh_render_entities.size(); ++i)
       {
         const auto& entity      = mesh_render_entities[i];
+        const auto  animator    = entity->component<mak::animator>   ();
         const auto  transform   = entity->component<mak::transform>  ();
         const auto  mesh_render = entity->component<mak::mesh_render>();
 
@@ -188,10 +189,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           pbr_materials.push_back(_physically_based_material {
             glm::uvec4 
             {
-              static_cast<std::uint32_t>(albedo_offset           .has_value()),
-              static_cast<std::uint32_t>(metallicity_offset      .has_value()),
-              static_cast<std::uint32_t>(roughness_offset        .has_value()),
-              static_cast<std::uint32_t>(normal_offset           .has_value())
+              static_cast<std::uint32_t>(albedo_offset     .has_value()),
+              static_cast<std::uint32_t>(metallicity_offset.has_value()),
+              static_cast<std::uint32_t>(roughness_offset  .has_value()),
+              static_cast<std::uint32_t>(normal_offset     .has_value())
             },
             glm::uvec4
             {
