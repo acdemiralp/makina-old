@@ -6,6 +6,7 @@
 #include <makina/renderer/backend/opengl/render_tasks/create_hmd_textures_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/phong_shading_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/physically_based_shading_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/skeletal_animation_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/submit_hmd_textures_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/test_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/ui_render_task.hpp>
