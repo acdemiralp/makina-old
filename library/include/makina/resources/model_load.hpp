@@ -2,6 +2,7 @@
 #define MAKINA_RESOURCES_MODEL_LOAD_HPP_
 
 #include <filesystem>
+#include <fstream>
 #include <functional>
 #include <memory>
 #include <string>
@@ -48,6 +49,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
 
   model->set_name(description.filepath);
 
+  const auto filename   = std::experimental::filesystem::path(description.filepath).replace_extension("").filename().string();
   const auto folderpath = std::experimental::filesystem::path(description.filepath).parent_path().string();
 
   for (auto i = 0; i < scene->mNumMeshes; ++i)
@@ -116,9 +118,18 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
         if(relative_filepath.data[0] == '*')
         {
           auto texture = scene->mTextures[boost::lexical_cast<int>(relative_filepath.data[1])];
-          //image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight});
-          //image->to_32_bits();
-          // TODO: Handle compressed textures.
+          if  (texture->mHeight == 0) // Compressed format.
+          {
+            auto filepath = folderpath + "/" + filename + "_" + relative_filepath.data[1] + "." + std::string(texture->achFormatHint);
+            std::ofstream(filepath, std::ios::binary).write(reinterpret_cast<char*>(texture->pcData), texture->mWidth);
+            image = std::make_unique<mak::image>(filepath);
+            image->to_32_bits();
+          }
+          else
+          {
+            image = std::make_unique<mak::image>(&texture->pcData[0].r, std::array<std::size_t, 2>{texture->mWidth, texture->mHeight}, fi::type::bitmap, 32);
+            image->to_32_bits();
+          }
         }
         else
         {
