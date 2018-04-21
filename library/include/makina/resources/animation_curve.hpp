@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/compatibility.hpp>
 #include <glm/vec3.hpp>
 
 #include <makina/resources/keyframe.hpp>
@@ -14,7 +15,7 @@ namespace mak
 template<typename parameter_type = glm::vec3, typename temporal_type = float>
 struct MAKINA_EXPORT animation_curve
 {
-  parameter_type interpolate(temporal_type time, const bool spherical = false)
+  parameter_type lerp (temporal_type time)
   {
     for (auto i = 0; i < keyframes.size(); ++i)
     {
@@ -23,12 +24,12 @@ struct MAKINA_EXPORT animation_curve
         auto& start = keyframes[i];
         auto& end   = keyframes[i + 1];
         auto  t     = (time - start.time) / (end.time - start.time);
-        return spherical ? glm::slerp(start.value, end.value, t) : glm::lerp(start.value, end.value, t);
+        return glm::lerp(start.value, end.value, t);
       }
     }
     return parameter_type();
   }
-  parameter_type mix        (temporal_type time)
+  parameter_type slerp(temporal_type time)
   {
     for (auto i = 0; i < keyframes.size(); ++i)
     {
@@ -37,7 +38,7 @@ struct MAKINA_EXPORT animation_curve
         auto& start = keyframes[i];
         auto& end   = keyframes[i + 1];
         auto  t     = (time - start.time) / (end.time - start.time);
-        return glm::mix(start.value, end.value, t);
+        return glm::slerp(start.value, end.value, t);
       }
     }
     return parameter_type();
