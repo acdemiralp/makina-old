@@ -50,15 +50,16 @@ TEST_CASE("OpenGL test.", "[makina]")
 
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer(window));
-  const auto upload_scene_render_task = mak::opengl::add_upload_scene_render_task            (renderer);
-  const auto clear_render_task        = mak::opengl::add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto skybox_render_task       = mak::opengl::add_test_render_task                    (renderer, backbuffer);
-  const auto pbr_render_task          = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data(), "default_camera");
-  const auto ui_render_task           = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
+  const auto upload_scene_render_task       = mak::opengl::add_upload_scene_render_task            (renderer);
+  const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task      (renderer, upload_scene_render_task->data());
+  const auto clear_render_task              = mak::opengl::add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
+  const auto skybox_render_task             = mak::opengl::add_test_render_task                    (renderer, backbuffer);
+  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data(), "default_camera");
+  const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{"data/model/cube/cube.obj", true});
+  model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
   
   auto& audio_clips = mak::registry->get<mak::audio_clip>().storage();
   auto& audio_clip  = audio_clips.emplace_back(mak::audio_clip::description{"data/audio/test/test.mp3", true});
@@ -68,7 +69,7 @@ TEST_CASE("OpenGL test.", "[makina]")
   std::uniform_real_distribution<float> distribution    (-0.25f, 0.25f);
   for(auto i = 0; i < 8; ++i)
   {
-    auto entity    = engine->scene()->copy_entity(model.scene->entities()[1]); // TODO: Preserve transform hierarchy when appending / copying.
+    auto entity    = engine->scene()->copy_entity(model.scene->entities<mak::mesh_render>()[0]); // TODO: Preserve transform hierarchy when appending / copying.
     auto transform = entity->component<mak::transform>();
     transform->set_translation(glm::vec3(distribution(mersenne_twister), distribution(mersenne_twister), distribution(mersenne_twister)));
 
