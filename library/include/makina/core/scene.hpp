@@ -11,6 +11,7 @@
 #include <makina/audio/audio_listener.hpp>
 #include <makina/audio/audio_source.hpp>
 #include <makina/core/logger.hpp>
+#include <makina/core/metadata.hpp>
 #include <makina/input/controller.hpp>
 #include <makina/physics/mesh_collider.hpp>
 #include <makina/physics/rigidbody.hpp>
@@ -22,17 +23,6 @@
 
 namespace mak
 {
-struct metadata
-{
-  bool contains_tag(const std::string& tag)
-  {
-    return std::find(tags.begin(), tags.end(), tag) != tags.end();
-  }
-
-  std::string              name;
-  std::vector<std::string> tags;
-};
-
 class behavior  ;
 using behaviors = std::vector<std::shared_ptr<behavior>>;
 
@@ -44,20 +34,27 @@ inline void print_scene(const scene* scene)
   const std::function<void(entity*, std::size_t)> recursive_print = [&] (entity* entity, std::size_t depth)
   {
     if (entity->has_components<metadata>())
-      logger->info("{}- {}", depth > 0 ? std::string('\t', depth) : "", entity->component<metadata>()->name);
+      logger->info("{}- {}", depth > 0 ? std::string(depth, ' ') : "", entity->component<metadata>()->name);
     for (auto& child : entity->component<transform>()->children())
-      recursive_print(*std::find_if(scene->entities<transform>().begin(), scene->entities<transform>().end(), [&] (const mak::entity* iteratee) {return iteratee->component<transform>() == child;}), ++depth);
+    {
+      auto entities = scene->entities<transform>();
+      recursive_print(*std::find_if(entities.begin(), entities.end(), [&] (mak::entity* iteratee) {return iteratee->component<transform>() == child;}), depth + 1);
+    }
   };
 
+  logger->info("{}", std::string(50, '#'));
   logger->info("Transformless Entities");
   for (auto entity : scene->entities())
     if (!entity->has_components<transform>() && entity->has_components<metadata>())
       logger->info("- {}", entity->component<metadata>()->name);
-  
+
+  logger->info("{}", std::string(50, '#'));
   logger->info("Transform Hierarchy");
   for (auto entity : scene->entities())
     if ( entity->has_components<transform>() && !entity->component<transform>()->parent())
       recursive_print(entity, 0);
+
+  logger->info("{}", std::string(50, '#'));
 }
 }
 
