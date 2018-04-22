@@ -70,26 +70,13 @@ TEST_CASE("OpenGL test.", "[makina]")
   auto& audio_clips = mak::registry->get<mak::audio_clip>().storage();
   auto& audio_clip  = audio_clips.emplace_back(mak::audio_clip::description{"data/audio/test/test.mp3", true});
 
-  std::random_device                    random_device   ;
-  std::mt19937                          mersenne_twister(random_device());
-  std::uniform_real_distribution<float> distribution    (-0.25f, 0.25f);
-  for(auto i = 0; i < 8; ++i)
-  {
-    auto entity    = engine->scene()->copy_entity(model.scene->entities<mak::mesh_render>()[0]); // TODO: Preserve transform hierarchy when appending / copying.
-    auto transform = entity->component<mak::transform>();
-    transform->set_translation(glm::vec3(distribution(mersenne_twister), distribution(mersenne_twister), distribution(mersenne_twister)));
-
-    if(i == 0)
-    {
-      entity->remove_component<mak::rigidbody>();
-
-      auto audio_source = entity->add_component<mak::audio_source>();
-      audio_source->set_clip   (&audio_clip);
-      audio_source->set_looping(true);
-    }
-  }
-
-  print_scene(engine->scene());
+  auto audio_source = engine->scene()->entities()[0]->add_component<mak::audio_source>();
+  audio_source->set_clip(&audio_clip);
+  audio_source->set_looping(true);
+  
+  mak::append_scene(model.scene.get(), engine->scene());
+  mak::print_scene (model.scene.get());
+  mak::print_scene (engine->scene  ());
   
   engine->run();
 }
