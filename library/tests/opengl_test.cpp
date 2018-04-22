@@ -88,6 +88,8 @@ TEST_CASE("OpenGL test.", "[makina]")
       audio_source->set_looping(true);
     }
   }
+
+  print_scene(engine->scene());
   
   engine->run();
 }
