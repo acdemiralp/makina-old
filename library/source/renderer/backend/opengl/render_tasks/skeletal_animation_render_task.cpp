@@ -31,15 +31,15 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.draw_calls           = builder.read(scene_data.draw_calls         );
       data.parameter_map        = builder.create<parameter_map_resource>     ("Skeletal Animation Parameter Map"     , parameter_map::description {});
       
-      data.transformed_vertices = builder.read(retained_vertices);
-      data.transformed_normals  = builder.read(retained_normals );
+      data.transformed_vertices = builder.write(retained_vertices);
+      data.transformed_normals  = builder.write(retained_normals );
       data.transform_feedback   = builder.create<transform_feedback_resource>("Skeletal Animation Transform Feedback", transform_feedback_description {{data.transformed_vertices, data.transformed_normals}});
 
       data.program              = builder.create<program_resource>           ("Skeletal Animation Program"           , program::description     
       {
         glsl::skeletal_animation_vertex_shader
       });
-      data.vertex_array         = builder.create<vertex_array_resource>      ("Skeletal Animation Vertex Array"           , vertex_array::description
+      data.vertex_array         = builder.create<vertex_array_resource>      ("Skeletal Animation Vertex Array"      , vertex_array::description
       {
         { 
           {data.vertices    , 3, GL_FLOAT       }, 
