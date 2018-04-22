@@ -9,18 +9,21 @@ void append_scene(scene* source, scene* target)
   auto entities = target->append(*source);
   for (auto& entity : entities)
   {
-    auto transform = entity->component<mak::transform>();
-    if (!transform->parent()) continue;
+    const auto transform = entity->component<mak::transform>();
+    const auto metadata  = entity->component<mak::metadata> ();
+    transform->set_metadata(metadata);
+
+    if (!transform->parent())
+      continue;
 
     auto parent_entity = *std::find_if(entities.begin(), entities.end(), [&] (mak::entity* iteratee)
     {
       return transform->parent()->metadata()->name == iteratee->component<mak::metadata>()->name;
     });
 
-    auto parent_metadata  = parent_entity->component<mak::metadata> ();
-    auto parent_transform = parent_entity->component<mak::transform>();
-    parent_transform->set_metadata(parent_metadata );
-    transform       ->set_parent  (parent_transform);
+    // Remove references to the old version of this transform from parent's children.
+
+    transform->set_parent(parent_entity->component<mak::transform>());
   }
 }
 void print_scene (const scene* scene)

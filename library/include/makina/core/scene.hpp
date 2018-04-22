@@ -28,8 +28,8 @@ using behaviors = std::vector<std::shared_ptr<behavior>>;
 using entity    = ec::entity<metadata, audio_listener, audio_source, controller, mesh_collider, rigidbody, animator, light, mesh_render, projection, transform, behaviors>;
 using scene     = ec::scene<entity>;
 
-void append_scene(scene* source, scene* target);
-void print_scene (const scene* scene);
+MAKINA_EXPORT void append_scene(scene* source, scene* target);
+MAKINA_EXPORT void print_scene (const scene* scene);
 }
 
 #endif
