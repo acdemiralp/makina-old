@@ -63,7 +63,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     mesh->vertices             .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices        ), reinterpret_cast<glm::vec3*>(assimp_mesh->mVertices         + assimp_mesh->mNumVertices));
     mesh->normals              .assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals         ), reinterpret_cast<glm::vec3*>(assimp_mesh->mNormals          + assimp_mesh->mNumVertices));
     if (assimp_mesh->HasTextureCoords(0))
-      mesh->texture_coordinates.assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mTextureCoords[0]), reinterpret_cast<glm::vec3*>(assimp_mesh->mTextureCoords[0] + assimp_mesh->mNumVertices)); // Make this vec3...
+      mesh->texture_coordinates.assign (reinterpret_cast<glm::vec3*>(assimp_mesh->mTextureCoords[0]), reinterpret_cast<glm::vec3*>(assimp_mesh->mTextureCoords[0] + assimp_mesh->mNumVertices));
     if (assimp_mesh->HasVertexColors (0))
       mesh->colors             .assign (reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       [0]), reinterpret_cast<glm::vec4*>(assimp_mesh->mColors       [0] + assimp_mesh->mNumVertices));
     if (assimp_mesh->HasTangentsAndBitangents())
