@@ -18,7 +18,7 @@ class MakinaConan(ConanFile):
                        ("catch2/2.2.0@bincrafters/stable"      ),
                        ("cppzmq/4.2.2@bincrafters/stable"      ),
                        ("di/1.2.0@acdemiralp/makina"           ),
-                       ("ec/1.2.0@acdemiralp/makina"           ),
+                       ("ec/1.2.1@acdemiralp/makina"           ),
                        ("eigen/3.3.4@conan/stable"             ),
                        ("fg/1.1.0@acdemiralp/makina"           ),
                        ("fi/1.0.2@acdemiralp/makina"           ),
