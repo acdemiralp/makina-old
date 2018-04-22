@@ -108,17 +108,9 @@ void      transform::set_parent        (transform* parent)
 }
 void      transform::set_parent        (transform* parent, const bool maintain_absolute)
 {
-  if (parent_)
-    parent_->children_.erase(std::remove_if(
-      parent_->children_.begin(), 
-      parent_->children_.end  (), 
-      [&] (transform* child) {return child->metadata_->name == metadata_->name; }), 
-      parent_->children_.end  ());   
-  parent_ = parent;
-  if (parent_)
-    parent_->children_.push_back(this);
-
-  if (maintain_absolute) set_matrix(absolute_matrix_, true);
+  const auto matrix = absolute_matrix_;
+  hierarchical<transform>::set_parent(parent);
+  if (maintain_absolute) set_matrix(matrix, true);
   update_matrix();
 }
           
