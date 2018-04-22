@@ -46,6 +46,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   model->materials.push_back(std::make_unique<mak::physically_based_material>()); // TODO: Add support for other type of materials.
   auto mesh     = model->meshes.back().get();
   auto material = dynamic_cast<mak::physically_based_material*>(model->materials.back().get());
+  mesh->set_name           (tracking_device->render_model_name());
   mesh->vertices           .reserve(openvr_model->vertices           .size());
   mesh->normals            .reserve(openvr_model->normals            .size());
   mesh->texture_coordinates.reserve(openvr_model->texture_coordinates.size());
@@ -64,8 +65,10 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   material->albedo_image->to_32_bits();
 
   auto entity           = scene->add_entity();
+  auto metadata         = entity->add_component<mak::metadata>();
   auto transform        = entity->add_component<mak::transform>  ();
   auto mesh_render      = entity->add_component<mak::mesh_render>();
+  metadata   ->name     = mesh->name();
   mesh_render->mesh     = mesh;
   mesh_render->material = material;
 
@@ -73,20 +76,22 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   {
     const auto hmd = dynamic_cast<di::hmd*>(tracking_device);
     {
-      auto eye            = scene ->add_entity();
-      auto eye_metadata   = eye   ->add_component<mak::metadata>  ();
-      auto eye_transform  = eye   ->add_component<mak::transform> ();
-      auto eye_projection = eye   ->add_component<mak::projection>();
+      auto eye             = scene ->add_entity();
+      auto eye_metadata    = eye   ->add_component<mak::metadata>  ();
+      auto eye_transform   = eye   ->add_component<mak::transform> ();
+      auto eye_projection  = eye   ->add_component<mak::projection>();
+      eye_metadata  ->name = "HMD Left Camera";
       eye_metadata  ->tags.push_back("hmd_left_camera" );
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::left )));
       eye_projection->set_matrix(convert_to_glm_matrix(hmd->projection_matrix    (di::eye::left , 0.1f, 10000.0f)));
     }
     {
-      auto eye            = scene ->add_entity();
-      auto eye_metadata   = eye   ->add_component<mak::metadata>  ();
-      auto eye_transform  = eye   ->add_component<mak::transform> ();
-      auto eye_projection = eye   ->add_component<mak::projection>();
+      auto eye             = scene ->add_entity();
+      auto eye_metadata    = eye   ->add_component<mak::metadata>  ();
+      auto eye_transform   = eye   ->add_component<mak::transform> ();
+      auto eye_projection  = eye   ->add_component<mak::projection>();
+      eye_metadata  ->name = "HMD Right Camera";
       eye_metadata  ->tags.push_back("hmd_right_camera");
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::right)));
