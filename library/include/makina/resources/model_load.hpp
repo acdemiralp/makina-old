@@ -219,7 +219,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
   {
     auto entity     = model->scene->add_entity();
     auto metadata   = entity->add_component<mak::metadata> ();
-    auto transform  = entity->add_component<mak::transform>();
+    auto transform  = entity->add_component<mak::transform>(metadata);
     metadata ->name = node->mName.C_Str();
     transform->set_matrix(glm::transpose(glm::make_mat4(&node->mTransformation[0][0])));
     transform->set_parent(parent);

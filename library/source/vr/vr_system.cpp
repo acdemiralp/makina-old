@@ -65,8 +65,8 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   material->albedo_image->to_32_bits();
 
   auto entity           = scene->add_entity();
-  auto metadata         = entity->add_component<mak::metadata>();
-  auto transform        = entity->add_component<mak::transform>  ();
+  auto metadata         = entity->add_component<mak::metadata>   ();
+  auto transform        = entity->add_component<mak::transform>  (metadata);
   auto mesh_render      = entity->add_component<mak::mesh_render>();
   metadata   ->name     = mesh->name();
   mesh_render->mesh     = mesh;
@@ -78,7 +78,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
     {
       auto eye             = scene ->add_entity();
       auto eye_metadata    = eye   ->add_component<mak::metadata>  ();
-      auto eye_transform   = eye   ->add_component<mak::transform> ();
+      auto eye_transform   = eye   ->add_component<mak::transform> (metadata);
       auto eye_projection  = eye   ->add_component<mak::projection>();
       eye_metadata  ->name = "HMD Left Camera";
       eye_metadata  ->tags.push_back("hmd_left_camera" );
@@ -89,7 +89,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
     {
       auto eye             = scene ->add_entity();
       auto eye_metadata    = eye   ->add_component<mak::metadata>  ();
-      auto eye_transform   = eye   ->add_component<mak::transform> ();
+      auto eye_transform   = eye   ->add_component<mak::transform> (metadata);
       auto eye_projection  = eye   ->add_component<mak::projection>();
       eye_metadata  ->name = "HMD Right Camera";
       eye_metadata  ->tags.push_back("hmd_right_camera");

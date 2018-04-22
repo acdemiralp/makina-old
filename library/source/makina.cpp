@@ -37,7 +37,7 @@ std::unique_ptr<engine> make_default_engine()
   {
     auto entity          = scene ->add_entity();
     auto metadata        = entity->add_component<mak::metadata>      ();
-    auto transform       = entity->add_component<mak::transform>     ();
+    auto transform       = entity->add_component<mak::transform>     (metadata);
     auto projection      = entity->add_component<mak::projection>    ();
     auto audio_listener  = entity->add_component<mak::audio_listener>();
     auto controller      = entity->add_component<mak::controller>    (make_wasd_controller());
@@ -48,8 +48,8 @@ std::unique_ptr<engine> make_default_engine()
   }
   {
     auto entity          = scene ->add_entity();
-    auto metadata        = entity->add_component<mak::metadata>();
-    auto transform       = entity->add_component<mak::transform>();
+    auto metadata        = entity->add_component<mak::metadata> ();
+    auto transform       = entity->add_component<mak::transform>(metadata);
     auto light           = entity->add_component<mak::light>    ();
     metadata ->name     = "Default Ambient Light";
     light    ->type      = light::type::ambient;
@@ -58,8 +58,8 @@ std::unique_ptr<engine> make_default_engine()
   }
   {
     auto entity          = scene ->add_entity();
-    auto metadata        = entity->add_component<mak::metadata>();
-    auto transform       = entity->add_component<mak::transform>();
+    auto metadata        = entity->add_component<mak::metadata> ();
+    auto transform       = entity->add_component<mak::transform>(metadata);
     auto light           = entity->add_component<mak::light>    ();
     metadata ->name     = "Default Directional Light";
     transform->set_rotation_euler(glm::vec3(50.0f, -30.0f, 0.0f));

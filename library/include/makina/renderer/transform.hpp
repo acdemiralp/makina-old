@@ -6,6 +6,7 @@
 #include <glm/vec3.hpp>
 
 #include <makina/aspects/hierarchical.hpp>
+#include <makina/core/metadata.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -13,7 +14,7 @@ namespace mak
 class MAKINA_EXPORT transform : public hierarchical<transform>
 {
 public:
-  transform           ();
+  transform           (metadata* metadata);
   transform           (const transform&  that) = default;
   transform           (      transform&& temp) = default;
   virtual ~transform  ()                       = default;
@@ -45,16 +46,20 @@ public:
             
   void      set_parent        (transform* parent) override;
   void      set_parent        (transform* parent, const bool maintain_absolute);
-            
+  
+  metadata* metadata          () const;
+  void      set_metadata      (mak::metadata* metadata);
+
 protected:  
   void      update_matrix     ();
   void      update_hierarchy  ();
 
-  glm::vec3 translation_     = glm::vec3(0.0f, 0.0f, 0.0f);
-  glm::quat rotation_        = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-  glm::vec3 scale_           = glm::vec3(1.0f, 1.0f, 1.0f);
-  glm::mat4 matrix_          ;
-  glm::mat4 absolute_matrix_ ;
+  glm::vec3      translation_     = glm::vec3(0.0f, 0.0f, 0.0f);
+  glm::quat      rotation_        = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+  glm::vec3      scale_           = glm::vec3(1.0f, 1.0f, 1.0f);
+  glm::mat4      matrix_          ;
+  glm::mat4      absolute_matrix_ ;
+  mak::metadata* metadata_        ;
 };
 }
 
