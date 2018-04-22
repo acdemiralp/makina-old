@@ -31,7 +31,7 @@ layout(std430, set = 0, binding = 0) readonly buffer transform
 layout(std430, set = 0, binding = 1) readonly buffer rig
 {
   uvec4      rigs_metadata;       // x size
-  _rigs      rigs[];
+  _rig       rigs[];
 };
 
 layout(location = 0) in vec3  vertex      ;
@@ -47,9 +47,9 @@ void main()
   mat4 matrix = mat4(0.0);
   for (int i = 0; i < 4; ++i)
     if (bone_weights[i] > 0.0f)
-      matrix += transforms[bone_ids[i]] * rigs[bone_ids[i]] * bone_weights[i];
-  output_vertex = matrix * vec4(vertex, 1.0f);
-  output_normal = matrix * vec4(normal, 0.0f);
+      matrix += transforms[bone_ids[i]].model * rigs[bone_ids[i]].offset * bone_weights[i];
+  output_vertex = (matrix * vec4(vertex, 1.0f)).xyz;
+  output_normal = (matrix * vec4(normal, 0.0f)).xyz;
 }
 )";
 }
