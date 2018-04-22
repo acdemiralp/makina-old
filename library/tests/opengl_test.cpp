@@ -54,7 +54,13 @@ TEST_CASE("OpenGL test.", "[makina]")
   const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task      (renderer, upload_scene_render_task->data());
   const auto clear_render_task              = mak::opengl::add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto skybox_render_task             = mak::opengl::add_test_render_task                    (renderer, backbuffer);
-  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_render_task->data(), "default_camera");
+  
+  auto upload_scene_task_data               = upload_scene_render_task      ->data();
+  auto skeletal_animation_task_data         = skeletal_animation_render_task->data();
+  upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
+  upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
+
+  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_task_data, "default_camera");
   const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
@@ -77,7 +83,7 @@ TEST_CASE("OpenGL test.", "[makina]")
     {
       entity->remove_component<mak::rigidbody>();
 
-      auto audio_source  = entity->add_component<mak::audio_source>();
+      auto audio_source = entity->add_component<mak::audio_source>();
       audio_source->set_clip   (&audio_clip);
       audio_source->set_looping(true);
     }
