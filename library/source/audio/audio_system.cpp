@@ -4,6 +4,7 @@
 
 #include <makina/audio/fmod_context.hpp>
 #include <makina/core/logger.hpp>
+#include <makina/renderer/transform.hpp>
 
 namespace mak
 {

@@ -8,6 +8,7 @@
 #include <makina/core/scene.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
+#include <makina/renderer/transform.hpp>
 #include <makina/resources/model.hpp>
 #include <makina/resources/physically_based_material.hpp>
 

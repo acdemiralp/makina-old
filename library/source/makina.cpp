@@ -7,6 +7,7 @@
 #include <makina/physics/physics_system.hpp>
 #include <makina/renderer/animation_system.hpp>
 #include <makina/renderer/renderer.hpp>
+#include <makina/renderer/transform.hpp>
 #include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/ui_system.hpp>
 #include <makina/vr/vr_system.hpp>
