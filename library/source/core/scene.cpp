@@ -7,34 +7,38 @@ namespace mak
 {
 void append_scene(scene* source, scene* target)
 {
-  auto entities = target->append(*source);
+  auto source_entities = source->entities();
 
-  for (auto& entity : entities)
-    entity->component<mak::transform>()->set_children({});
-
-  for (auto i = 0; i < entities.size(); ++i)
+  const std::function<void(entity*, entity*)> recursive_add_entity = [&] (mak::entity* source_entity, mak::entity* parent)
   {
-    const auto target_transform = entities[i]->component<mak::transform>();
-    const auto target_metadata  = entities[i]->component<mak::metadata> ();
-    target_transform->set_metadata(target_metadata);
+    auto entity    = target->copy_entity(source_entity);
+    auto transform = entity->component<mak::transform>();
+    auto metadata  = entity->component<mak::metadata> ();
+    transform->set_metadata(metadata);
+    transform->set_children({});
+    if (parent) transform->set_parent(parent->component<mak::transform>());
 
-    if (!target_transform->parent())
-      continue;
+    for (auto child : source_entity->component<mak::transform>()->children())
+      recursive_add_entity(*std::find_if(
+        source_entities.begin(),
+        source_entities.end  (),
+        [&] (mak::entity* iteratee)
+        {
+          return child == iteratee->component<mak::transform>();
+        }), 
+        entity);
+  };
 
-    auto parent_entity = *std::find_if(entities.begin(), entities.end(), [&] (mak::entity* iteratee)
-    {
-      return target_transform->parent()->metadata()->name == iteratee->component<mak::metadata>()->name;
-    });
-
-    target_transform->set_parent(parent_entity->component<mak::transform>());
-  }
+  for (auto& entity : source_entities)
+    if (!entity->component<transform>()->parent())
+      recursive_add_entity(entity, nullptr);
 }
 void print_scene (const scene* scene)
 {
   const std::function<void(entity*, std::size_t)> recursive_print = [&] (entity* entity, std::size_t depth)
   {
     if (entity->has_components<metadata>())
-      logger->info("{}- {}", depth > 0 ? std::string(depth, ' ') : "", entity->component<metadata>()->name);
+      logger->info("{}- {} ({})", depth > 0 ? std::string(depth, ' ') : "", entity->component<metadata>()->name, entity->bitset().to_string());
 
     auto entities = scene ->entities <transform>();
     auto children = entity->component<transform>()->children();
@@ -47,7 +51,7 @@ void print_scene (const scene* scene)
   logger->info("Transformless Entities");
   for (auto entity : scene->entities())
     if (!entity->has_components<transform>() && entity->has_components<metadata>())
-      logger->info("- {}", entity->component<metadata>()->name);
+      logger->info("- {} ({})", entity->component<metadata>()->name, entity->bitset().to_string());
 
   logger->info("{}", std::string(50, '#'));
 
