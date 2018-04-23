@@ -122,7 +122,10 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const auto& entity      = mesh_render_entities[i];
         const auto  animator    = entity->component<mak::animator>   ();
         const auto  transform   = entity->component<mak::transform>  ();
+        const auto  metadata    = entity->component<mak::metadata>   ();
         const auto  mesh_render = entity->component<mak::mesh_render>();
+        
+        if (!metadata->active) continue;
 
         glm::vec3 texture_coordinate_scale(1.0f);
 

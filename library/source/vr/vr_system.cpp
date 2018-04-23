@@ -75,6 +75,8 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
 
   if(type == di::tracking_device_type::hmd)
   {
+    metadata->active = false;
+
     const auto hmd = dynamic_cast<di::hmd*>(tracking_device);
     {
       auto eye             = scene ->add_entity();

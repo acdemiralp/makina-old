@@ -14,8 +14,9 @@ struct metadata
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
   }
 
-  std::string              name;
-  std::vector<std::string> tags;
+  bool                     active = true;
+  std::string              name   ;
+  std::vector<std::string> tags   ;
 };
 }
 
