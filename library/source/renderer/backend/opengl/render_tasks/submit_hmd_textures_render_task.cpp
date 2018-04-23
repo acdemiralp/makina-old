@@ -21,8 +21,8 @@ fg::render_task<submit_hmd_textures_task_data>* add_submit_hmd_textures_render_t
     },
     [=] (const submit_hmd_textures_task_data& data)
     {
-      hmd->submit(di::eye::left , data.left ->actual()->id());
-      hmd->submit(di::eye::right, data.right->actual()->id());
+      hmd->submit(di::eye::left , data.left ->actual()->color_texture()->id());
+      hmd->submit(di::eye::right, data.right->actual()->color_texture()->id());
     });
   render_task->set_cull_immune(true);
   return render_task;
