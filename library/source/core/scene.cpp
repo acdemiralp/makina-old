@@ -8,7 +8,8 @@ namespace mak
 void append_scene(scene* source, scene* target)
 {
   auto source_entities = source->entities();
-
+  auto target_entities = std::vector<entity*>();
+  
   const std::function<void(entity*, entity*)> recursive_add_entity = [&] (mak::entity* source_entity, mak::entity* parent)
   {
     auto entity    = target->copy_entity(source_entity);
@@ -17,6 +18,8 @@ void append_scene(scene* source, scene* target)
     transform->set_metadata(metadata);
     transform->set_children({});
     if (parent) transform->set_parent(parent->component<mak::transform>());
+
+    target_entities.push_back(entity);
 
     for (auto child : source_entity->component<mak::transform>()->children())
       recursive_add_entity(*std::find_if(
@@ -32,6 +35,14 @@ void append_scene(scene* source, scene* target)
   for (auto& entity : source_entities)
     if (!entity->component<transform>()->parent())
       recursive_add_entity(entity, nullptr);
+
+  bone* root_bone = nullptr;
+  for (auto& entity : target_entities)
+    if (entity->component<metadata>()->contains_tag("root_bone"))
+      root_bone = entity->component<bone>();
+  for (auto& entity : target_entities)
+    if (entity->has_components<mak::animator>())
+      entity->component<animator>()->root_bone = root_bone;
 }
 void print_scene (const scene* scene)
 {

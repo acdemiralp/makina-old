@@ -87,7 +87,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       mesh->bone_weights   .resize(assimp_mesh->mNumVertices);
       std::vector<unsigned> counts(assimp_mesh->mNumVertices);
 
-      for (auto j = 0; j < assimp_mesh->mNumBones; ++j) 
+      for (std::uint32_t j = 0; j < assimp_mesh->mNumBones; ++j) 
       {
         const auto& assimp_bone = assimp_mesh->mBones[j];
 
@@ -211,7 +211,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     }
   }
 
-  mak::bone* root_bone;
+  mak::bone* root_bone = nullptr;
   model->scene = std::make_unique<mak::scene>();
   std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
   hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
@@ -239,7 +239,11 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     else if (bones.count(metadata->name)) // Meshes and bones cannot be on the same entity (as in Unity).
     {
       auto bone = entity->add_component<mak::bone>(bones[metadata->name]);
-      if (!root_bone) root_bone = bone;
+      if (!root_bone)
+      {
+        metadata->tags.push_back("root_bone");
+        root_bone = bone;
+      }
     }
   
     for (auto i = 0; i < node->mNumChildren; ++i)

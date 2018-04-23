@@ -30,6 +30,7 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
     }
 
     // TODO: Apply to corresponding children of the animator entity.
+    auto root_bone = animator->root_bone;
     for (auto curve : animator->clip->translation_curves)
       curve.second.lerp (animator->time);
     for (auto curve : animator->clip->rotation_curves   )
