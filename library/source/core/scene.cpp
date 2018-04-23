@@ -36,13 +36,13 @@ void append_scene(scene* source, scene* target)
     if (!entity->component<transform>()->parent())
       recursive_add_entity(entity, nullptr);
 
-  bone* root_bone = nullptr;
+  transform* root_transform = nullptr;
   for (auto& entity : target_entities)
     if (entity->component<metadata>()->contains_tag("root_bone"))
-      root_bone = entity->component<bone>();
+      root_transform = entity->component<transform>();
   for (auto& entity : target_entities)
     if (entity->has_components<mak::animator>())
-      entity->component<animator>()->root_bone = root_bone;
+      entity->component<animator>()->root_transform = root_transform;
 }
 void print_scene (const scene* scene)
 {

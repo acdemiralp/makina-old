@@ -29,14 +29,19 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
         animator->time -= animator->clip->length;
     }
 
-    // TODO: Apply to corresponding children of the animator entity.
-    auto root_bone = animator->root_bone;
-    for (auto curve : animator->clip->translation_curves)
-      curve.second.lerp (animator->time);
-    for (auto curve : animator->clip->rotation_curves   )
-      curve.second.slerp(animator->time);
-    for (auto curve : animator->clip->scaling_curves    )
-      curve.second.lerp (animator->time);
+    //std::function<void(transform*)> recursive_apply = [&] (transform* transform)
+    //{
+    //  if (animator->clip->translation_curves.count(transform->metadata()->name))
+    //    transform->set_translation(animator->clip->translation_curves[transform->metadata()->name].lerp (animator->time), true);
+    //  if (animator->clip->rotation_curves   .count(transform->metadata()->name))
+    //    transform->set_rotation   (animator->clip->rotation_curves   [transform->metadata()->name].slerp(animator->time), true);
+    //  if (animator->clip->scaling_curves    .count(transform->metadata()->name))
+    //    transform->set_scale      (animator->clip->scaling_curves    [transform->metadata()->name].lerp (animator->time), true);
+    //
+    //  for (auto child : transform->children())
+    //    recursive_apply(transform);
+    //};
+    //recursive_apply(animator->root_transform);
   }
 }
 }

@@ -187,9 +187,9 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     auto       animation_clip        = model->animation_clips.back().get();
     const auto assimp_animation_clip = scene->mAnimations[i];
     animation_clip->set_name(assimp_animation_clip->mName.C_Str());
-    animation_clip->framerate = assimp_animation_clip->mTicksPerSecond;
-    animation_clip->length    = assimp_animation_clip->mDuration      ;
-    animation_clip->wrap_mode = mak::animation_clip::wrap_mode::loop  ;
+    animation_clip->framerate = assimp_animation_clip->mTicksPerSecond ;
+    animation_clip->length    = assimp_animation_clip->mDuration * 1000;
+    animation_clip->wrap_mode = mak::animation_clip::wrap_mode::loop   ;
 
     for (auto j = 0; j < assimp_animation_clip->mNumChannels; ++j) 
     {
@@ -211,7 +211,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     }
   }
 
-  mak::bone* root_bone = nullptr;
+  mak::transform* root_transform = nullptr;
   model->scene = std::make_unique<mak::scene>();
   std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
   hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
@@ -239,10 +239,10 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     else if (bones.count(metadata->name)) // Meshes and bones cannot be on the same entity (as in Unity).
     {
       auto bone = entity->add_component<mak::bone>(bones[metadata->name]);
-      if (!root_bone)
+      if (!root_transform)
       {
         metadata->tags.push_back("root_bone");
-        root_bone = bone;
+        root_transform = transform;
       }
     }
   
@@ -251,7 +251,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
   };
   hierarchy_traverser(scene->mRootNode, nullptr);
   for (auto entity : model->scene->entities<mak::animator>())
-    entity->component<mak::animator>()->root_bone = root_bone;
+    entity->component<mak::animator>()->root_transform = root_transform;
 }
 
 template<>
