@@ -1,29 +1,32 @@
 #include <makina/core/scene.hpp>
 
 #include <makina/core/logger.hpp>
+#include <makina/renderer/transform.hpp>
 
 namespace mak
 {
 void append_scene(scene* source, scene* target)
 {
   auto entities = target->append(*source);
-  for (auto& entity : entities)
-  {
-    const auto transform = entity->component<mak::transform>();
-    const auto metadata  = entity->component<mak::metadata> ();
-    transform->set_metadata(metadata);
 
-    if (!transform->parent())
+  for (auto& entity : entities)
+    entity->component<mak::transform>()->set_children({});
+
+  for (auto i = 0; i < entities.size(); ++i)
+  {
+    const auto target_transform = entities[i]->component<mak::transform>();
+    const auto target_metadata  = entities[i]->component<mak::metadata> ();
+    target_transform->set_metadata(target_metadata);
+
+    if (!target_transform->parent())
       continue;
 
     auto parent_entity = *std::find_if(entities.begin(), entities.end(), [&] (mak::entity* iteratee)
     {
-      return transform->parent()->metadata()->name == iteratee->component<mak::metadata>()->name;
+      return target_transform->parent()->metadata()->name == iteratee->component<mak::metadata>()->name;
     });
 
-    // Remove references to the old version of this transform from parent's children.
-
-    transform->set_parent(parent_entity->component<mak::transform>());
+    target_transform->set_parent(parent_entity->component<mak::transform>());
   }
 }
 void print_scene (const scene* scene)
@@ -40,12 +43,14 @@ void print_scene (const scene* scene)
   };
 
   logger->info("{}", std::string(50, '#'));
+
   logger->info("Transformless Entities");
   for (auto entity : scene->entities())
     if (!entity->has_components<transform>() && entity->has_components<metadata>())
       logger->info("- {}", entity->component<metadata>()->name);
 
   logger->info("{}", std::string(50, '#'));
+
   logger->info("Transform Hierarchy");
   for (auto entity : scene->entities())
     if ( entity->has_components<transform>() && !entity->component<transform>()->parent())
