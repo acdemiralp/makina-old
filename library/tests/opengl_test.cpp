@@ -10,8 +10,6 @@ extern "C"
 }
 #endif
 
-#include <random>
-
 #include <fi/free_image.hpp>
 #include <gl/all.hpp>
 
