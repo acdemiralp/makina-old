@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -52,6 +53,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
   const auto filename   = std::experimental::filesystem::path(description.filepath).replace_extension("").filename().string();
   const auto folderpath = std::experimental::filesystem::path(description.filepath).parent_path().string();
 
+  std::map<std::string, mak::bone> bones;
   for (auto i = 0; i < scene->mNumMeshes; ++i)
   {
     model->meshes.push_back(std::make_unique<mak::mesh>());
@@ -81,8 +83,6 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
 
     if (assimp_mesh->HasBones()) 
     {
-      auto& rig = model->rigs.emplace_back();
-
       mesh->bone_ids       .resize(assimp_mesh->mNumVertices);
       mesh->bone_weights   .resize(assimp_mesh->mNumVertices);
       std::vector<unsigned> counts(assimp_mesh->mNumVertices);
@@ -91,10 +91,8 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       {
         const auto& assimp_bone = assimp_mesh->mBones[j];
 
-        auto& bone = rig.emplace_back();
-        bone.set_name      (assimp_bone->mName.C_Str());
-        bone.offset_matrix = glm::transpose(glm::make_mat4(&assimp_bone->mOffsetMatrix[0][0]));
-
+        bones[assimp_bone->mName.C_Str()] = {j, glm::transpose(glm::make_mat4(&assimp_bone->mOffsetMatrix[0][0]))};
+        
         for (auto k = 0; k < assimp_bone->mNumWeights; ++k)
         {
           auto* weight = &assimp_bone->mWeights[k];
@@ -213,6 +211,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     }
   }
 
+  mak::bone* root_bone;
   model->scene = std::make_unique<mak::scene>();
   std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
   hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
@@ -234,18 +233,21 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
       mesh_render  ->material = model->materials[scene->mMeshes[mesh_index]->mMaterialIndex].get();
       mesh_collider->set_mesh ( model->meshes   [mesh_index].get());
 
-      if (model->animation_clips.size() > 0 && model->rigs.size() > 0)
-      {
-        auto animator  = entity->add_component<mak::animator>();
-        animator->clip =  model->animation_clips[0].get();
-        animator->rig  = &model->rigs           [0];
-      }
+      if (model->animation_clips.size() > 0)
+        entity->add_component<mak::animator>()->clip = model->animation_clips[0].get();
+    }
+    else if (bones.count(metadata->name)) // Meshes and bones cannot be on the same entity (as in Unity).
+    {
+      auto bone = entity->add_component<mak::bone>(bones[metadata->name]);
+      if (!root_bone) root_bone = bone;
     }
   
     for (auto i = 0; i < node->mNumChildren; ++i)
       hierarchy_traverser(node->mChildren[i], transform);
   };
-  hierarchy_traverser (scene->mRootNode, nullptr);
+  hierarchy_traverser(scene->mRootNode, nullptr);
+  for (auto entity : model->scene->entities<mak::animator>())
+    entity->component<mak::animator>()->root_bone = root_bone;
 }
 
 template<>

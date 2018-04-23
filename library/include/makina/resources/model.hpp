@@ -10,7 +10,6 @@
 #include <makina/aspects/named.hpp>
 #include <makina/core/scene.hpp>
 #include <makina/resources/animation_clip.hpp>
-#include <makina/resources/bone.hpp>
 #include <makina/resources/material.hpp>
 #include <makina/resources/mesh.hpp>
 #include <makina/export.hpp>
@@ -35,7 +34,6 @@ struct MAKINA_EXPORT model : public named, public ra::resource<model>
   std::vector<std::unique_ptr<animation_clip>> animation_clips;
   std::vector<std::unique_ptr<material>>       materials      ;
   std::vector<std::unique_ptr<mesh>>           meshes         ;
-  std::vector<std::vector<bone>>               rigs           ;
   std::unique_ptr<scene>                       scene          ; // Models may contain partial scenes.
 };
 }
