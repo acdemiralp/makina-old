@@ -17,7 +17,7 @@ namespace mak
 {
 namespace detail
 {
-glm::mat4  handedness_conversion_matrix()
+glm::mat4  handedness_conversion_matrix ()
 {
   return glm::mat4(
     1.0f,  0.0f,  0.0f,  0.0f,
@@ -25,7 +25,7 @@ glm::mat4  handedness_conversion_matrix()
     0.0f,  0.0f, -1.0f,  0.0f,
     0.0f,  0.0f,  0.0f,  1.0f);
 }
-glm::mat4  convert_to_glm_matrix       (const std::array<float, 12>& matrix)
+glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
 {
   const auto m = &reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
   return 
@@ -37,7 +37,7 @@ glm::mat4  convert_to_glm_matrix       (const std::array<float, 12>& matrix)
       m[0][3], m[1][3], m[2][3], 1.0f) *
     handedness_conversion_matrix();
 }
-glm::mat4  convert_to_glm_matrix       (const std::array<float, 16>& matrix)
+glm::mat4  convert_to_glm_matrix        (const std::array<float, 16>& matrix)
 {
   const auto m = &reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
   return 
@@ -49,7 +49,7 @@ glm::mat4  convert_to_glm_matrix       (const std::array<float, 16>& matrix)
       m[0][3], m[1][3], m[2][3], m[3][3]) *
     handedness_conversion_matrix();
 }
-glm::mat4  make_projection_matrix      (const di::rectangle<float>&  rectangle, const float near, const float far)
+glm::mat4  make_projection_matrix       (const di::rectangle<float>& rectangle, const float near, const float far)
 {
   return glm::frustum(near * rectangle.left, near * rectangle.right, near * rectangle.top, near * rectangle.bottom, near, far);
 }
