@@ -14,7 +14,7 @@ namespace mak
 class MAKINA_EXPORT transform : public hierarchical<transform>
 {
 public:
-  transform           (metadata* metadata);
+  explicit transform  (metadata* metadata);
   transform           (const transform&  that) = default;
   transform           (      transform&& temp) = default;
   virtual ~transform  ()                       = default;
@@ -50,8 +50,12 @@ public:
   metadata* metadata          () const;
   void      set_metadata      (mak::metadata* metadata);
 
+  bool      auto_commit       () const;
+  void      set_auto_commit   (const bool auto_commit);
+
+  void      commit            ();
+
 protected:  
-  void      update_matrix     ();
   void      update_hierarchy  ();
 
   glm::vec3      translation_     = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -60,6 +64,7 @@ protected:
   glm::mat4      matrix_          ;
   glm::mat4      absolute_matrix_ ;
   mak::metadata* metadata_        ;
+  bool           auto_commit_     = true;
 };
 }
 

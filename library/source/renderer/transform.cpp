@@ -9,7 +9,7 @@ namespace mak
 {
 transform::transform(mak::metadata* metadata) : metadata_(metadata)
 {
-  update_matrix();
+  commit();
 }
 
 glm::vec3 transform::translation       (const bool absolute) const
@@ -49,12 +49,12 @@ glm::vec3 transform::forward           (const bool absolute) const
 void      transform::set_translation   (const glm::vec3& translation                , const bool absolute)
 {
   translation_ = absolute && parent_ ? translation - parent_->translation(true) : translation;
-  update_matrix();
+  if (auto_commit_) commit();
 }
 void      transform::set_rotation      (const glm::quat& rotation                   , const bool absolute)
 {
   rotation_ = absolute && parent_ ? glm::inverse(parent_->rotation(true)) * rotation : rotation;
-  update_matrix();
+  if (auto_commit_) commit();
 }
 void      transform::set_rotation_euler(const glm::vec3& rotation                   , const bool absolute)
 {
@@ -63,7 +63,7 @@ void      transform::set_rotation_euler(const glm::vec3& rotation               
 void      transform::set_scale         (const glm::vec3& scale                      , const bool absolute)
 {
   scale_ = absolute && parent_ ? scale / parent_->scale(true) : scale;
-  update_matrix();
+  if (auto_commit_) commit();
 }
 void      transform::set_matrix        (const glm::mat4& matrix                     , const bool absolute)
 {
@@ -71,7 +71,7 @@ void      transform::set_matrix        (const glm::mat4& matrix                 
   glm::vec4 perspective;
   matrix_ = absolute && parent_ ? glm::inverse(parent_->absolute_matrix_) * matrix : matrix;
   glm::decompose(matrix_, scale_, rotation_, translation_, skew, perspective);
-  update_hierarchy();
+  if (auto_commit_) commit();
 }
           
 void      transform::translate         (const glm::vec3& value                      , const bool absolute)
@@ -99,7 +99,7 @@ void      transform::reset             ()
   translation_ = glm::vec3(0.0f, 0.0f, 0.0f);
   rotation_    = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
   scale_       = glm::vec3(1.0f, 1.0f, 1.0f);
-  update_matrix();
+  if (auto_commit_) commit();
 }
           
 void      transform::set_parent        (transform* parent)
@@ -111,7 +111,7 @@ void      transform::set_parent        (transform* parent, const bool maintain_a
   const auto matrix = absolute_matrix_;
   hierarchical<transform>::set_parent(parent);
   if (maintain_absolute) set_matrix(matrix, true);
-  update_matrix();
+  if (auto_commit_) commit();
 }
           
 metadata* transform::metadata          () const
@@ -123,11 +123,21 @@ void      transform::set_metadata      (mak::metadata* metadata)
   metadata_ = metadata;
 }
 
-void      transform::update_matrix     ()
+bool      transform::auto_commit       () const
+{
+  return auto_commit_;
+}
+void      transform::set_auto_commit   (const bool auto_commit)
+{
+  auto_commit_ = auto_commit;
+}
+                                       
+void      transform::commit            ()
 {
   matrix_ = glm::translate(translation_) * glm::mat4_cast(rotation_) * glm::scale(scale_);
   update_hierarchy();
 }
+
 void      transform::update_hierarchy  ()
 {
   absolute_matrix_ = parent_ ? parent_->absolute_matrix_ * matrix_ : matrix_;
