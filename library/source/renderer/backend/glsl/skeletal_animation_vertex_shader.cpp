@@ -14,24 +14,16 @@ std::string skeletal_animation_vertex_shader = R"(
 #extension GL_KHR_vulkan_glsl : enable
 #endif
 
-struct _transform
-{
-  mat4 model ;
-};
 struct _rig
 {
+  mat4 model ;
   mat4 offset;
 };
 
-layout(std430, set = 0, binding = 0) readonly buffer transform
+layout(std430, set = 0, binding = 0) readonly buffer rig
 {
-  uvec4      transforms_metadata; // x size
-  _transform transforms[];
-};
-layout(std430, set = 0, binding = 1) readonly buffer rig
-{
-  uvec4      rigs_metadata;       // x size
-  _rig       rigs[];
+  uvec4 rigs_metadata; // x size
+  _rig  rigs[];
 };
 
 layout(location = 0) in vec3  vertex      ;
@@ -47,7 +39,7 @@ void main()
   mat4 matrix = mat4(0.0);
   for (int i = 0; i < 4; ++i)
     if (bone_weights[i] > 0.0f)
-      matrix += transforms[bone_ids[i]].model * rigs[bone_ids[i]].offset * bone_weights[i];
+      matrix += rigs[bone_ids[i]].model * rigs[bone_ids[i]].offset * bone_weights[i];
   output_vertex = (matrix * vec4(vertex, 1.0f)).xyz;
   output_normal = (matrix * vec4(normal, 0.0f)).xyz;
 }

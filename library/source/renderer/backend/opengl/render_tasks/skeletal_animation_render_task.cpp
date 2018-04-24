@@ -26,7 +26,6 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.bone_ids             = builder.read(scene_data.bone_ids     );
       data.bone_weights         = builder.read(scene_data.bone_weights );
       data.indices              = builder.read(scene_data.indices      );
-      data.transforms           = builder.read(scene_data.transforms   );
       data.rigs                 = builder.read(scene_data.rigs         );
       data.draw_calls           = builder.read(scene_data.draw_calls   );
       data.parameter_map        = builder.read(scene_data.parameter_map);
@@ -48,7 +47,6 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
           {data.bone_weights, 4, GL_FLOAT       }
         }, 
         {
-          data.transforms, 
           data.rigs  
         }, 
         data.indices,

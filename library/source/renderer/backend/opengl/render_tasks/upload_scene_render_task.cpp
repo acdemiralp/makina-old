@@ -54,6 +54,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
   };
   struct _rig
   {
+    glm::mat4    model         ;
     glm::mat4    offset        ;
   };
 
@@ -111,12 +112,13 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       auto phong_materials      = std::vector<_phong_material>                   ();
       auto cameras              = std::vector<_camera>                           ();
       auto lights               = std::vector<_light>                            ();
-      auto rigs                 = std::vector<_rig>                              (); // TODO: Fill rigs!
+      auto rigs                 = std::vector<_rig>                              ();
       auto draw_calls           = std::vector<gl::draw_elements_indirect_command>();
 
       GLuint texture_offset     = 0;
       GLuint first_index_offset = 0;
       GLuint base_vertex_offset = 0;
+      GLuint bone_offset        = 0;
       for (auto i = 0; i < mesh_render_entities.size(); ++i)
       {
         const auto& entity      = mesh_render_entities[i];
@@ -298,15 +300,29 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const std::array<std::uint32_t, 2> instance_attribute {i, i};
 
         std::vector<glm::vec3> transformed_texture_coordinates(texture_coordinates.size());
-        std::transform(texture_coordinates.begin(), texture_coordinates.end(), transformed_texture_coordinates.begin(), [texture_coordinate_scale] (const glm::vec3& texture_coordinate)
-        {
-          return texture_coordinate * texture_coordinate_scale;
-        });
+        std::transform(
+          texture_coordinates            .begin(), 
+          texture_coordinates            .end  (), 
+          transformed_texture_coordinates.begin(), 
+          [texture_coordinate_scale] (const glm::vec3& texture_coordinate)
+          {
+            return texture_coordinate * texture_coordinate_scale;
+          });
+        
+        std::vector<glm::uvec4> transformed_bone_ids(bone_ids.size());
+        std::transform(
+          bone_ids            .begin(), 
+          bone_ids            .end  (), 
+          transformed_bone_ids.begin(), 
+          [bone_offset] (const glm::uvec4& bone_id)
+          {
+            return bone_id + glm::uvec4(bone_offset);
+          });
 
         data.vertices           ->actual()->set_sub_data(sizeof vertices           [0] * base_vertex_offset, sizeof vertices           [0] * vertices           .size(), vertices                       .data());
         data.normals            ->actual()->set_sub_data(sizeof normals            [0] * base_vertex_offset, sizeof normals            [0] * normals            .size(), normals                        .data());
         data.texture_coordinates->actual()->set_sub_data(sizeof texture_coordinates[0] * base_vertex_offset, sizeof texture_coordinates[0] * texture_coordinates.size(), transformed_texture_coordinates.data());
-        data.bone_ids           ->actual()->set_sub_data(sizeof bone_ids           [0] * base_vertex_offset, sizeof bone_ids           [0] * bone_ids           .size(), bone_ids                       .data());
+        data.bone_ids           ->actual()->set_sub_data(sizeof bone_ids           [0] * base_vertex_offset, sizeof bone_ids           [0] * bone_ids           .size(), transformed_bone_ids           .data());
         data.bone_weights       ->actual()->set_sub_data(sizeof bone_weights       [0] * base_vertex_offset, sizeof bone_weights       [0] * bone_weights       .size(), bone_weights                   .data());
         data.indices            ->actual()->set_sub_data(sizeof indices            [0] * first_index_offset, sizeof indices            [0] * indices            .size(), indices                        .data());
         data.instance_attributes->actual()->set_sub_data(sizeof std::array<std::uint32_t, 2> * i           , sizeof std::array<std::uint32_t, 2>                       , instance_attribute             .data());
@@ -320,8 +336,11 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           static_cast<GLuint>(i)
         });
 
+        // TODO: Collect the bones on the animator.root_transform. Sort them by their ID. Append to rigs.
+
         first_index_offset += static_cast<GLuint>(indices .size());
         base_vertex_offset += static_cast<GLuint>(vertices.size());
+        bone_offset        += static_cast<GLuint>(rigs    .size());
       }
       for (auto& entity : camera_entities)
       {

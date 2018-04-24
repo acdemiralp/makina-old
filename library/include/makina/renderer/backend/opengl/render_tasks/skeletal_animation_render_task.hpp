@@ -21,7 +21,6 @@ struct MAKINA_EXPORT skeletal_animation_task_data
   buffer_resource*             bone_ids            ;
   buffer_resource*             bone_weights        ;
   buffer_resource*             indices             ;
-  buffer_resource*             transforms          ;
   buffer_resource*             rigs                ;
   buffer_resource*             draw_calls          ;
   parameter_map_resource*      parameter_map       ;
