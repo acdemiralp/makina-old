@@ -68,16 +68,17 @@ add_conan_remote(
   ${BINTRAY_USERNAME} 
   ${BINTRAY_API_KEY})
   
-# There is no option to include FMOD from Conan at the moment.
-find_package  (FMOD REQUIRED)
+# Manual dependencies.
+find_package(Cuda REQUIRED)
+find_package(FMOD REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(OptiX REQUIRED)
+find_package(Vulkan REQUIRED)
+
+import_library(CUDA_INCLUDE_DIRS CUDA_LIBRARIES)
 import_library(FMOD_INCLUDE_DIRS FMOD_LIBRARIES)
-
-# Necessary for correct linking order.
-find_package  (OpenGL REQUIRED)
 import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
-
-# There is no option to include Vulkan from Conan at the moment.
-find_package  (Vulkan REQUIRED)
+import_library(OPTIX_INCLUDE_DIR OPTIX_LIB)
 import_library(Vulkan_INCLUDE_DIR Vulkan_LIBRARY)
 
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
