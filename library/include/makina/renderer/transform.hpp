@@ -6,11 +6,12 @@
 #include <glm/vec3.hpp>
 
 #include <makina/aspects/hierarchical.hpp>
-#include <makina/core/metadata.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
+struct metadata;
+
 class MAKINA_EXPORT transform : public hierarchical<transform>
 {
 public:

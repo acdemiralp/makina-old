@@ -5,6 +5,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include <makina/core/metadata.hpp>
+
 namespace mak
 {
 transform::transform(mak::metadata* metadata) : metadata_(metadata)
