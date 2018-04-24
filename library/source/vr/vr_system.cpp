@@ -17,7 +17,7 @@ namespace mak
 {
 namespace detail
 {
-glm::mat4  handedness_conversion_matrix ()
+glm::mat4  handedness_conversion_matrix()
 {
   return glm::mat4(
     1.0f,  0.0f,  0.0f,  0.0f,
@@ -25,14 +25,19 @@ glm::mat4  handedness_conversion_matrix ()
     0.0f,  0.0f, -1.0f,  0.0f,
     0.0f,  0.0f,  0.0f,  1.0f);
 }
-glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
+glm::mat4  convert_to_glm_matrix       (const std::array<float, 12>& matrix)
 {
   return handedness_conversion_matrix() * glm::transpose(glm::mat4(glm::make_mat3x4(matrix.data()))) * handedness_conversion_matrix();
 }
-glm::mat4  convert_to_glm_matrix        (const std::array<float, 16>& matrix)
+glm::mat4  convert_to_glm_matrix       (const std::array<float, 16>& matrix)
 {
   return handedness_conversion_matrix() * glm::transpose(glm::make_mat4(matrix.data()))              * handedness_conversion_matrix();
 }
+glm::mat4  make_projection_matrix      (const di::rectangle<float>&  rectangle, const float near, const float far)
+{
+  return glm::frustum(rectangle.left, rectangle.right, rectangle.top, rectangle.bottom, near, far);
+}
+
 template <di::tracking_device_type type>
 transform* create_tracking_device_entity(di::tracking_device<type>* tracking_device, model* model, scene* scene)
 {
@@ -84,24 +89,22 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
       auto eye_metadata    = eye  ->add_component<mak::metadata>  ();
       auto eye_transform   = eye  ->add_component<mak::transform> (metadata);
       auto eye_projection  = eye  ->add_component<mak::projection>();
-      auto parameters      = hmd->projection_parameters(di::eye::left);
       eye_metadata  ->name = "HMD Left Camera";
       eye_metadata  ->tags.push_back("hmd_left_camera" );
       eye_transform ->set_parent(transform);
-      eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::left )));
-      eye_projection->set_matrix(glm::perspective(parameters.bottom - parameters.top, (parameters.right - parameters.left) / (parameters.bottom - parameters.top), 0.1f, 10000.0f));
+      eye_transform ->set_matrix(convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::left )));
+      eye_projection->set_matrix(make_projection_matrix(hmd->projection_parameters(di::eye::left ), 0.1f, 10000.0f));
     }
     {
       auto eye             = scene->add_entity();
       auto eye_metadata    = eye  ->add_component<mak::metadata>  ();
       auto eye_transform   = eye  ->add_component<mak::transform> (metadata);
       auto eye_projection  = eye  ->add_component<mak::projection>();
-      auto parameters      = hmd->projection_parameters(di::eye::right);
       eye_metadata  ->name = "HMD Right Camera";
       eye_metadata  ->tags.push_back("hmd_right_camera");
       eye_transform ->set_parent(transform);
-      eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::right)));
-      eye_projection->set_matrix(glm::perspective(parameters.bottom - parameters.top, (parameters.right - parameters.left) / (parameters.bottom - parameters.top), 0.1f, 10000.0f));
+      eye_transform ->set_matrix(convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::right)));
+      eye_projection->set_matrix(make_projection_matrix(hmd->projection_parameters(di::eye::right), 0.1f, 10000.0f));
     }
   }
   
