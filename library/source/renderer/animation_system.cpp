@@ -29,19 +29,22 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
         animator->time -= animator->clip->length;
     }
 
-    //std::function<void(transform*)> recursive_apply = [&] (transform* transform)
-    //{
-    //  if (animator->clip->translation_curves.count(transform->metadata()->name))
-    //    transform->set_translation(animator->clip->translation_curves[transform->metadata()->name].lerp (animator->time), true);
-    //  if (animator->clip->rotation_curves   .count(transform->metadata()->name))
-    //    transform->set_rotation   (animator->clip->rotation_curves   [transform->metadata()->name].slerp(animator->time), true);
-    //  if (animator->clip->scaling_curves    .count(transform->metadata()->name))
-    //    transform->set_scale      (animator->clip->scaling_curves    [transform->metadata()->name].lerp (animator->time), true);
-    //
-    //  for (auto child : transform->children())
-    //    recursive_apply(transform);
-    //};
-    //recursive_apply(animator->root_transform);
+    std::function<void(transform*)> recursive_apply = [&] (transform* transform)
+    {
+      transform->set_auto_commit(false);
+      if (animator->clip->translation_curves.count(transform->metadata()->name))
+        transform->set_translation(animator->clip->translation_curves[transform->metadata()->name].lerp (animator->time));
+      if (animator->clip->rotation_curves   .count(transform->metadata()->name))
+        transform->set_rotation   (animator->clip->rotation_curves   [transform->metadata()->name].slerp(animator->time));
+      if (animator->clip->scaling_curves    .count(transform->metadata()->name))
+        transform->set_scale      (animator->clip->scaling_curves    [transform->metadata()->name].lerp (animator->time));
+      transform->set_auto_commit(true );
+    
+      for (auto child : transform->children())
+        recursive_apply(child);
+    };
+    recursive_apply(animator->root_transform);
+    animator->root_transform->commit();
   }
 }
 }
