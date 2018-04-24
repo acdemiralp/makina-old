@@ -12,9 +12,10 @@ void append_scene(scene* source, scene* target)
   
   const std::function<void(entity*, entity*)> recursive_add_entity = [&] (mak::entity* source_entity, mak::entity* parent)
   {
-    auto entity    = target->copy_entity(source_entity);
-    auto transform = entity->component<mak::transform>();
-    auto metadata  = entity->component<mak::metadata> ();
+    auto entity       = target->copy_entity(source_entity);
+    auto transform    = entity->component<mak::transform>();
+    auto metadata     = entity->component<mak::metadata> ();
+    metadata ->entity = entity;
     transform->set_metadata(metadata);
     transform->set_children({});
     if (parent) transform->set_parent(parent->component<mak::transform>());
