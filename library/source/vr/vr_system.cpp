@@ -35,6 +35,7 @@ glm::mat4  convert_to_glm_matrix       (const std::array<float, 16>& matrix)
 }
 glm::mat4  make_projection_matrix      (const di::rectangle<float>&  rectangle, const float near, const float far)
 {
+  // TODO: Correct.
   return glm::frustum(rectangle.left, rectangle.right, rectangle.top, rectangle.bottom, near, far);
 }
 
