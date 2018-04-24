@@ -216,10 +216,11 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
   std::function<void(const aiNode*, mak::transform*)> hierarchy_traverser;
   hierarchy_traverser = [&] (const aiNode* node, mak::transform* parent)
   {
-    auto entity     = model->scene->add_entity();
-    auto metadata   = entity->add_component<mak::metadata> ();
-    auto transform  = entity->add_component<mak::transform>(metadata);
-    metadata ->name = node->mName.C_Str();
+    auto entity      = model->scene->add_entity();
+    auto metadata    = entity->add_component<mak::metadata> (mak::metadata{entity, node->mName.C_Str()});
+    auto transform   = entity->add_component<mak::transform>(metadata);
+    metadata->entity = entity;
+    metadata->name   = node->mName.C_Str();
     transform->set_matrix(glm::transpose(glm::make_mat4(&node->mTransformation[0][0])));
     transform->set_parent(parent);
   

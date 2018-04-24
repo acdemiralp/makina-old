@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <makina/core/scene_fwd.hpp>
+
 namespace mak
 {
 struct metadata
@@ -13,10 +15,11 @@ struct metadata
   {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
   }
-
-  bool                     active = true;
+  
+  entity*                  entity ;
   std::string              name   ;
   std::vector<std::string> tags   ;
+  bool                     active = true;
 };
 }
 
