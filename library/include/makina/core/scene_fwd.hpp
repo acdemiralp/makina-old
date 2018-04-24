@@ -4,8 +4,14 @@
 #include <memory>
 #include <vector>
 
-#include <ec/entity.hpp>
-#include <ec/scene.hpp>
+namespace ec
+{
+template<typename... types>
+class entity;
+
+template<typename type>
+class scene;
+}
 
 namespace mak
 {
