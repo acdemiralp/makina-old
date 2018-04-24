@@ -1,5 +1,6 @@
 #include <makina/vr/vr_system.hpp>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat3x4.hpp>
 #include <glm/mat4x4.hpp>
@@ -54,13 +55,13 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   mesh->indices            .reserve(openvr_model->indices            .size());
 
   for (auto& vertex : openvr_model->vertices)
-    mesh  ->vertices           .push_back({vertex[0], vertex[1], -vertex[2]});
+    mesh->vertices           .push_back({vertex[0], vertex[1], -vertex[2]});
   for (auto& normal : openvr_model->normals )
-    mesh  ->normals            .push_back({normal[0], normal[1], -normal[2]});
+    mesh->normals            .push_back({normal[0], normal[1], -normal[2]});
   for (auto& texture_coordinate : openvr_model->texture_coordinates)
-    mesh  ->texture_coordinates.push_back({texture_coordinate[0], texture_coordinate[1], 0.0f});
+    mesh->texture_coordinates.push_back({texture_coordinate[0], texture_coordinate[1], 0.0f});
   for (auto i = 0; i < openvr_model->indices.size(); i+=3)
-    mesh  ->indices            .insert(mesh->indices.end(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
+    mesh->indices            .insert(mesh->indices.end(), {openvr_model->indices[i + 0], openvr_model->indices[i + 2], openvr_model->indices[i + 1]});
 
   material->albedo_image = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap, 32, std::array<fi::color_mask, 3>{fi::color_mask::red, fi::color_mask::green, fi::color_mask::blue});
   material->albedo_image->to_32_bits();
@@ -79,26 +80,28 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
 
     const auto hmd = dynamic_cast<di::hmd*>(tracking_device);
     {
-      auto eye             = scene ->add_entity();
-      auto eye_metadata    = eye   ->add_component<mak::metadata>  ();
-      auto eye_transform   = eye   ->add_component<mak::transform> (metadata);
-      auto eye_projection  = eye   ->add_component<mak::projection>();
+      auto eye             = scene->add_entity();
+      auto eye_metadata    = eye  ->add_component<mak::metadata>  ();
+      auto eye_transform   = eye  ->add_component<mak::transform> (metadata);
+      auto eye_projection  = eye  ->add_component<mak::projection>();
+      auto parameters      = hmd->projection_parameters(di::eye::left);
       eye_metadata  ->name = "HMD Left Camera";
       eye_metadata  ->tags.push_back("hmd_left_camera" );
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::left )));
-      eye_projection->set_matrix(convert_to_glm_matrix(hmd->projection_matrix    (di::eye::left , 0.1f, 10000.0f)));
+      eye_projection->set_matrix(glm::perspective(parameters.bottom - parameters.top, (parameters.right - parameters.left) / (parameters.bottom - parameters.top), 0.1f, 10000.0f));
     }
     {
-      auto eye             = scene ->add_entity();
-      auto eye_metadata    = eye   ->add_component<mak::metadata>  ();
-      auto eye_transform   = eye   ->add_component<mak::transform> (metadata);
-      auto eye_projection  = eye   ->add_component<mak::projection>();
+      auto eye             = scene->add_entity();
+      auto eye_metadata    = eye  ->add_component<mak::metadata>  ();
+      auto eye_transform   = eye  ->add_component<mak::transform> (metadata);
+      auto eye_projection  = eye  ->add_component<mak::projection>();
+      auto parameters      = hmd->projection_parameters(di::eye::right);
       eye_metadata  ->name = "HMD Right Camera";
       eye_metadata  ->tags.push_back("hmd_right_camera");
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix(hmd->eye_to_head_transform(di::eye::right)));
-      eye_projection->set_matrix(convert_to_glm_matrix(hmd->projection_matrix    (di::eye::right, 0.1f, 10000.0f)));
+      eye_projection->set_matrix(glm::perspective(parameters.bottom - parameters.top, (parameters.right - parameters.left) / (parameters.bottom - parameters.top), 0.1f, 10000.0f));
     }
   }
   
