@@ -27,16 +27,31 @@ glm::mat4  handedness_conversion_matrix()
 }
 glm::mat4  convert_to_glm_matrix       (const std::array<float, 12>& matrix)
 {
-  return handedness_conversion_matrix() * glm::transpose(glm::mat4(glm::make_mat3x4(matrix.data()))) * handedness_conversion_matrix();
+  const auto m = &reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
+  return 
+    handedness_conversion_matrix() * 
+    glm::mat4(
+      m[0][0], m[1][0], m[2][0], 0.0f, 
+      m[0][1], m[1][1], m[2][1], 0.0f, 
+      m[0][2], m[1][2], m[2][2], 0.0f, 
+      m[0][3], m[1][3], m[2][3], 1.0f) *
+    handedness_conversion_matrix();
 }
 glm::mat4  convert_to_glm_matrix       (const std::array<float, 16>& matrix)
 {
-  return handedness_conversion_matrix() * glm::transpose(glm::make_mat4(matrix.data()))              * handedness_conversion_matrix();
+  const auto m = &reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
+  return 
+    handedness_conversion_matrix() *
+    glm::mat4(
+      m[0][0], m[1][0], m[2][0], m[3][0],
+      m[0][1], m[1][1], m[2][1], m[3][1],
+      m[0][2], m[1][2], m[2][2], m[3][2],
+      m[0][3], m[1][3], m[2][3], m[3][3]) *
+    handedness_conversion_matrix();
 }
 glm::mat4  make_projection_matrix      (const di::rectangle<float>&  rectangle, const float near, const float far)
 {
-  // TODO: Correct.
-  return glm::frustum(rectangle.left, rectangle.right, rectangle.top, rectangle.bottom, near, far);
+  return glm::frustum(near * rectangle.left, near * rectangle.right, near * rectangle.top, near * rectangle.bottom, near, far);
 }
 
 template <di::tracking_device_type type>
