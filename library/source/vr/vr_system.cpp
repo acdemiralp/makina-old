@@ -27,7 +27,7 @@ glm::mat4  handedness_conversion_matrix ()
 }
 glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
 {
-  const auto m = &reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
+  const auto& m = reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
   return 
     handedness_conversion_matrix() * 
     glm::mat4(
@@ -39,7 +39,7 @@ glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
 }
 glm::mat4  convert_to_glm_matrix        (const std::array<float, 16>& matrix)
 {
-  const auto m = &reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
+  const auto& m = reinterpret_cast<const vr::HmdMatrix44_t*>(matrix.data())->m;
   return 
     handedness_conversion_matrix() *
     glm::mat4(
