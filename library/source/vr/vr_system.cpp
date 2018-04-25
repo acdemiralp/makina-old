@@ -17,41 +17,26 @@ namespace mak
 {
 namespace detail
 {
-glm::mat4  handedness_conversion_matrix ()
+glm::mat3  handedness_conversion_matrix ()
 {
-  return glm::mat4(
-    1.0f,  0.0f,  0.0f,  0.0f,
-    0.0f,  1.0f,  0.0f,  0.0f,
-    0.0f,  0.0f, -1.0f,  0.0f,
-    0.0f,  0.0f,  0.0f,  1.0f);
+  return glm::mat3(
+    1.0f,  0.0f,  0.0f,
+    0.0f,  1.0f,  0.0f,
+    0.0f,  0.0f, -1.0f);
 }
 glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
 {
-  const auto& m = reinterpret_cast<const vr::HmdMatrix34_t*>(matrix.data())->m;
-  return 
-    handedness_conversion_matrix() * 
-    glm::mat4(
-      m[0][0], m[1][0], m[2][0], 0.0f, 
-      m[0][1], m[1][1], m[2][1], 0.0f, 
-      m[0][2], m[1][2], m[2][2], 0.0f, 
-      m[0][3], m[1][3], m[2][3], 1.0f) *
-    handedness_conversion_matrix();
-}
-glm::mat4  convert_to_glm_matrix        (const std::array<float, 16>& matrix)
-{
-  const auto& m = reinterpret_cast<const vr::HmdMatrix44_t*>(matrix.data())->m;
-  return 
-    handedness_conversion_matrix() *
-    glm::mat4(
-      m[0][0], m[1][0], m[2][0], m[3][0],
-      m[0][1], m[1][1], m[2][1], m[3][1],
-      m[0][2], m[1][2], m[2][2], m[3][2],
-      m[0][3], m[1][3], m[2][3], m[3][3]) *
-    handedness_conversion_matrix();
+  const auto translation = handedness_conversion_matrix() * glm::vec3(matrix[3], matrix[7], matrix[11]);
+  const auto rotation    = handedness_conversion_matrix() * glm::mat3(glm::make_mat3x4(matrix.data())) * handedness_conversion_matrix();
+  return glm::mat4(
+    glm::vec4(rotation[0], 0.0f),
+    glm::vec4(rotation[1], 0.0f),
+    glm::vec4(rotation[2], 0.0f),
+    glm::vec4(translation, 1.0f));
 }
 glm::mat4  make_projection_matrix       (const di::rectangle<float>& rectangle, const float near, const float far)
 {
-  return glm::frustum(near * rectangle.left, near * rectangle.right, near * rectangle.top, near * rectangle.bottom, near, far);
+  return glm::frustum(-near * rectangle.right, -near * rectangle.left, -near * rectangle.bottom, -near * rectangle.top, near, far);
 }
 
 template <di::tracking_device_type type>
@@ -102,25 +87,25 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
 
     const auto hmd = dynamic_cast<di::hmd*>(tracking_device);
     {
-      auto eye            = scene->add_entity();
-      auto eye_metadata   = eye  ->add_component<mak::metadata>  ();
-      auto eye_transform  = eye  ->add_component<mak::transform> (metadata);
-      auto eye_projection = eye  ->add_component<mak::projection>();
-      metadata->entity    = eye;
-      metadata->name      = "HMD Left Camera";
-      metadata->tags.push_back("hmd_left_camera");
+      auto eye               = scene->add_entity();
+      auto eye_metadata      = eye  ->add_component<mak::metadata>  ();
+      auto eye_transform     = eye  ->add_component<mak::transform> (eye_metadata);
+      auto eye_projection    = eye  ->add_component<mak::projection>();
+      eye_metadata  ->entity = eye;
+      eye_metadata  ->name   = "HMD Left Camera";
+      eye_metadata  ->tags.push_back("hmd_left_camera");
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::left )));
       eye_projection->set_matrix(make_projection_matrix(hmd->projection_parameters(di::eye::left ), 0.1f, 10000.0f));
     }
     {
-      auto eye            = scene->add_entity();
-      auto eye_metadata   = eye  ->add_component<mak::metadata>  ();
-      auto eye_transform  = eye  ->add_component<mak::transform> (metadata);
-      auto eye_projection = eye  ->add_component<mak::projection>();
-      metadata->entity    = eye;
-      metadata->name      = "HMD Right Camera";
-      metadata->tags.push_back("hmd_right_camera");
+      auto eye               = scene->add_entity();
+      auto eye_metadata      = eye  ->add_component<mak::metadata>  ();
+      auto eye_transform     = eye  ->add_component<mak::transform> (eye_metadata);
+      auto eye_projection    = eye  ->add_component<mak::projection>();
+      eye_metadata  ->entity = eye;
+      eye_metadata  ->name   = "HMD Right Camera";
+      eye_metadata  ->tags.push_back("hmd_right_camera");
       eye_transform ->set_parent(transform);
       eye_transform ->set_matrix(convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::right)));
       eye_projection->set_matrix(make_projection_matrix(hmd->projection_parameters(di::eye::right), 0.1f, 10000.0f));
