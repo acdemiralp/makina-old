@@ -336,7 +336,24 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           static_cast<GLuint>(i)
         });
 
-        // TODO: Collect the bones on the animator.root_transform. Sort them by their ID. Append to rigs.
+        std::vector<std::pair<mak::transform*, mak::bone*>> transform_bone_pairs;
+        std::function<void(mak::transform*)> recursive_collect = [&] (mak::transform* transform)
+        {
+          if(transform->metadata()->entity->has_components<mak::bone>())
+            transform_bone_pairs.push_back({transform, transform->metadata()->entity->component<mak::bone>()});
+          for (auto child : transform->children())
+            recursive_collect(child);
+        };
+        recursive_collect(animator->root_transform);
+        std::sort(
+          transform_bone_pairs.begin(), 
+          transform_bone_pairs.end  (), 
+          [ ] (const std::pair<mak::transform*, mak::bone*>& lhs, const std::pair<mak::transform*, mak::bone*>& rhs)
+          {
+            return lhs.second->index < rhs.second->index;
+          });
+        for (auto& transform_bone_pair : transform_bone_pairs)
+          rigs.push_back(_rig{transform_bone_pair.first->matrix(true), transform_bone_pair.second->offset_matrix});
 
         first_index_offset += static_cast<GLuint>(indices .size());
         base_vertex_offset += static_cast<GLuint>(vertices.size());

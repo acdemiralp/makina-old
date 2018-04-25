@@ -57,7 +57,7 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
     {
       data.program           ->actual()->use   ();
       data.vertex_array      ->actual()->bind  ();
-      data.transform_feedback->actual()->begin (GL_TRIANGLES);
+      //data.transform_feedback->actual()->begin (GL_TRIANGLES);
 
       glClipControl                       (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled          (true   );
@@ -71,7 +71,7 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       gl::multi_draw_elements_indirect    (GL_TRIANGLES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
       gl::set_rasterizer_discard_enabled  (false  );
 
-      data.transform_feedback->actual()->end   ();
+      //data.transform_feedback->actual()->end   ();
       data.vertex_array      ->actual()->unbind();
       data.program           ->actual()->unuse ();
 
