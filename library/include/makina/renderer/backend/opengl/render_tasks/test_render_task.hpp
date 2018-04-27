@@ -15,7 +15,7 @@ namespace opengl
 struct MAKINA_EXPORT test_task_data
 {
   buffer_resource*       vertices    ;
-  program_resource*      program     ;
+  graphics_program_resource*      program     ;
   vertex_array_resource* vertex_array;
   framebuffer_resource*  target      ;
 };

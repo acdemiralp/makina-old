@@ -31,12 +31,12 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
       data.draw_calls          = builder.read(scene_data.draw_calls          );
       data.parameter_map       = builder.read(scene_data.parameter_map       );
       data.textures            = builder.read(scene_data.textures            );
-      data.program             = builder.create<program_resource>     ("Phong Shading Program"     , program::description     
+      data.program             = builder.create<graphics_program_resource>("Phong Shading Program"     , program::graphics_description     
       {
         glsl::default_vertex_shader, 
         glsl::phong_fragment_shader
       });
-      data.vertex_array        = builder.create<vertex_array_resource>("Phong Shading Vertex Array", vertex_array::description
+      data.vertex_array        = builder.create<vertex_array_resource>    ("Phong Shading Vertex Array", vertex_array::description
       {
         { 
           {data.vertices           , 3, GL_FLOAT       }, 

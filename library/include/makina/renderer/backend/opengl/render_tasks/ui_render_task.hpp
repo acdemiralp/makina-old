@@ -20,7 +20,7 @@ struct MAKINA_EXPORT ui_task_data
   buffer_resource*       indices     ;
   texture_2d_resource*   texture     ;
                          
-  program_resource*      program     ;
+  graphics_program_resource*      program     ;
   vertex_array_resource* vertex_array;
   framebuffer_resource*  target      ;
 };

@@ -17,9 +17,9 @@ namespace opengl
     "Test Shading Pass",
     [&] (      test_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices     = builder.create<buffer_resource>      ("Test Shading Vertices"    , buffer_description        {GLsizeiptr(1e+6), GL_ARRAY_BUFFER});
-      data.program      = builder.create<program_resource>     ("Test Shading Program"     , program::description      {glsl::test_vertex_shader, glsl::test_fragment_shader});
-      data.vertex_array = builder.create<vertex_array_resource>("Test Shading Vertex Array", vertex_array::description {{{data.vertices, 3, GL_FLOAT}}});
+      data.vertices     = builder.create<buffer_resource>          ("Test Shading Vertices"    , buffer_description           {GLsizeiptr(1e+6), GL_ARRAY_BUFFER});
+      data.program      = builder.create<graphics_program_resource>("Test Shading Program"     , program::graphics_description{glsl::test_vertex_shader, glsl::test_fragment_shader});
+      data.vertex_array = builder.create<vertex_array_resource>    ("Test Shading Vertex Array", vertex_array::description    {{{data.vertices, 3, GL_FLOAT}}});
       data.target       = builder.write(target);
     },
     [=] (const test_task_data& data)

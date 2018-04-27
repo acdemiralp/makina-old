@@ -6,7 +6,26 @@ namespace mak
 {
 namespace opengl
 {
-program::program(const description& description)
+program::program(const compute_description& description)
+{
+  if (description.compute_stage.size() > 0)
+  {
+    compute_stage_. emplace   (GL_COMPUTE_SHADER);
+    compute_stage_->set_source(description.compute_stage);
+    compute_stage_->compile   ();
+
+    if (compute_stage_->info_log_length() > 0)
+      logger->error(compute_stage_->info_log());
+
+    attach_shader(compute_stage_.value());
+  }
+
+  link();
+
+  if (info_log_length() > 0)
+    logger->error(info_log());
+}
+program::program(const graphics_description& description)
 {
   if (description.vertex_stage.size() > 0)
   {
