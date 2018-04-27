@@ -401,7 +401,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       data.lights       ->actual()->set_sub_data(sizeof glm::vec4, sizeof _light                             * lights_metadata    .x, lights         .data());
       data.rigs         ->actual()->set_sub_data(sizeof glm::vec4, sizeof _rig                               * rigs_metadata      .x, rigs           .data());
       data.draw_calls   ->actual()->set_sub_data(0               , sizeof gl::draw_elements_indirect_command * draw_calls.size()    , draw_calls     .data());
-      data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size());
+      data.parameter_map->actual()->set         ("vertex_count"  , base_vertex_offset);
+      data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size() );
 
       gl::print_error("Error in Upload Scene Pass");
     });
