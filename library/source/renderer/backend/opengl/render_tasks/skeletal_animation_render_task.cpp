@@ -26,9 +26,7 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.normals              = builder.read(scene_data.normals      );
       data.bone_ids             = builder.read(scene_data.bone_ids     );
       data.bone_weights         = builder.read(scene_data.bone_weights );
-      data.indices              = builder.read(scene_data.indices      );
       data.rigs                 = builder.read(scene_data.rigs         );
-      data.draw_calls           = builder.read(scene_data.draw_calls   );
       data.parameter_map        = builder.read(scene_data.parameter_map);
       
       data.transformed_vertices = builder.write(retained_vertices);
