@@ -39,8 +39,8 @@ public:
   void      set_matrix        (const glm::mat4& matrix     , const bool absolute = false);
                                                                            
   void      translate         (const glm::vec3& value      , const bool absolute = false);
-  void      rotate            (const glm::quat& value      , const bool absolute = false);
-  void      rotate_euler      (const glm::vec3& value      , const bool absolute = false);
+  void      rotate            (const glm::quat& value      , const bool absolute = false, const bool postmultiply = false);
+  void      rotate_euler      (const glm::vec3& value      , const bool absolute = false, const bool postmultiply = false);
   void      scale             (const glm::vec3& value      , const bool absolute = false);
   void      look_at           (const glm::vec3& target     , const glm::vec3& up = glm::vec3(0.0f, 1.0f, 0.0f), const bool absolute = false);
   void      reset             ();

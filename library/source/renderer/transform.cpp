@@ -55,7 +55,7 @@ void      transform::set_translation   (const glm::vec3& translation            
 }
 void      transform::set_rotation      (const glm::quat& rotation                   , const bool absolute)
 {
-  rotation_ = absolute && parent_ ? glm::inverse(parent_->rotation(true)) * rotation : rotation;
+  rotation_ = absolute && parent_ ? rotation * glm::inverse(parent_->rotation(true)) : rotation;
   if (auto_commit_) commit();
 }
 void      transform::set_rotation_euler(const glm::vec3& rotation                   , const bool absolute)
@@ -71,7 +71,7 @@ void      transform::set_matrix        (const glm::mat4& matrix                 
 {
   glm::vec3 skew       ;
   glm::vec4 perspective;
-  matrix_ = absolute && parent_ ? glm::inverse(parent_->absolute_matrix_) * matrix : matrix;
+  matrix_ = absolute && parent_ ? matrix * glm::inverse(parent_->absolute_matrix_) : matrix;
   glm::decompose(matrix_, scale_, rotation_, translation_, skew, perspective);
   if (auto_commit_) commit();
 }
@@ -80,13 +80,13 @@ void      transform::translate         (const glm::vec3& value                  
 {
   set_translation(value + translation(absolute), absolute);
 }
-void      transform::rotate            (const glm::quat& value                      , const bool absolute)
+void      transform::rotate            (const glm::quat& value                      , const bool absolute, const bool postmultiply)
 {
-  set_rotation   (value * rotation   (absolute), absolute);
+  set_rotation   (postmultiply ? rotation(absolute) * value : value * rotation(absolute), absolute);
 }
-void      transform::rotate_euler      (const glm::vec3& value                      , const bool absolute)
+void      transform::rotate_euler      (const glm::vec3& value                      , const bool absolute, const bool postmultiply)
 {
-  rotate         (glm::quat(glm::radians(value)), absolute);
+  rotate         (glm::quat(glm::radians(value)), absolute, postmultiply);
 }
 void      transform::scale             (const glm::vec3& value                      , const bool absolute)
 {
@@ -110,9 +110,8 @@ void      transform::set_parent        (transform* parent)
 }
 void      transform::set_parent        (transform* parent, const bool maintain_absolute)
 {
-  const auto matrix = absolute_matrix_;
   hierarchical<transform>::set_parent(parent);
-  if (maintain_absolute) set_matrix(matrix, true);
+  if (maintain_absolute) set_matrix(absolute_matrix_, true);
   if (auto_commit_) commit();
 }
           

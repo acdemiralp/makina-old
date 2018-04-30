@@ -188,22 +188,28 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     const auto assimp_animation_clip = scene->mAnimations[i];
     animation_clip->set_name(assimp_animation_clip->mName.C_Str());
     animation_clip->framerate = assimp_animation_clip->mTicksPerSecond ;
-    animation_clip->length    = assimp_animation_clip->mDuration * 1000;
+    animation_clip->length    = std::chrono::duration<float, std::ratio<1>>(assimp_animation_clip->mDuration / assimp_animation_clip->mTicksPerSecond);
     animation_clip->wrap_mode = mak::animation_clip::wrap_mode::loop   ;
 
     for (auto j = 0; j < assimp_animation_clip->mNumChannels; ++j) 
     {
-      auto position_curve = mak::animation_curve<glm::vec3, float>();
-      auto scaling_curve  = mak::animation_curve<glm::vec3, float>();
-      auto rotation_curve = mak::animation_curve<glm::quat, float>();
+      auto position_curve = mak::animation_curve<glm::vec3>();
+      auto scaling_curve  = mak::animation_curve<glm::vec3>();
+      auto rotation_curve = mak::animation_curve<glm::quat>();
 
       const auto assimp_curve = assimp_animation_clip->mChannels[j];
       for (auto k = 0; k < assimp_curve->mNumPositionKeys; k++)
-        position_curve.keyframes.push_back({float(assimp_curve->mPositionKeys[k].mTime), glm::vec3(assimp_curve->mPositionKeys[k].mValue.x, assimp_curve->mPositionKeys[k].mValue.y, assimp_curve->mPositionKeys[k].mValue.z)});
+        position_curve.keyframes.push_back({
+          mak::frame_timer::duration(std::chrono::duration<float, std::ratio<1>>(assimp_curve->mPositionKeys[k].mTime)), 
+          glm::vec3(assimp_curve->mPositionKeys[k].mValue.x, assimp_curve->mPositionKeys[k].mValue.y, assimp_curve->mPositionKeys[k].mValue.z)});
       for (auto k = 0; k < assimp_curve->mNumRotationKeys; k++)
-        rotation_curve.keyframes.push_back({float(assimp_curve->mRotationKeys[k].mTime), glm::quat(assimp_curve->mRotationKeys[k].mValue.x, assimp_curve->mRotationKeys[k].mValue.y, assimp_curve->mRotationKeys[k].mValue.z, assimp_curve->mRotationKeys[k].mValue.w)});
+        rotation_curve.keyframes.push_back({
+          mak::frame_timer::duration(std::chrono::duration<float, std::ratio<1>>(assimp_curve->mRotationKeys[k].mTime)), 
+          glm::quat(assimp_curve->mRotationKeys[k].mValue.w, assimp_curve->mRotationKeys[k].mValue.x, assimp_curve->mRotationKeys[k].mValue.y, assimp_curve->mRotationKeys[k].mValue.z)});
       for (auto k = 0; k < assimp_curve->mNumScalingKeys; k++)
-        scaling_curve .keyframes.push_back({float(assimp_curve->mScalingKeys [k].mTime), glm::vec3(assimp_curve->mScalingKeys [k].mValue.x, assimp_curve->mScalingKeys [k].mValue.y, assimp_curve->mScalingKeys [k].mValue.z)});
+        scaling_curve .keyframes.push_back({
+          mak::frame_timer::duration(std::chrono::duration<float, std::ratio<1>>(assimp_curve->mScalingKeys [k].mTime)), 
+          glm::vec3(assimp_curve->mScalingKeys [k].mValue.x, assimp_curve->mScalingKeys [k].mValue.y, assimp_curve->mScalingKeys [k].mValue.z)});
 
       animation_clip->translation_curves[assimp_curve->mNodeName.C_Str()] = position_curve;
       animation_clip->rotation_curves   [assimp_curve->mNodeName.C_Str()] = rotation_curve;
@@ -222,7 +228,7 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     metadata->entity = entity;
     metadata->name   = node->mName.C_Str();
     transform->set_matrix(glm::transpose(glm::make_mat4(&node->mTransformation[0][0])));
-    transform->set_parent(parent);
+    transform->set_parent(parent, false);
   
     if (node->mNumMeshes > 0)
     {

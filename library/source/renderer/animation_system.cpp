@@ -15,12 +15,12 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
     auto animator = entity->component<mak::animator>();
     if (!animator->play) continue;
 
-    animator->time += delta.count();
+    animator->time += delta;
     if (animator->time >= animator->clip->length)
     {
       if (animator->clip->wrap_mode == animation_clip::wrap_mode::once )
       {
-        animator->time = 0.0f;
+        animator->time = frame_timer::duration();
         animator->play = false;
       }
       if (animator->clip->wrap_mode == animation_clip::wrap_mode::clamp)
@@ -38,13 +38,13 @@ void animation_system::update(frame_timer::duration delta, scene* scene)
         transform->set_rotation   (animator->clip->rotation_curves   [transform->metadata()->name].slerp(animator->time));
       if (animator->clip->scaling_curves    .count(transform->metadata()->name))
         transform->set_scale      (animator->clip->scaling_curves    [transform->metadata()->name].lerp (animator->time));
+      transform->commit         ();
       transform->set_auto_commit(true );
     
       for (auto child : transform->children())
         recursive_apply(child);
     };
     recursive_apply(animator->root_transform);
-    animator->root_transform->commit();
   }
 }
 }

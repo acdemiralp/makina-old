@@ -16,6 +16,7 @@ extern "C"
 #include <makina/core/registry.hpp>
 #include <makina/core/scene.hpp>
 #include <makina/display/display_system.hpp>
+#include <makina/physics/physics_system.hpp>
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
@@ -65,16 +66,13 @@ TEST_CASE("OpenGL test.", "[makina]")
   auto& model  = models.emplace_back();
   model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
   
-  auto& audio_clips = mak::registry->get<mak::audio_clip>().storage();
-  auto& audio_clip  = audio_clips.emplace_back(mak::audio_clip::description{"data/audio/test/test.mp3", true});
-
-  auto audio_source = engine->scene()->entities()[0]->add_component<mak::audio_source>();
-  audio_source->set_clip(&audio_clip);
-  audio_source->set_looping(true);
-  
   mak::append_scene(model.scene.get(), engine->scene());
   mak::print_scene (model.scene.get());
   mak::print_scene (engine->scene  ());
   
+  engine->scene()->entities<mak::rigidbody>  ()[0]->component<mak::rigidbody>()->set_mass (0.0f);
+  //engine->scene()->entities<mak::mesh_render>()[0]->component<mak::transform>()->set_scale(glm::vec3(0.1f), true);
+  engine->scene()->entities<mak::animator>   ()[0]->component<mak::animator> ()->play = true;
+
   engine->run();
 }

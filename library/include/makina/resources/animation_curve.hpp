@@ -12,17 +12,17 @@
 
 namespace mak
 {
-template<typename parameter_type = glm::vec3, typename temporal_type = float>
+template<typename parameter_type = glm::vec3, typename temporal_type = frame_timer::duration>
 struct MAKINA_EXPORT animation_curve
 {
   parameter_type lerp (temporal_type time)
   {
-    for (auto i = 0; i < keyframes.size(); ++i)
+    for (auto i = 1; i < keyframes.size(); ++i)
     {
-      if (keyframes[i].time < time && i < keyframes.size() - 1)
+      if (time < keyframes[i].time)
       {
-        auto& start = keyframes[i];
-        auto& end   = keyframes[i + 1];
+        auto& start = keyframes[i - 1];
+        auto& end   = keyframes[i];
         auto  t     = (time - start.time) / (end.time - start.time);
         return glm::lerp(start.value, end.value, t);
       }
@@ -31,12 +31,12 @@ struct MAKINA_EXPORT animation_curve
   }
   parameter_type slerp(temporal_type time)
   {
-    for (auto i = 0; i < keyframes.size(); ++i)
+    for (auto i = 1; i < keyframes.size(); ++i)
     {
-      if (keyframes[i].time < time && i < keyframes.size() - 1)
+      if (time < keyframes[i].time)
       {
-        auto& start = keyframes[i];
-        auto& end   = keyframes[i + 1];
+        auto& start = keyframes[i - 1];
+        auto& end   = keyframes[i];
         auto  t     = (time - start.time) / (end.time - start.time);
         return glm::slerp(start.value, end.value, t);
       }
