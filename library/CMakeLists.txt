@@ -25,12 +25,14 @@ file(GLOB_RECURSE PROJECT_MISC *.md *.txt *.py)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_HPPS include/*.hpp include/*.h)
 file(GLOB_RECURSE PROJECT_CPPS source/*.cpp source/*.c)
+file(GLOB_RECURSE PROJECT_CUS source/*.cu)
 set (PROJECT_EXPORT_HPP "include/${PROJECT_NAME}/export.hpp")
 set (PROJECT_SOURCES 
   ${PROJECT_MISC} 
   ${PROJECT_CMAKE_UTILS} 
   ${PROJECT_HPPS} 
   ${PROJECT_CPPS} 
+  ${PROJECT_CUS} 
   ${PROJECT_EXPORT_HPP})
 
 include            (assign_source_group)
@@ -83,6 +85,23 @@ import_library(Vulkan_INCLUDE_DIR Vulkan_LIBRARY)
 
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
 list           (APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
+
+##################################################    Prebuild    ##################################################
+CUDA_GET_SOURCES_AND_OPTIONS(CUDA_SOURCES CUDA_CMAKE_OPTIONS CUDA_OPTIONS ${PROJECT_SOURCES})
+if (CUDA_NVRTC_ENABLED)
+  set(CUDA_OBJ_SOURCES)
+  foreach(CUDA_SOURCE ${CUDA_SOURCES})
+    get_source_file_property(SOURCE_FORMAT ${CUDA_SOURCE} CUDA_SOURCE_PROPERTY_FORMAT)
+    if(${SOURCE_FORMAT} MATCHES "OBJ")
+      list(APPEND CUDA_OBJ_SOURCES ${CUDA_SOURCE})
+    endif()
+  endforeach()
+  CUDA_WRAP_SRCS(${PROJECT_NAME} OBJ GENERATED_FILES ${CUDA_OBJ_SOURCES})
+else()
+  source_group("PTX Files" REGULAR_EXPRESSION ".+\\.ptx$")
+  CUDA_WRAP_SRCS(${PROJECT_NAME} PTX GENERATED_FILES ${CUDA_SOURCES} ${CUDA_CMAKE_OPTIONS} OPTIONS ${CUDA_OPTIONS})
+endif()
+list(APPEND PROJECT_SOURCES ${GENERATED_FILES})
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
