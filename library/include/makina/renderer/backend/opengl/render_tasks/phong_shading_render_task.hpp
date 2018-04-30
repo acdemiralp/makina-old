@@ -30,7 +30,7 @@ struct MAKINA_EXPORT phong_shading_task_data
   parameter_map_resource*    parameter_map      ;
   texture_2d_array_resource* textures           ;
 
-  graphics_program_resource*          program            ;
+  graphics_program_resource* program            ;
   vertex_array_resource*     vertex_array       ;
   framebuffer_resource*      target             ;
 };
