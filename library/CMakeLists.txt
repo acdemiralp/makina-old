@@ -132,6 +132,11 @@ endif()
 # Copy data folder to build directory.
 file(COPY ${PROJECT_SOURCE_DIR}/../data DESTINATION ${PROJECT_BINARY_DIR})
 
+# Configure cs generator.
+file          (COPY ${PROJECT_SOURCE_DIR}/../utility/CsGenerator DESTINATION ${PROJECT_BINARY_DIR}/..)
+set           (CS_PROGRAM_FILEPATH ${PROJECT_BINARY_DIR}/../CsGenerator/CsGenerator/Program.cs)
+configure_file(${CS_PROGRAM_FILEPATH} ${CS_PROGRAM_FILEPATH})
+
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
   enable_testing()
