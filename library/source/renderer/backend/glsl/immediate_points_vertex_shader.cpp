@@ -16,9 +16,16 @@ std::string immediate_points_vertex_shader = R"(
 
 const float antialiasing = 2.0f;
 
-layout(std430, set = 0, binding = 0) readonly buffer _projection
+struct _camera
 {
+  mat4 view      ;
   mat4 projection;
+};
+
+layout(std430, set = 0, binding = 0) readonly buffer camera
+{
+  uvec4     cameras_metadata  ; // x size, y index
+  _camera   cameras[]         ;
 };
 
 layout(location = 0) in  vec4 attributes;
@@ -34,7 +41,7 @@ void main()
   vs_output.size     = max(attributes.w, antialiasing);
   vs_output.color    = color.abgr;
   vs_output.color.a *= smoothstep(0.0f, 1.0f, attributes.w / antialiasing);
-  gl_Position        = projection * vec4(attributes.xyz, 1.0f);
+  gl_Position        = cameras[cameras_metadata.y].projection * vec4(attributes.xyz, 1.0f);
   gl_PointSize       = vs_output.size;
 }
 )";

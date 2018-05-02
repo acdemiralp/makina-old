@@ -27,7 +27,7 @@ layout(location = 0) out vec4 color;
 void main()
 {
   color    = fs_input.color;
-  color.a *= smoothstep(0.5f, 0.5f - (antialiasing / fs_input.size), length(gl_PointCoord.xy - vec2(0.5f));
+  color.a *= smoothstep(0.5f, 0.5f - (antialiasing / fs_input.size), length(gl_PointCoord.xy - vec2(0.5f)));
 }
 )";
 }

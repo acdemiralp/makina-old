@@ -14,9 +14,16 @@ std::string immediate_triangles_vertex_shader = R"(
 #extension GL_KHR_vulkan_glsl : enable
 #endif
 
-layout(std430, set = 0, binding = 0) readonly buffer _projection
+struct _camera
 {
+  mat4 view      ;
   mat4 projection;
+};
+
+layout(std430, set = 0, binding = 0) readonly buffer camera
+{
+  uvec4     cameras_metadata  ; // x size, y index
+  _camera   cameras[]         ;
 };
 
 layout(location = 0) in  vec4 attributes;
@@ -29,7 +36,7 @@ layout(location = 0) out vs_output_type
 void main()
 {
   vs_output.color = color.abgr;
-  gl_Position     = projection * vec4(attributes.xyz, 1.0f);
+  gl_Position     = cameras[cameras_metadata.y].projection * vec4(attributes.xyz, 1.0f);
 }
 )";
 }
