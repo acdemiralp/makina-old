@@ -42,7 +42,7 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
           {data.vertices           , 3, GL_FLOAT       }, 
           {data.normals            , 3, GL_FLOAT       }, 
           {data.texture_coordinates, 3, GL_FLOAT       }, 
-          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 1}
+          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 0, 1}
         }, 
         {
           data.transforms, 

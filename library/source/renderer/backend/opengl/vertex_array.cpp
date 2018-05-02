@@ -10,7 +10,7 @@ vertex_array::vertex_array(const description& description)
   for(auto i = 0; i < description.attribute_bindings.size(); ++i)
   {
     auto& binding = description.attribute_bindings[i];
-    set_vertex_buffer    (i, *binding.buffer->actual(), binding.offset, binding.components * gl::type_size(binding.type));
+    set_vertex_buffer    (i, *binding.buffer->actual(), binding.offset, binding.stride != 0u ? binding.stride : binding.components * gl::type_size(binding.type));
     set_attribute_enabled(i, true);
 
     if(binding.type == GL_BYTE  || binding.type == GL_UNSIGNED_BYTE  ||
