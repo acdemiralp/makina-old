@@ -1,10 +1,12 @@
 #include <makina/renderer/backend/opengl/render_tasks/immediate_render_task.hpp>
 
+#include <di/systems/input/mouse.hpp>
 #include <gl/draw_commands.hpp>
 #include <gl/per_fragment_ops.hpp>
 #include <gl/rasterization.hpp>
 #include <gl/viewport.hpp>
 #include <im3d.h>
+#include <im3d_math.h>
 
 #include <makina/renderer/backend/glsl/immediate_lines_fragment_shader.hpp>
 #include <makina/renderer/backend/glsl/immediate_lines_geometry_shader.hpp>
@@ -18,10 +20,27 @@ namespace mak
 {
 namespace opengl
 {
-fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
+fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* framegraph, input_system* input_system, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
 {
-  const auto retained_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>("Immediate Vertices"  , buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
-  const auto retained_viewport   = framegraph->add_retained_resource<buffer_description, gl::buffer>("Immediate Viewport"  , buffer_description{sizeof(glm::vec2), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>("Immediate Vertices", buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
+  const auto retained_viewport   = framegraph->add_retained_resource<buffer_description, gl::buffer>("Immediate Viewport", buffer_description{sizeof(glm::vec2), GL_SHADER_STORAGE_BUFFER});
+  
+  input_system->on_key_press  .connect([ ] (di::key key)
+  {
+    auto& app_data = Im3d::GetAppData();
+    if      (key.code == di::key_code::l) app_data.m_keyDown[Im3d::Key_L] = true;
+    else if (key.code == di::key_code::t) app_data.m_keyDown[Im3d::Key_T] = true;
+    else if (key.code == di::key_code::r) app_data.m_keyDown[Im3d::Key_R] = true;
+    else if (key.code == di::key_code::s) app_data.m_keyDown[Im3d::Key_S] = true;
+  });
+  input_system->on_key_release.connect([ ] (di::key key)
+  {
+    auto& app_data = Im3d::GetAppData();
+    if      (key.code == di::key_code::l) app_data.m_keyDown[Im3d::Key_L] = false;
+    else if (key.code == di::key_code::t) app_data.m_keyDown[Im3d::Key_T] = false;
+    else if (key.code == di::key_code::r) app_data.m_keyDown[Im3d::Key_R] = false;
+    else if (key.code == di::key_code::s) app_data.m_keyDown[Im3d::Key_S] = false;
+  });
 
   return framegraph->add_render_task<immediate_task_data>(
     "Immediate Pass",
@@ -99,47 +118,79 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* frame
         data.vertex_array->actual()->unbind();
       };
 
-      Im3d::GetAppData().m_appData = &data.draw_callback;
-      Im3d::GetAppData().drawCallback = [ ] (const Im3d::DrawList& draw_list)
+      auto& app_data = Im3d::GetAppData();
+      app_data.m_appData     = &data.draw_callback;
+      app_data.drawCallback  = [ ] (const Im3d::DrawList& draw_list)
       {
-        auto& closure = *reinterpret_cast<std::function<void(const Im3d::DrawList&)>*>(Im3d::GetAppData().m_appData);
-        closure(draw_list);
+        (*reinterpret_cast<std::function<void(const Im3d::DrawList&)>*>(Im3d::GetAppData().m_appData))(draw_list);
       };
     },
     [=] (const immediate_task_data& data)
     {
+      auto  cameras = framegraph->scene_cache()->entities<metadata, projection>();
+      auto& camera  = cameras[0];
+      if (!camera_tag.empty())
+        for (auto i = 0; i < cameras.size(); ++i)
+          if (cameras[i]->component<metadata>()->contains_tag(camera_tag))
+            camera = cameras[i];
+      
+      auto camera_transform  = camera->component<mak::transform> ();
+      auto camera_projection = camera->component<mak::projection>();
+      auto camera_position   = camera_transform ->translation(true);
+      auto camera_direction  = camera_transform ->forward    (true);
+      auto transform_matrix  = camera_transform ->matrix     (true);
+      auto projection_matrix = camera_projection->matrix     ();
+      
+      Im3d::Mat4 native_transform_matrix(
+        transform_matrix [0][0], transform_matrix [0][1], transform_matrix [0][2], transform_matrix [0][3],
+        transform_matrix [1][0], transform_matrix [1][1], transform_matrix [1][2], transform_matrix [1][3],
+        transform_matrix [2][0], transform_matrix [2][1], transform_matrix [2][2], transform_matrix [2][3],
+        transform_matrix [3][0], transform_matrix [3][1], transform_matrix [3][2], transform_matrix [3][3]);
+      Im3d::Mat4 native_projection_matrix(
+        projection_matrix[0][0], projection_matrix[0][1], projection_matrix[0][2], projection_matrix[0][3],
+        projection_matrix[1][0], projection_matrix[1][1], projection_matrix[1][2], projection_matrix[1][3],
+        projection_matrix[2][0], projection_matrix[2][1], projection_matrix[2][2], projection_matrix[2][3],
+        projection_matrix[3][0], projection_matrix[3][1], projection_matrix[3][2], projection_matrix[3][3]);
+
       auto& app_data = Im3d::GetAppData();
+      app_data.m_deltaTime       = std::chrono::duration_cast<std::chrono::duration<float>>(framegraph->delta_cache()).count();
+      app_data.m_viewportSize    = Im3d::Vec2(data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height());
+      app_data.m_viewOrigin      = Im3d::Vec3(camera_position .x, camera_position .y, camera_position .z);
+      app_data.m_viewDirection   = Im3d::Vec3(camera_direction.x, camera_direction.y, camera_direction.z);
+      app_data.m_worldUp         = Im3d::Vec3(0.0f, 1.0f, 0.0f);
+      app_data.m_projOrtho       = camera_projection->mode() == projection::projection_mode::orthogonal;
+      app_data.m_projScaleY      = 2.0f / projection_matrix[1][1];
+      app_data.m_snapTranslation = 0.0f;
+      app_data.m_snapRotation    = 0.0f;
+      app_data.m_snapScale       = 0.0f;
 
-      app_data.m_deltaTime = 
+      Im3d::Vec2 cursor(di::mouse::relative_position()[0], di::mouse::relative_position()[1]);
+      cursor   = cursor / app_data.m_viewportSize * 2.0f - 1.0f;
+      cursor.y = -cursor.y;
+      
+      Im3d::Vec3 ray_origin, ray_direction;
+      if (app_data.m_projOrtho)
+      {
+        ray_origin.x    = cursor.x / native_projection_matrix(0, 0);
+        ray_origin.y    = cursor.y / native_projection_matrix(1, 1);
+        ray_origin.z    = 0.0f;
+        ray_origin      = native_transform_matrix * Im3d::Vec4(ray_origin, 1.0f);
+        ray_direction   = native_transform_matrix * Im3d::Vec4(0.0f, 0.0f, -1.0f, 0.0f);
+      }
+      else 
+      {
+        ray_origin      = app_data.m_viewOrigin;
+        ray_direction.x = cursor.x / native_projection_matrix(0, 0);
+        ray_direction.y = cursor.y / native_projection_matrix(1, 1);
+        ray_direction.z = -1.0f;
+        ray_direction   = native_transform_matrix * Im3d::Vec4(Im3d::Normalize(ray_direction), 0.0f);
+      }
+      app_data.m_cursorRayOrigin    = ray_origin   ;
+      app_data.m_cursorRayDirection = ray_direction;
 
-      //auto& io = ImGui::GetIO();
-      //
-      //vertex_array->set_vertex_buffer   (0, *data.attributes->actual(), 0, sizeof ImDrawVert);
-      //vertex_array->set_vertex_buffer   (1, *data.attributes->actual(), 0, sizeof ImDrawVert);
-      //vertex_array->set_vertex_buffer   (2, *data.attributes->actual(), 0, sizeof ImDrawVert);
-      //vertex_array->set_attribute_format(0, 2, GL_FLOAT        , false, IM_OFFSETOF(ImDrawVert, pos));
-      //vertex_array->set_attribute_format(1, 2, GL_FLOAT        , false, IM_OFFSETOF(ImDrawVert, uv ));
-      //vertex_array->set_attribute_format(2, 4, GL_UNSIGNED_BYTE, true , IM_OFFSETOF(ImDrawVert, col));
-      //
-      //ImGui::Render();
-      //auto draw_data = ImGui::GetDrawData();
-      //for(auto i = 0; i < draw_data->CmdListsCount; ++i)
-      //{
-      //  const ImDrawList* command_list = draw_data->CmdLists[i];
-      //  const ImDrawIdx*  index_offset = nullptr;
-      //  data.attributes->actual()->set_sub_data(0, static_cast<GLsizeiptr>(command_list->VtxBuffer.Size) * sizeof(ImDrawVert), static_cast<const GLvoid*>(command_list->VtxBuffer.Data));
-      //  data.indices   ->actual()->set_sub_data(0, static_cast<GLsizeiptr>(command_list->IdxBuffer.Size) * sizeof(ImDrawIdx) , static_cast<const GLvoid*>(command_list->IdxBuffer.Data));
-      //  for(auto j = 0; j < command_list->CmdBuffer.Size; ++j)
-      //  {
-      //    auto& command = command_list->CmdBuffer[j];
-      //    gl::set_scissor(
-      //      {static_cast<int>(command.ClipRect.x)                     , static_cast<int>(io.DisplaySize.y   - command.ClipRect.w)},
-      //      {static_cast<int>(command.ClipRect.z - command.ClipRect.x), static_cast<int>(command.ClipRect.w - command.ClipRect.y)});
-      //    gl::draw_elements(GL_TRIANGLES, static_cast<GLsizei>(command.ElemCount), GL_UNSIGNED_SHORT, index_offset);
-      //    index_offset += command.ElemCount;
-      //  }
-      //}
-
+      app_data.setCullFrustum(native_projection_matrix, false);
+    
+      Im3d::Draw    ();
       Im3d::NewFrame();
 
       gl::print_error("Error in Immediate Pass");
