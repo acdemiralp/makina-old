@@ -1,8 +1,10 @@
 #include <makina/renderer/backend/opengl/render_tasks/upload_scene_render_task.hpp>
 
+#include <bm/bm.hpp>
 #include <gl/draw_commands.hpp>
 #include <gl/texture_handle.hpp>
 
+#include <makina/core/logger.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
@@ -103,6 +105,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     },
     [=] (const upload_scene_task_data& data)
     {
+      auto record = bm::run<float, std::milli>(1, [&] ()
+      {
       auto scene                = framegraph->scene_cache();
       auto mesh_render_entities = scene->entities<transform, mesh_render>();
       auto light_entities       = scene->entities<transform, light>      ();
@@ -405,6 +409,8 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
       data.parameter_map->actual()->set         ("draw_count"    , draw_calls.size() );
 
       gl::print_error("Error in Upload Scene Pass");
+      });
+      logger->info("Upload scene took {} milliseconds.", record.mean());
     });
 }
 }
