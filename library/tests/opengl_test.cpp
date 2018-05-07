@@ -30,6 +30,7 @@ TEST_CASE("OpenGL test.", "[makina]")
   auto engine = mak::make_default_engine();
 
   const auto display_system = engine->get_system<mak::display_system>();
+  const auto input_system   = engine->get_system<mak::input_system>  ();
   const auto window         = display_system->create_opengl_window(
     "Makina (OpenGL)", 
     std::array<std::size_t, 2>{32 , 32 }, 
@@ -59,16 +60,14 @@ TEST_CASE("OpenGL test.", "[makina]")
   upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
   upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
 
-  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer, backbuffer, upload_scene_task_data, "default_camera");
+  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data, "default_camera");
+  const auto immediate_render_task          = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data, "default_camera");
   const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
-  
   mak::append_scene(model.scene.get(), engine->scene());
-  mak::print_scene (model.scene.get());
-  mak::print_scene (engine->scene  ());
   
   engine->scene()->entities<mak::rigidbody>  ()[0]->component<mak::rigidbody>()->set_mass (0.0f);
   engine->scene()->entities<mak::mesh_render>()[0]->component<mak::transform>()->set_scale(glm::vec3(0.1f), true);

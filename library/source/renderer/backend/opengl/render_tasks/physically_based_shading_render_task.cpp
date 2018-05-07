@@ -42,7 +42,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
           {data.vertices           , 3, GL_FLOAT       }, 
           {data.normals            , 3, GL_FLOAT       }, 
           {data.texture_coordinates, 3, GL_FLOAT       }, 
-          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 1}
+          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 0, 1}
         }, 
         {
           data.transforms, 

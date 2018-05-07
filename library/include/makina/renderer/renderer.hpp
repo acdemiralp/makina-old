@@ -12,13 +12,15 @@ namespace mak
 class MAKINA_EXPORT renderer : public fg::framegraph, public system
 {
 public:
-  const scene* scene_cache() const;
+  const frame_timer::duration& delta_cache() const;
+  const scene*                 scene_cache() const;
 
 protected:
-  void         prepare    (scene* scene)                              override;
-  void         update     (frame_timer::duration delta, scene* scene) override;
+  void prepare(scene* scene)                              override;
+  void update (frame_timer::duration delta, scene* scene) override;
 
-  scene* scene_cache_ = nullptr;
+  frame_timer::duration delta_cache_ ;
+  scene*                scene_cache_ = nullptr;
 };
 }
 

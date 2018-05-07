@@ -22,6 +22,7 @@ public:
     GLenum           type            ;
     GLboolean        normalize       = GL_FALSE;
     GLuint           offset          = 0;
+    GLsizei          stride          = 0;
     GLuint           relative_offset = 0;
     GLuint           divisor         = 0;
   };
