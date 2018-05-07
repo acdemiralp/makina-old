@@ -13,13 +13,22 @@ namespace mak
 class MAKINA_EXPORT projection
 {
 public:
+  enum class projection_mode
+  {
+    perspective,
+    orthogonal ,
+    frustum    // For HMDs.
+  };
+
   void             set_perspective(const float fov_y, const float aspect_ratio, std::array<float, 2> z_range);
   void             set_orthogonal (const di::rectangle<float> rectangle       , std::array<float, 2> z_range);
-  void             set_matrix     (const glm::mat4& matrix);
+  void             set_frustum    (const di::rectangle<float> rectangle       , std::array<float, 2> z_range);
   const glm::mat4& matrix         () const;
+  projection_mode  mode           () const;
 
 protected:
-  glm::mat4 matrix_;
+  glm::mat4       matrix_;
+  projection_mode mode_  ;
 };
 }
 
