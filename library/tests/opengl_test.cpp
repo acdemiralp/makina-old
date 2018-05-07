@@ -16,13 +16,11 @@ extern "C"
 #include <makina/core/registry.hpp>
 #include <makina/core/scene.hpp>
 #include <makina/display/display_system.hpp>
-#include <makina/physics/physics_system.hpp>
+#include <makina/input/input_system.hpp>
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
-#include <makina/resources/audio_clip_load.hpp>
 #include <makina/resources/model_load.hpp>
-#include <makina/scripting/behavior.hpp>
 #include <makina/makina.hpp>
 
 TEST_CASE("OpenGL test.", "[makina]")
@@ -36,7 +34,7 @@ TEST_CASE("OpenGL test.", "[makina]")
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
-  window->set_swap_mode(di::opengl_swap_mode::vertical_sync);
+  window->set_swap_mode(di::opengl_swap_mode::immediate);
   window->set_resizable(true);
 
   const auto projection = engine->scene()->entities<mak::projection>()[0]->component<mak::projection>();
@@ -51,18 +49,17 @@ TEST_CASE("OpenGL test.", "[makina]")
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer(window));
   const auto upload_scene_render_task       = mak::opengl::add_upload_scene_render_task            (renderer);
-  const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task      (renderer, upload_scene_render_task->data());
-  const auto clear_render_task              = mak::opengl::add_clear_render_task                   (renderer, backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto skybox_render_task             = mak::opengl::add_test_render_task                    (renderer, backbuffer);
+  //const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task      (renderer, upload_scene_render_task->data());
   
   auto upload_scene_task_data               = upload_scene_render_task      ->data();
-  auto skeletal_animation_task_data         = skeletal_animation_render_task->data();
-  upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
-  upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
-
+  //auto skeletal_animation_task_data         = skeletal_animation_render_task->data();
+  //upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
+  //upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
+  
+  const auto clear_render_task              = mak::opengl::add_clear_render_task                   (renderer,               backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data, "default_camera");
   const auto immediate_render_task          = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data, "default_camera");
-  const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer, backbuffer);
+  const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer,               backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
