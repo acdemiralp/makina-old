@@ -15,28 +15,30 @@ namespace opengl
 {
 fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
 {
+  const auto retained_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Physically Based Shading Program", program::graphics_description
+  {
+    glsl::default_vertex_shader,
+    glsl::physically_based_fragment_shader
+  });
+
   return framegraph->add_render_task<physically_based_shading_task_data>(
     "Physically Based Shading Pass",
     [&] (      physically_based_shading_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices            = builder.read(scene_data.vertices            );
-      data.normals             = builder.read(scene_data.normals             );
-      data.texture_coordinates = builder.read(scene_data.texture_coordinates );
-      data.instance_attributes = builder.read(scene_data.instance_attributes );
-      data.indices             = builder.read(scene_data.indices             );
-      data.transforms          = builder.read(scene_data.transforms          );
-      data.materials           = builder.read(scene_data.materials           );
-      data.cameras             = builder.read(scene_data.cameras             );
-      data.lights              = builder.read(scene_data.lights              );
-      data.draw_calls          = builder.read(scene_data.draw_calls          );
-      data.parameter_map       = builder.read(scene_data.parameter_map       );
-      data.textures            = builder.read(scene_data.textures            );
-      data.program             = builder.create<graphics_program_resource>("Physically Based Shading Program"     , program::graphics_description     
-      {
-        glsl::default_vertex_shader, 
-        glsl::physically_based_fragment_shader
-      });
-      data.vertex_array        = builder.create<vertex_array_resource>    ("Physically Based Shading Vertex Array", vertex_array::description
+      data.vertices            = builder.read(scene_data.vertices           );
+      data.normals             = builder.read(scene_data.normals            );
+      data.texture_coordinates = builder.read(scene_data.texture_coordinates);
+      data.instance_attributes = builder.read(scene_data.instance_attributes);
+      data.indices             = builder.read(scene_data.indices            );
+      data.transforms          = builder.read(scene_data.transforms         );
+      data.materials           = builder.read(scene_data.materials          );
+      data.cameras             = builder.read(scene_data.cameras            );
+      data.lights              = builder.read(scene_data.lights             );
+      data.draw_calls          = builder.read(scene_data.draw_calls         );
+      data.parameter_map       = builder.read(scene_data.parameter_map      );
+      data.textures            = builder.read(scene_data.textures           );
+      data.program             = builder.read(retained_program              );
+      data.vertex_array        = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
       {
         { 
           {data.vertices           , 3, GL_FLOAT       }, 
