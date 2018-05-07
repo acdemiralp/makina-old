@@ -66,7 +66,6 @@ TEST_CASE("OpenGL test.", "[makina]")
   model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
   mak::append_scene(model.scene.get(), engine->scene());
   
-  engine->scene()->entities<mak::rigidbody>  ()[0]->component<mak::rigidbody>()->set_mass (0.0f);
   engine->scene()->entities<mak::mesh_render>()[0]->component<mak::transform>()->set_scale(glm::vec3(0.1f), true);
   engine->scene()->entities<mak::animator>   ()[0]->component<mak::animator> ()->play = true;
 
