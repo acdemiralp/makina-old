@@ -22,8 +22,24 @@ namespace opengl
 {
 fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* framegraph, input_system* input_system, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
 {
-  const auto retained_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>("Immediate Vertices", buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
-  const auto retained_viewport   = framegraph->add_retained_resource<buffer_description, gl::buffer>("Immediate Viewport", buffer_description{sizeof(glm::vec2), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_attributes        = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Vertices"         , buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
+  const auto retained_viewport          = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Viewport"         , buffer_description{sizeof(glm::vec2), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_points_program    = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Points Program"   , program::graphics_description
+  {                                                                                                                                                            
+    glsl::immediate_points_vertex_shader,                                                                                                                      
+    glsl::immediate_points_fragment_shader                                                                                                                     
+  });                                                                                                                                                          
+  const auto retained_lines_program     = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Lines Program"    , program::graphics_description
+  {
+    glsl::immediate_lines_vertex_shader,
+    glsl::immediate_lines_fragment_shader,
+    glsl::immediate_lines_geometry_shader
+  });
+  const auto retained_triangles_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Triangles Program", program::graphics_description
+  {
+    glsl::immediate_triangles_vertex_shader,
+    glsl::immediate_triangles_fragment_shader
+  });
   
   input_system->on_key_press  .connect([ ] (di::key key)
   {
@@ -46,32 +62,19 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* frame
     "Immediate Pass",
     [&] (      immediate_task_data& data, fg::render_task_builder& builder)
     {
-      data.attributes        = builder.read  <buffer_resource>          (retained_attributes);
-      data.cameras           = builder.read  <buffer_resource>          (scene_data.cameras );
-      data.viewport          = builder.read  <buffer_resource>          (retained_viewport  );
-      data.points_program    = builder.create<graphics_program_resource>("Immediate Points Program"   , program::graphics_description     
-      {
-        glsl::immediate_points_vertex_shader, 
-        glsl::immediate_points_fragment_shader
-      });
-      data.lines_program     = builder.create<graphics_program_resource>("Immediate Lines Program"    , program::graphics_description     
-      {
-        glsl::immediate_lines_vertex_shader,
-        glsl::immediate_lines_fragment_shader,
-        glsl::immediate_lines_geometry_shader
-      });
-      data.triangles_program = builder.create<graphics_program_resource>("Immediate Triangles Program", program::graphics_description     
-      {
-        glsl::immediate_triangles_vertex_shader, 
-        glsl::immediate_triangles_fragment_shader
-      });
-      data.vertex_array      = builder.create<vertex_array_resource>    ("Immediate Vertex Array"     , vertex_array::description
+      data.attributes        = builder.read(retained_attributes       );
+      data.cameras           = builder.read(scene_data.cameras        );
+      data.viewport          = builder.read(retained_viewport         );
+      data.points_program    = builder.read(retained_points_program   );
+      data.lines_program     = builder.read(retained_lines_program    );
+      data.triangles_program = builder.read(retained_triangles_program);
+      data.vertex_array      = builder.create<vertex_array_resource>("Immediate Vertex Array", vertex_array::description
       {
         { 
           {data.attributes, 4, GL_FLOAT        , false, 0, sizeof Im3d::VertexData, offsetof(Im3d::VertexData, m_positionSize)},
           {data.attributes, 4, GL_UNSIGNED_BYTE, true , 0, sizeof Im3d::VertexData, offsetof(Im3d::VertexData, m_color       )}
         }, 
-        {
+        { 
           data.cameras,
           data.viewport
         }

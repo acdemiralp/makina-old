@@ -26,8 +26,8 @@ void   engine::run       ()
 
   is_running_ = true;
 
-  frame_timer_.tick        ();
-  entry_node_.try_put     (flow_node_data{true, scene_.get()});
+  frame_timer_.tick   ();
+  entry_node_ .try_put(flow_node_data{true, scene_.get()});
   for (auto& system : systems_) 
     if (!system->async()) 
       system->prepare(scene_.get());
@@ -35,8 +35,8 @@ void   engine::run       ()
 
   while (is_running_)
   {
-    frame_timer_.tick        ();
-    entry_node_.try_put     (flow_node_data{false, scene_.get(), frame_timer_.delta_time()});
+    frame_timer_.tick   ();
+    entry_node_ .try_put(flow_node_data{false, scene_.get(), frame_timer_.delta_time()});
     for (auto& system : systems_) 
       if (!system->async()) 
         system->update(frame_timer_.delta_time(), scene_.get());

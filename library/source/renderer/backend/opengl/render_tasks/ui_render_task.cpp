@@ -15,9 +15,26 @@ namespace opengl
 {
 fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebuffer_resource* target)
 {
-  const auto retained_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>("UI Vertices"  , buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
-  const auto retained_projection = framegraph->add_retained_resource<buffer_description, gl::buffer>("UI Projection", buffer_description{sizeof(glm::mat4), GL_SHADER_STORAGE_BUFFER});
-  const auto retained_indices    = framegraph->add_retained_resource<buffer_description, gl::buffer>("UI Indices"   , buffer_description{GLsizeiptr(4e+6) , GL_ELEMENT_ARRAY_BUFFER });
+  const auto retained_attributes   = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Vertices"  , buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
+  const auto retained_projection   = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Projection", buffer_description{sizeof(glm::mat4), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_indices      = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Indices"   , buffer_description{GLsizeiptr(4e+6) , GL_ELEMENT_ARRAY_BUFFER });
+  const auto retained_program      = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("UI Program"   , program::graphics_description
+  {
+    glsl::ui_vertex_shader, 
+    glsl::ui_fragment_shader
+  });
+  const auto retained_vertex_array = framegraph->add_retained_resource<vertex_array::description, vertex_array>             ("UI Vertex Array", vertex_array::description
+  {
+    { 
+      {retained_attributes, 2, GL_FLOAT},
+      {retained_attributes, 2, GL_FLOAT},
+      {retained_attributes, 4, GL_UNSIGNED_BYTE}
+    }, 
+    {
+      retained_projection
+    }, 
+    retained_indices
+  });
 
   auto& io = ImGui::GetIO();
   std::uint8_t* pixels;
@@ -32,28 +49,13 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
     "UI Pass",
     [&] (      ui_task_data& data, fg::render_task_builder& builder)
     {
-      data.attributes   = builder.read  <buffer_resource>      (retained_attributes);
-      data.projection   = builder.read  <buffer_resource>      (retained_projection);
-      data.indices      = builder.read  <buffer_resource>      (retained_indices   );
-      data.texture      = builder.read  <texture_2d_resource>  (retained_texture   );
-      data.program      = builder.create<graphics_program_resource>("UI Program"     , program::graphics_description     
-      {
-        glsl::ui_vertex_shader, 
-        glsl::ui_fragment_shader
-      });
-      data.vertex_array = builder.create<vertex_array_resource>    ("UI Vertex Array", vertex_array::description
-      {
-        { 
-          {data.attributes, 2, GL_FLOAT},
-          {data.attributes, 2, GL_FLOAT},
-          {data.attributes, 4, GL_UNSIGNED_BYTE}
-        }, 
-        {
-          data.projection
-        }, 
-        data.indices
-      });
-      data.target = builder.write(target);
+      data.attributes   = builder.read (retained_attributes  );
+      data.projection   = builder.read (retained_projection  );
+      data.indices      = builder.read (retained_indices     );
+      data.texture      = builder.read (retained_texture     );
+      data.program      = builder.read (retained_program     );
+      data.vertex_array = builder.read (retained_vertex_array);
+      data.target       = builder.write(target);
     },
     [=] (const ui_task_data& data)
     {
