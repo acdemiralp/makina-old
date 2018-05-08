@@ -82,7 +82,7 @@ list           (APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${C
 
 ##################################################    Prebuild    ##################################################
 CUDA_GET_SOURCES_AND_OPTIONS(CUDA_SOURCES CUDA_CMAKE_OPTIONS CUDA_OPTIONS ${PROJECT_SOURCES})
-list (APPEND CUDA_OPTIONS -gencode=arch=compute_52,code=sm_52)
+list                        (APPEND CUDA_OPTIONS -gencode=arch=compute_52,code=sm_52)
 if (CUDA_NVRTC_ENABLED)
   set(CUDA_OBJ_SOURCES)
   foreach(CUDA_SOURCE ${CUDA_SOURCES})
