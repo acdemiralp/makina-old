@@ -326,6 +326,26 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           const auto& bone_ids            = mesh_render->mesh->bone_ids           ;
           const auto& bone_weights        = mesh_render->mesh->bone_weights       ;
           const auto& indices             = mesh_render->mesh->indices            ;
+          
+          std::vector<glm::vec4> transformed_vertices(vertices.size());
+          std::transform(
+            vertices            .begin(), 
+            vertices            .end  (), 
+            transformed_vertices.begin(), 
+            [ ] (const glm::vec3& vertex)
+            {
+              return glm::vec4(vertex, 1.0f);
+            });
+          
+          std::vector<glm::vec4> transformed_normals(normals.size());
+          std::transform(
+            normals            .begin(), 
+            normals            .end  (), 
+            transformed_normals.begin(), 
+            [ ] (const glm::vec3& normal)
+            {
+              return glm::vec4(normal, 0.0f);
+            });
 
           std::vector<glm::vec3> transformed_texture_coordinates(texture_coordinates.size());
           std::transform(
@@ -347,12 +367,12 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
               return bone_id + glm::uvec4(mutable_data.rig_offset);
             });
 
-          data.vertices           ->actual()->set_sub_data(sizeof vertices           [0] * mutable_data.vertex_offset, sizeof vertices           [0] * vertices           .size(), vertices                       .data());
-          data.normals            ->actual()->set_sub_data(sizeof normals            [0] * mutable_data.vertex_offset, sizeof normals            [0] * normals            .size(), normals                        .data());
-          data.texture_coordinates->actual()->set_sub_data(sizeof texture_coordinates[0] * mutable_data.vertex_offset, sizeof texture_coordinates[0] * texture_coordinates.size(), transformed_texture_coordinates.data());
-          data.bone_ids           ->actual()->set_sub_data(sizeof bone_ids           [0] * mutable_data.vertex_offset, sizeof bone_ids           [0] * bone_ids           .size(), transformed_bone_ids           .data());
-          data.bone_weights       ->actual()->set_sub_data(sizeof bone_weights       [0] * mutable_data.vertex_offset, sizeof bone_weights       [0] * bone_weights       .size(), bone_weights                   .data());
-          data.indices            ->actual()->set_sub_data(sizeof indices            [0] * mutable_data.index_offset , sizeof indices            [0] * indices            .size(), indices                        .data());
+          data.vertices           ->actual()->set_sub_data(sizeof transformed_vertices           [0] * mutable_data.vertex_offset, sizeof transformed_vertices           [0] * transformed_vertices           .size(), transformed_vertices           .data());
+          data.normals            ->actual()->set_sub_data(sizeof transformed_normals            [0] * mutable_data.vertex_offset, sizeof transformed_normals            [0] * transformed_normals            .size(), transformed_normals            .data());
+          data.texture_coordinates->actual()->set_sub_data(sizeof transformed_texture_coordinates[0] * mutable_data.vertex_offset, sizeof transformed_texture_coordinates[0] * transformed_texture_coordinates.size(), transformed_texture_coordinates.data());
+          data.bone_ids           ->actual()->set_sub_data(sizeof transformed_bone_ids           [0] * mutable_data.vertex_offset, sizeof transformed_bone_ids           [0] * transformed_bone_ids           .size(), transformed_bone_ids           .data());
+          data.bone_weights       ->actual()->set_sub_data(sizeof bone_weights                   [0] * mutable_data.vertex_offset, sizeof bone_weights                   [0] * bone_weights                   .size(), bone_weights                   .data());
+          data.indices            ->actual()->set_sub_data(sizeof indices                        [0] * mutable_data.index_offset , sizeof indices                        [0] * indices                        .size(), indices                        .data());
 
           auto& draw_call = mutable_data.mesh_cache[mesh_render->mesh];
           draw_call = gl::draw_elements_indirect_command

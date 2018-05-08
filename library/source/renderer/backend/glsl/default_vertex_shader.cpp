@@ -35,8 +35,8 @@ layout(std430, set = 0, binding = 2) readonly buffer camera
   _camera    cameras   [];
 };
 
-layout(location = 0) in vec3  vertex;
-layout(location = 1) in vec3  normal;
+layout(location = 0) in vec4  vertex;
+layout(location = 1) in vec4  normal;
 layout(location = 2) in vec3  texture_coordinate;
 layout(location = 3) in uvec2 instance_attribute; // x transform id, y material id
 
@@ -58,10 +58,10 @@ out gl_PerVertex
 void main()
 {
   mat4 model_view   = cameras[cameras_metadata.y].view * transforms[instance_attribute.x].model;
-  vec4 trans_vertex = model_view * vec4(vertex, 1.0);
+  vec4 trans_vertex = model_view * vertex;
   
   vs_output.vertex             = trans_vertex.xyz;
-  vs_output.normal             = normalize((model_view * vec4(normal, 0.0f)).xyz);
+  vs_output.normal             = normalize((model_view * normal).xyz);
   vs_output.texture_coordinate = texture_coordinate.xy;
   vs_output.material_index     = instance_attribute.y;
 

@@ -10,6 +10,8 @@ extern "C"
 }
 #endif
 
+#include <random>
+
 #include <fi/free_image.hpp>
 #include <gl/all.hpp>
 
@@ -49,12 +51,12 @@ TEST_CASE("OpenGL test.", "[makina]")
   const auto renderer   = engine->get_system<mak::renderer>();
   const auto backbuffer = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer(window));
   const auto upload_scene_render_task       = mak::opengl::add_upload_scene_render_task            (renderer);
-  //const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task      (renderer, upload_scene_render_task->data());
+  const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task      (renderer, upload_scene_render_task->data());
   
   auto upload_scene_task_data               = upload_scene_render_task      ->data();
-  //auto skeletal_animation_task_data         = skeletal_animation_render_task->data();
-  //upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
-  //upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
+  auto skeletal_animation_task_data         = skeletal_animation_render_task->data();
+  upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
+  upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
   
   const auto clear_render_task              = mak::opengl::add_clear_render_task                   (renderer,               backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
   const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data);
@@ -64,10 +66,22 @@ TEST_CASE("OpenGL test.", "[makina]")
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
-  mak::append_scene(model.scene.get(), engine->scene());
+  for(auto i = 0; i < 16; ++i)
+    mak::append_scene(model.scene.get(), engine->scene());
   
-  engine->scene()->entities<mak::mesh_render>()[0]->component<mak::transform>()->set_scale(glm::vec3(0.1f), true);
-  engine->scene()->entities<mak::animator>   ()[0]->component<mak::animator> ()->play = true;
+  std::random_device                    device;
+  std::mt19937                          mersenne_twister(device());
+  std::uniform_real_distribution<float> distribution    (0.0f, 10.0f);
+  for (auto entity : engine->scene()->entities<mak::mesh_render>())
+  {
+    auto animator  = entity->component<mak::animator> ();
+    auto transform = entity->component<mak::transform>();
+  
+    if (animator) animator->play = true;
 
+    transform->set_translation(glm::vec3(distribution(mersenne_twister), 0.0f, distribution(mersenne_twister)));
+    transform->set_scale      (glm::vec3(0.01f));
+  }
+    
   engine->run();
 }

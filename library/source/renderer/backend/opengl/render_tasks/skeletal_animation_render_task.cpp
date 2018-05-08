@@ -54,38 +54,12 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.vertex_array->actual()->bind  ();
       
       auto vertex_count = data.parameter_map->actual()->get<GLuint>("vertex_count");
-
-      auto vertices     = data.vertices->actual()->sub_data(0, vertex_count * sizeof glm::vec3);
-      auto normals      = data.normals ->actual()->sub_data(0, vertex_count * sizeof glm::vec3);
-      auto vertices_ptr = reinterpret_cast<glm::vec3*>(vertices.data());
-      auto normals_ptr  = reinterpret_cast<glm::vec3*>(normals .data());
-      std::vector<glm::vec4> input_vertices(vertex_count);
-      std::vector<glm::vec4> input_normals (vertex_count);
-      for (auto i = 0; i < vertex_count; ++i)
-      {
-        input_vertices[i] = glm::vec4(vertices_ptr[i], 1.0f);
-        input_normals [i] = glm::vec4(normals_ptr [i], 0.0f);
-      }
-      data.transformed_vertices->actual()->set_sub_data(0, vertex_count * sizeof glm::vec4, input_vertices.data());
-      data.transformed_normals ->actual()->set_sub_data(0, vertex_count * sizeof glm::vec4, input_normals .data());
-
+      data.transformed_vertices->actual()->copy_sub_data(*data.vertices->actual(), 0, 0, vertex_count * sizeof glm::vec4);
+      data.transformed_normals ->actual()->copy_sub_data(*data.normals ->actual(), 0, 0, vertex_count * sizeof glm::vec4);
+      
       glDispatchComputeGroupSizeARB(vertex_count, 1, 1, 1, 1, 1);
       gl::memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
       
-      auto transformed_vertices     = data.transformed_vertices->actual()->sub_data(0, vertex_count * sizeof glm::vec4);
-      auto transformed_normals      = data.transformed_normals ->actual()->sub_data(0, vertex_count * sizeof glm::vec4);
-      auto transformed_vertices_ptr = reinterpret_cast<glm::vec4*>(transformed_vertices.data());
-      auto transformed_normals_ptr  = reinterpret_cast<glm::vec4*>(transformed_normals .data());
-      std::vector<glm::vec3> output_vertices(vertex_count);
-      std::vector<glm::vec3> output_normals (vertex_count);
-      for (auto i = 0; i < vertex_count; ++i)
-      {
-        output_vertices[i] = glm::vec3(transformed_vertices_ptr[i]);
-        output_normals [i] = glm::vec3(transformed_normals_ptr [i]);
-      }
-      data.transformed_vertices->actual()->set_sub_data(0, vertex_count * sizeof glm::vec3, output_vertices.data());
-      data.transformed_normals ->actual()->set_sub_data(0, vertex_count * sizeof glm::vec3, output_normals .data());
-
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
 
