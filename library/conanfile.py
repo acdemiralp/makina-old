@@ -33,6 +33,7 @@ class MakinaConan(ConanFile):
                        ("rttr/0.9.5@acdemiralp/makina"         ),
                        ("spdlog/0.16.3@bincrafters/stable"     ),
                        ("splinter/3.0@acdemiralp/makina"       ),
+                       ("stb/20180214@conan/stable"            ),
                        ("TBB/2018_U3@RWTH-VR/thirdparty"       ),
                        ("vkhlf/master@acdemiralp/makina"       )) 
     options         = {"shared": [True, False]} 
