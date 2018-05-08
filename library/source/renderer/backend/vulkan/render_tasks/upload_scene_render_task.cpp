@@ -247,7 +247,7 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
         const auto& mesh_indices             = mesh_render->mesh->indices            ;
        
         for(auto j = 0; j < mesh_vertices.size(); ++j)
-          vertices.push_back(_vertex{mesh_vertices[j], mesh_normals[j], texture_coordinate_scale * mesh_texture_coordinates[j], {i, i}});
+          vertices.push_back(_vertex{glm::vec4(mesh_vertices[j], 1.0f), glm::vec4(mesh_normals[j], 0.0f), texture_coordinate_scale * mesh_texture_coordinates[j], {i, i}});
         indices.insert(indices.end(), mesh_indices.begin(), mesh_indices.end());
 
         draw_calls.push_back(vk::DrawIndexedIndirectCommand
