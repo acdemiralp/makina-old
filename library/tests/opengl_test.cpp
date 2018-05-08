@@ -57,8 +57,8 @@ TEST_CASE("OpenGL test.", "[makina]")
   //upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
   
   const auto clear_render_task              = mak::opengl::add_clear_render_task                   (renderer,               backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
-  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data, "default_camera");
-  const auto immediate_render_task          = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data, "default_camera");
+  const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data);
+  const auto immediate_render_task          = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data);
   const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer,               backbuffer);
 
   auto& models = mak::registry->get<mak::model>().storage();
