@@ -2,12 +2,15 @@
 
 ### Requirements ###
 - A C++14 Compiler
-- CMake 3.10+ https://cmake.org/download
-- Conan 1.1+ https://conan.io
-- Git https://git-scm.com/downloads
+- CMake 3.11+ https://cmake.org/download
+- Conan 1.1+  https://conan.io
+- Git         https://git-scm.com/downloads
 
-### Manually Installed Dependencies ###
-- See https://github.com/acdemiralp/makina_dependencies
+### Manual Dependencies ###
+- FMOD     https://fmod.com/download
+- Cuda     https://developer.nvidia.com/cuda-downloads
+- OptiX    https://developer.nvidia.com/designworks/optix/download
+- Vulkan   https://vulkan.lunarg.com/
 
 ### Building ###
 - Create an account at https://bintray.com and note your API key located at https://bintray.com/profile/edit .
