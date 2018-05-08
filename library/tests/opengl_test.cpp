@@ -66,12 +66,12 @@ TEST_CASE("OpenGL test.", "[makina]")
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
-  for(auto i = 0; i < 16; ++i)
+  for(auto i = 0; i < 8; ++i)
     mak::append_scene(model.scene.get(), engine->scene());
   
   std::random_device                    device;
   std::mt19937                          mersenne_twister(device());
-  std::uniform_real_distribution<float> distribution    (0.0f, 10.0f);
+  std::uniform_real_distribution<float> distribution    (0.0f, 5.0f);
   for (auto entity : engine->scene()->entities<mak::mesh_render>())
   {
     auto animator  = entity->component<mak::animator> ();
