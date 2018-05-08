@@ -4,7 +4,7 @@
 using namespace optix;
 
 rtDeclareVariable(uint2 , launch_index, rtLaunchIndex, );
-rtDeclareVariable(float3, color       , , );
+rtDeclareVariable(float3, color       ,              , );
 
 rtBuffer<float4, 2> output;
 
