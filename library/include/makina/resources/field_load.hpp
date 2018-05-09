@@ -50,13 +50,13 @@ void load(const mak::hdf5_description<type, dimensions>& description, mak::field
     return;
   }
 
-  HighFive::File file(description.filepath);
+  const HighFive::File file(description.filepath);
 
   field->set_name(description.dataset_name);
 
   if (description.selection)
   {
-    std::vector<std::size_t> offset(dimensions), size(dimensions), stride(dimensions);
+    std::vector<std::size_t> offset(dimensions, 0), size(dimensions, 1), stride(dimensions, 1);
     std::copy(description.selection->offset.begin(), description.selection->offset.end(), offset.begin());
     std::copy(description.selection->size  .begin(), description.selection->size  .end(), size  .begin());
     std::copy(description.selection->stride.begin(), description.selection->stride.end(), stride.begin());
