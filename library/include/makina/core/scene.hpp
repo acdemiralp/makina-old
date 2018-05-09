@@ -16,6 +16,7 @@
 #include <makina/physics/rigidbody.hpp>
 #include <makina/renderer/animator.hpp>
 #include <makina/renderer/bone.hpp>
+#include <makina/renderer/field_render.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
@@ -26,7 +27,7 @@ namespace mak
 class behavior  ;
 using behaviors = std::vector<std::shared_ptr<behavior>>;
 
-using entity    = ec::entity<metadata, audio_listener, audio_source, controller, mesh_collider, rigidbody, animator, bone, light, mesh_render, projection, transform, behaviors>;
+using entity    = ec::entity<metadata, audio_listener, audio_source, controller, mesh_collider, rigidbody, animator, bone, field_render, light, mesh_render, projection, transform, behaviors>;
 using scene     = ec::scene<entity>;
 
 MAKINA_EXPORT void append_scene(scene* source, scene* target);
