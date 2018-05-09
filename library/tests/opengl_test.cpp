@@ -64,15 +64,6 @@ TEST_CASE("OpenGL test.", "[makina]")
   const auto immediate_render_task          = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data);
   const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer,               backbuffer);
 
-  mak::field<float, 3> field;
-  field.load(mak::hdf5_description<float, 3>
-  {
-    "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
-    "Retardation",
-    "Spacing"    ,
-    mak::selection<float, 3>{{0, 0, 0}, {64, 64, 64}, {1, 1, 1}}
-  });
-
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
@@ -93,5 +84,14 @@ TEST_CASE("OpenGL test.", "[makina]")
     transform->set_scale      (glm::vec3(0.01f));
   }
     
+  mak::field<float, 3> field;
+  field.load(mak::hdf5_description<float, 3>
+  {
+    "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
+    "Retardation",
+    "Spacing"    ,
+    mak::selection<float, 3>{{0, 0, 0}, {64, 64, 64}, {1, 1, 1}}
+  });
+
   engine->run();
 }
