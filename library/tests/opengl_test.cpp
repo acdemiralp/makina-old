@@ -22,6 +22,7 @@ extern "C"
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/resources/field_load.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/makina.hpp>
 
@@ -62,6 +63,15 @@ TEST_CASE("OpenGL test.", "[makina]")
   const auto pbr_render_task                = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data);
   const auto immediate_render_task          = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data);
   const auto ui_render_task                 = mak::opengl::add_ui_render_task                      (renderer,               backbuffer);
+
+  mak::field<float, 3> field;
+  field.load(mak::hdf5_description<float, 3>
+  {
+    "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
+    "Retardation",
+    "Spacing"    ,
+    mak::selection<float, 3>{{0, 0, 0}, {64, 64, 64}, {1, 1, 1}}
+  });
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
