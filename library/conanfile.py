@@ -25,7 +25,7 @@ class MakinaConan(ConanFile):
                        ("freetype/2.8.1@bincrafters/stable"    ),
                        ("gl/1.1.2@acdemiralp/makina"           ),
                        ("glm/0.9.8.5@g-truc/stable"            ),
-                       ("hdf5/1.10.2-dm2@acdemiralp/makina"    ),
+                       ("hdf5/1.10.2@acdemiralp/makina"        ),
                        ("HighFive/1.5@acdemiralp/makina"       ),
                        ("im3d/master@acdemiralp/makina"        ),
                        ("imgui/1.53@acdemiralp/makina"         ),
