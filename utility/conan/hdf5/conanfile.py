@@ -3,7 +3,6 @@ import shutil
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 from conans.errors import ConanException
 
-
 class ConfigurationException(Exception):
     pass
 
@@ -12,8 +11,7 @@ class Hdf5Conan(ConanFile):
     name = "hdf5"
     sha256 = "bfec1be8c366965a99812cf02ddc97e4b708c1754fccba5414d4adccdc073866"
 
-    version_number = "1.10.2"
-    version = "1.10.2-dm2"
+    version = "1.10.2"
     description = "HDF5 C and C++ libraries"
     license = "https://support.hdfgroup.org/ftp/HDF5/releases/COPYING"
     url = "https://github.com/ess-dmsc/conan-hdf5"
@@ -33,7 +31,7 @@ class Hdf5Conan(ConanFile):
     )
     generators = "virtualbuildenv"
 
-    folder_name = "hdf5-%s" % version_number
+    folder_name = "hdf5-%s" % version
     windows_source_folder = "CMake-" + folder_name
     archive_name = "%s.tar.gz" % folder_name
     windows_archive_name = "%s.zip" % windows_source_folder
@@ -94,22 +92,22 @@ class Hdf5Conan(ConanFile):
         if tools.os_info.is_windows:
             cwd = os.getcwd()
             os.chdir(os.path.join(self.source_folder, self.windows_source_folder))
-
+            
             # Override build settings using our own options file
             shutil.copyfile(
                 os.path.join(self.source_folder, "files", "HDF5options.cmake"),
                 "HDF5options.cmake"
             )
-
+            
             static_option = "No" if self.options.shared else "Yes"
             try:
                 self.run("ctest -S HDF5config.cmake,BUILD_GENERATOR=VS201564,STATIC_ONLY=%s -C %s -V -O hdf5.log" % (static_option, self.settings.build_type))
             except ConanException:
                 # Allowed to "fail" on having no tests to run, because we purposely aren't building the tests
                 pass
-
-            install_package_name = "HDF5-%s-win64" % self.version_number
-            install_package = "HDF5-%s-win64.zip" % self.version_number
+            
+            install_package_name = "HDF5-%s-win64" % self.version
+            install_package = "HDF5-%s-win64.zip" % self.version
             os.chdir("build")
             tools.unzip(install_package)
             os.unlink(install_package)
@@ -118,7 +116,7 @@ class Hdf5Conan(ConanFile):
 
         else:
             os.mkdir("install")
-
+            
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure(
                 configure_dir=self.folder_name,
@@ -138,20 +136,6 @@ class Hdf5Conan(ConanFile):
             destdir = os.path.join(cwd, "install")
             env_build.make(args=["install", "DESTDIR="+destdir])
 
-            # The paths in the HDF5 compiler wrapper are hard-coded, so
-            # substitute the prefix by a variable named H5CC_PREFIX to be
-            # passed to it. The compiler wrapper can be called h5cc or h5pcc.
-            if self.options.parallel:
-                hdf5_compiler_wrapper = os.path.join(destdir, "bin", "h5pcc")
-            else:
-                hdf5_compiler_wrapper = os.path.join(destdir, "bin", "h5cc")
-
-            tools.replace_in_file(
-                hdf5_compiler_wrapper,
-                'prefix=""',
-                'prefix="$(cd "$( dirname "$0" )" && pwd)/.."'
-            )
-
             if tools.os_info.is_macos and self.options.shared:
                 self._add_rpath_to_executables(os.path.join(destdir, "bin"))
 
@@ -161,8 +145,8 @@ class Hdf5Conan(ConanFile):
             os.path.join(self.source_folder, "files", "CHANGES"),
             "CHANGES.hdf5"
         )
-
-        os.rename("COPYING", "LICENSE.hdf5")
+        
+        os.rename("COPYING", "LICENSE.hdf5") 
         os.chdir(cwd)
 
     def _add_rpath_to_executables(self, path):
@@ -194,5 +178,3 @@ class Hdf5Conan(ConanFile):
         self.cpp_info.libs = ["hdf5", "hdf5_hl"]
         if self.options.cxx:
             self.cpp_info.libs.append("hdf5_cpp")
-        if tools.os_info.is_windows:
-            self.cpp_info.defines = ["H5_BUILT_AS_DYNAMIC_LIB"]
