@@ -22,6 +22,7 @@
 #include <makina/renderer/animation_system.hpp>
 #include <makina/renderer/animator.hpp>
 #include <makina/renderer/bone.hpp>
+#include <makina/renderer/field_render.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/mesh_render.hpp>
 #include <makina/renderer/projection.hpp>
@@ -31,6 +32,8 @@
 #include <makina/resources/audio_clip.hpp>
 #include <makina/resources/audio_clip_load.hpp>
 #include <makina/resources/dynamic_material.hpp>
+#include <makina/resources/field.hpp>
+#include <makina/resources/field_load.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/image_load.hpp>
 #include <makina/resources/mesh.hpp>
