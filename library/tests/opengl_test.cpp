@@ -22,7 +22,6 @@ extern "C"
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
-#include <makina/resources/field_load.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/makina.hpp>
 
@@ -83,15 +82,6 @@ TEST_CASE("OpenGL test.", "[makina]")
     transform->set_translation(glm::vec3(distribution(mersenne_twister), 0.0f, distribution(mersenne_twister)));
     transform->set_scale      (glm::vec3(0.01f));
   }
-    
-  mak::field<float, 3> field;
-  field.load(mak::hdf5_description<float, 3>
-  {
-    "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
-    "Retardation",
-    "Spacing"    ,
-    mak::selection<float, 3>{{0, 0, 0}, {64, 64, 64}, {1, 1, 1}}
-  });
 
   engine->run();
 }
