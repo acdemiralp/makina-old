@@ -24,10 +24,10 @@ class Hdf5Conan(ConanFile):
         "parallel": [True, False]
     }
     default_options = (
-        "cxx=True",
-        "shared=False",
+        "cxx=False",
+        "shared=True",
         "parallel=False",
-        "zlib:shared=False"
+        "zlib:shared=True"
     )
     generators = "virtualbuildenv"
 
