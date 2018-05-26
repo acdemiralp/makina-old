@@ -33,7 +33,7 @@ TEST_CASE("SciVis test.", "[makina]")
 
   auto entity       = engine->scene()->add_entity();
   auto metadata     = entity->add_component<mak::metadata>    ();
-  auto transform    = entity->add_component<mak::transform>   ();
+  auto transform    = entity->add_component<mak::transform>   (metadata);
   auto field_render = entity->add_component<mak::field_render>();
   // field_render->field = &field;
 

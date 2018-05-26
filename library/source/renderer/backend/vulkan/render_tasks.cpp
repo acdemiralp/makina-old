@@ -11,7 +11,7 @@ void vulkan::make_default_framegraph(engine* engine, di::vulkan_window* window)
   context().create_window_swapchains(engine->get_system<display_system>()->vulkan_windows());
 
   const auto renderer                      = engine->get_system<mak::renderer>();
-  const auto target_swapchain              = std::find_if(context().window_swapchains.begin(), context().window_swapchains.end(), [window] (const window_swapchain& iteratee) { iteratee.window == window; });
+  const auto target_swapchain              = std::find_if(context().window_swapchains.begin(), context().window_swapchains.end(), [window] (const window_swapchain& iteratee) { return iteratee.window == window; });
   const auto backbuffer                    = renderer->add_retained_resource("Backbuffer", framebuffer_description{}, &target_swapchain->framebuffer);
   const auto upload_scene_task             = add_upload_scene_render_task            (renderer);
   const auto skybox_task                   = add_test_render_task                    (renderer);

@@ -7,6 +7,9 @@ namespace mak
 {
 struct MAKINA_EXPORT field_render
 {
+public:
+
+protected:
 
 };
 }

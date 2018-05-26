@@ -12,6 +12,7 @@
 #include <makina/renderer/backend/opengl/render_tasks/test_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/ui_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/upload_scene_render_task.hpp>
+#include <makina/export.hpp>
 
 namespace di
 {
@@ -24,7 +25,7 @@ class engine;
 
 namespace opengl
 {
-void make_default_framegraph(engine* engine, di::opengl_window* main_window, bool vr = false);
+MAKINA_EXPORT void make_default_framegraph(engine* engine, di::opengl_window* main_window, bool vr = false);
 }
 }
 
