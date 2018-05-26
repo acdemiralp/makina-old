@@ -1,5 +1,5 @@
-#ifndef MAKINA_MAKINA_HPP_
-#define MAKINA_MAKINA_HPP_
+#ifndef MAKINA_DEFAULT_ENGINE_HPP_
+#define MAKINA_DEFAULT_ENGINE_HPP_
 
 #include <memory>
 

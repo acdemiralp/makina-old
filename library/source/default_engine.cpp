@@ -1,4 +1,10 @@
-#include <makina/makina.hpp>
+#include <makina/default_engine.hpp>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#include <fi/free_image.hpp>
 
 #include <makina/audio/audio_system.hpp>
 #include <makina/display/display_system.hpp>
@@ -16,6 +22,8 @@ namespace mak
 {
 std::unique_ptr<engine> make_default_engine()
 {
+  fi::initialize();
+
   auto engine                    = std::make_unique<mak::engine>            ();
   auto display_system            = engine->add_system<mak::display_system>  ();
   auto input_system              = engine->add_system<mak::input_system>    ();
