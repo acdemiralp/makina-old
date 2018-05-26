@@ -14,7 +14,7 @@ Approximately 30 minutes to setup, including downloading and installing the depe
 - [Vulkan](https://vulkan.lunarg.com)
 
 ### Building ###
-- Download and install the requirements and manual dependencies above (and if asked to whether the installer should add the executable to the system path during any of the installations, choose "yes").
+- Download and install the requirements and manual dependencies above (and say yes if asked whether the installer should add the executable to the system path during any of the installations).
 - Create an account at https://bintray.com and note your API key located at https://bintray.com/profile/edit .
 - Run CMake and enter your Bintray username and API key when asked.
 - Configure and generate. The majority of the dependencies will be downloaded, built and linked automatically via Conan through Bintray.
