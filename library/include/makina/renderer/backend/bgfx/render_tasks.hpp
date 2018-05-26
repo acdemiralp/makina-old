@@ -4,4 +4,19 @@
 #include <makina/renderer/backend/bgfx/render_tasks/present_render_task.hpp>
 #include <makina/renderer/backend/bgfx/render_tasks/test_render_task.hpp>
 
+namespace di
+{
+class window;
+}
+
+namespace mak
+{
+class engine;
+  
+namespace bgfx
+{
+void make_default_framegraph(engine* engine, di::window* main_window);
+}
+}
+
 #endif

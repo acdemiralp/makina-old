@@ -8,4 +8,18 @@
 #include <makina/renderer/backend/vulkan/render_tasks/ui_render_task.hpp>
 #include <makina/renderer/backend/vulkan/render_tasks/upload_scene_render_task.hpp>
 
+namespace di
+{
+class vulkan_window;
+}
+
+namespace mak
+{
+class engine;
+
+namespace vulkan
+{
+void make_default_framegraph(engine* engine, di::vulkan_window* window);
+}
+}
 #endif

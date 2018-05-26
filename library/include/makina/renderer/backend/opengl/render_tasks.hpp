@@ -13,4 +13,19 @@
 #include <makina/renderer/backend/opengl/render_tasks/ui_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/upload_scene_render_task.hpp>
 
+namespace di
+{
+class opengl_window;
+}
+
+namespace mak
+{
+class engine;
+
+namespace opengl
+{
+void make_default_framegraph(engine* engine, di::opengl_window* main_window, bool vr = false);
+}
+}
+
 #endif
