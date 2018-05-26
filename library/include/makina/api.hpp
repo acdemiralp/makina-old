@@ -1,6 +1,16 @@
 #ifndef MAKINA_API_HPP_
 #define MAKINA_API_HPP_
 
+#ifdef _WIN32
+// Needs to be right here due to Windows antics.
+#include <windows.h>
+#undef MemoryBarrier
+#endif
+
+// Exposed libraries.
+#include <fi/free_image.hpp>
+
+// Exposed local content.
 #include <makina/audio/audio_listener.hpp>
 #include <makina/audio/audio_source.hpp>
 #include <makina/audio/audio_system.hpp>
@@ -44,6 +54,9 @@
 #include <makina/scripting/behavior.hpp>
 #include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/ui_system.hpp>
+#include <makina/utility/enable_dedicated_gpu.hpp>
+#include <makina/utility/random_number_generator.hpp>
 #include <makina/vr/vr_system.hpp>
+#include <makina/default_engine.hpp>
 
 #endif
