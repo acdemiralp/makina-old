@@ -12,6 +12,8 @@ class Project(ConanFile):
     license         = "BSD"                                         
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
+    options         = {"shared": [True, False]}
+    default_options = "shared=True"
     requires        = "zlib/1.2.11@conan/stable"
     exports         = ["HDF5options.cmake"]
 
@@ -53,4 +55,8 @@ class Project(ConanFile):
         self.copy("*", dst="bin"    , src="install/bin"    )
 
     def package_info(self):
-        self.cpp_info.libs = ["hdf5", "hdf5_hl"]
+        if self.options.shared:
+            self.cpp_info.libs = ["hdf5", "hdf5_hl"]
+            self.cpp_info.defines.append("H5_BUILT_AS_DYNAMIC_LIB")
+        else:
+            self.cpp_info.libs = ["libhdf5", "libhdf5_hl"]
