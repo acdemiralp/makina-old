@@ -25,7 +25,7 @@ class engine;
 
 namespace opengl
 {
-MAKINA_EXPORT void make_default_framegraph(engine* engine, di::opengl_window* main_window, bool vr = false);
+MAKINA_EXPORT void make_default_framegraph(engine* engine, di::opengl_window* main_window);
 }
 }
 
