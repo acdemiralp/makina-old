@@ -12,17 +12,17 @@ class ImguiConan(ConanFile):
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
     options         = {"shared": [True, False]} 
-    default_options = "shared=False"
+    default_options = "shared=True"
 
     def source(self):
         zip_name = "v%s.zip" % self.version
         download   ("%s/archive/%s" % (self.url, zip_name), zip_name, verify=False)
         unzip      (zip_name)
         os.unlink  (zip_name)
-        download   ("https://github.com/acdemiralp/imgui-cmake/archive/1.0.0.zip", zip_name, verify=False)
+        download   ("https://github.com/acdemiralp/imgui_cmake/archive/1.0.0.zip", zip_name, verify=False)
         unzip      (zip_name)
         os.unlink  (zip_name)
-        shutil.move("imgui-cmake-1.0.0/CMakeLists.txt", ("%s-%s" % (self.name, self.version)))
+        shutil.move("imgui_cmake-1.0.0/CMakeLists.txt", ("%s-%s" % (self.name, self.version)))
 
     def build(self):
         cmake          = CMake(self)
