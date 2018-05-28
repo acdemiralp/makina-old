@@ -51,6 +51,7 @@ void main()
   for (int i = 0; i < 4; ++i)
     if (bone_weights[index][i] > 0.0f)
       matrix += bone_weights[index][i] * rigs[bone_ids[index][i]].model * rigs[bone_ids[index][i]].offset;
+  if (matrix == mat4(0.0)) return;
   vertices[index] = matrix * vertices[index];
   normals [index] = matrix * normals [index];
 }
