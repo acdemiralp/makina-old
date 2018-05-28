@@ -11,6 +11,8 @@ class ImguiConan(ConanFile):
     license         = "MIT"                                         
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
+    options         = {"shared": [True, False]} 
+    default_options = "shared=False"
 
     def source(self):
         zip_name = "v%s.zip" % self.version
@@ -24,7 +26,8 @@ class ImguiConan(ConanFile):
 
     def build(self):
         cmake          = CMake(self)
-        self.run("cmake %s-%s %s" % (self.name, self.version, cmake.command_line))
+        shared_options = "-DBUILD_SHARED_LIBS=ON" if self.options.shared else "-DBUILD_SHARED_LIBS=OFF"
+        self.run("cmake %s-%s %s %s" % (self.name, self.version, cmake.command_line, shared_options))
         self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
