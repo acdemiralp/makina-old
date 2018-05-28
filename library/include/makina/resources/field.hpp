@@ -8,12 +8,11 @@
 #include <ra/resource.hpp>
 
 #include <makina/aspects/named.hpp>
-#include <makina/export.hpp>
 
 namespace mak
 {
 template <typename type, std::size_t dimensions>
-struct MAKINA_EXPORT field : named, ra::resource<field<type, dimensions>>
+struct field : named, ra::resource<field<type, dimensions>>
 {
   boost::multi_array<type , dimensions> data   ;
   std::array        <float, dimensions> spacing;

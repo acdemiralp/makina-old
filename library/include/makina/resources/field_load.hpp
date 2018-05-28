@@ -16,7 +16,7 @@
 namespace mak
 {
 template <typename type, std::size_t dimensions>
-struct MAKINA_EXPORT selection
+struct selection
 {
   std::array<std::size_t, dimensions>        offset      ;
   std::array<std::size_t, dimensions>        size        ;
@@ -24,7 +24,7 @@ struct MAKINA_EXPORT selection
 };
 
 template <typename type, std::size_t dimensions>
-struct MAKINA_EXPORT hdf5_description
+struct hdf5_description
 {
   std::string                                filepath    ;
   std::string                                dataset_name;
