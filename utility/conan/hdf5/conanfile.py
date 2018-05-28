@@ -60,3 +60,8 @@ class Project(ConanFile):
             self.cpp_info.defines.append("H5_BUILT_AS_DYNAMIC_LIB")
         else:
             self.cpp_info.libs = ["libhdf5", "libhdf5_hl"]
+        
+        if self.settings.build_type == "Debug":
+            for index in range(len(self.cpp_info.libs)):
+                self.cpp_info.libs[index] = "%s_D" % self.cpp_info.libs[index]
+                
