@@ -52,6 +52,16 @@ TEST_CASE("SciVis test.", "[makina]")
     ImGui::Begin            ("FPS");
     ImGui::Text             ("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End              ();
+
+    Im3d::SetContext        (mak::im3d_context());
+    Im3d::PushDrawState     ();
+    Im3d::SetSize           (2.0f);
+    Im3d::BeginLineLoop     ();
+    Im3d::Vertex            (0.0f, 0.0f, 0.0f, Im3d::Color_Magenta);
+    Im3d::Vertex            (1.0f, 1.0f, 0.0f, Im3d::Color_Yellow);
+    Im3d::Vertex            (2.0f, 2.0f, 0.0f, Im3d::Color_Cyan);
+    Im3d::End               ();
+    Im3d::PopDrawState      ();
   }));
   // field_render->field = &field;
 
