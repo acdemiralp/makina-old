@@ -53,6 +53,7 @@
 #include <makina/resources/physically_based_material.hpp>
 #include <makina/scripting/behavior.hpp>
 #include <makina/scripting/scripting_system.hpp>
+#include <makina/ui/imgui_context.hpp>
 #include <makina/ui/ui_system.hpp>
 #include <makina/utility/enable_dedicated_gpu.hpp>
 #include <makina/utility/random_number_generator.hpp>
