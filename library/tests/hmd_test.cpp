@@ -13,7 +13,7 @@ TEST_CASE("HMD test.", "[makina]")
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
-  window->set_swap_mode(di::opengl_swap_mode::vertical_sync);
+  window->set_swap_mode(di::opengl_swap_mode::immediate);
   window->set_resizable(true);
   window->on_resize.connect([&engine] (const std::array<std::size_t, 2>& size)
   {

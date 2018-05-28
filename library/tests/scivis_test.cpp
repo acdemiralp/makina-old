@@ -6,6 +6,7 @@
 TEST_CASE("SciVis test.", "[makina]")
 {
   auto engine = mak::make_default_engine();
+  engine->remove_system<mak::vr_system>();
 
   const auto display_system = engine->get_system<mak::display_system>();
   const auto window         = display_system->create_opengl_window(
@@ -13,7 +14,6 @@ TEST_CASE("SciVis test.", "[makina]")
     std::array<std::size_t, 2>{32 , 32 }, 
     std::array<std::size_t, 2>{800, 600}, 
     di::opengl_context_settings{di::opengl_profile::core, 4, 5});
-  window->set_swap_mode(di::opengl_swap_mode::immediate);
   window->set_resizable(true);
   window->on_resize.connect([&engine] (const std::array<std::size_t, 2>& size)
   {
@@ -21,7 +21,12 @@ TEST_CASE("SciVis test.", "[makina]")
   });
 
   mak::opengl::make_default_framegraph(engine.get(), window);
-
+  
+  auto& models = mak::registry->get<mak::model>().storage();
+  auto& model  = models.emplace_back();
+  model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
+  engine->scene()->copy_entity(model.scene->entities()[1]);
+  
   mak::field<float, 3> field;
   field.load(mak::hdf5_description<float, 3>
   {
