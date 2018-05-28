@@ -25,10 +25,10 @@ TEST_CASE("SciVis test.", "[makina]")
   mak::field<float, 3> field;
   field.load(mak::hdf5_description<float, 3>
   {
-    "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
+    "D:/data/pli/MSA/MSA0309_s0536-0695.h5",
     "Retardation",
     "Spacing"    ,
-    mak::selection<float, 3>{{0, 0, 0}, {64, 64, 64}, {1, 1, 1}}
+    mak::selection<float, 3>{{0, 512, 512}, {64, 64, 64}, {1, 1, 1}}
   });
 
   auto entity       = engine->scene()->add_entity();
