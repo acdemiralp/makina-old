@@ -39,7 +39,20 @@ TEST_CASE("SciVis test.", "[makina]")
   auto entity       = engine->scene()->add_entity();
   auto metadata     = entity->add_component<mak::metadata>    ();
   auto transform    = entity->add_component<mak::transform>   (metadata);
+  auto behaviors    = entity->add_component<mak::behaviors>   ();
   auto field_render = entity->add_component<mak::field_render>();
+  behaviors->push_back(std::make_shared<mak::behavior>(
+  [ ] (                                     mak::scene* scene, mak::entity* entity)
+  {
+
+  },
+  [ ] (mak::frame_timer::duration duration, mak::scene* scene, mak::entity* entity)
+  {
+    ImGui::SetCurrentContext(mak::imgui_context());
+    ImGui::Begin            ("FPS");
+    ImGui::Text             ("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End              ();
+  }));
   // field_render->field = &field;
 
   engine->run();
