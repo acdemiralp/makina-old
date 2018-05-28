@@ -60,7 +60,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* frame
 
   return framegraph->add_render_task<immediate_task_data>(
     "Immediate Pass",
-    [&] (      immediate_task_data& data, fg::render_task_builder& builder)
+    [=] (      immediate_task_data& data, fg::render_task_builder& builder)
     {
       data.attributes        = builder.read(retained_attributes       );
       data.cameras           = builder.read(scene_data.cameras        );
