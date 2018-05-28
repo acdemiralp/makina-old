@@ -17,14 +17,14 @@ namespace mak
 {
 namespace detail
 {
-glm::mat3  handedness_conversion_matrix ()
+glm::mat3  handedness_conversion_matrix()
 {
   return glm::mat3(
     1.0f,  0.0f,  0.0f,
     0.0f,  1.0f,  0.0f,
     0.0f,  0.0f, -1.0f);
 }
-glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
+glm::mat4  convert_to_glm_matrix       (const std::array<float, 12>& matrix)
 {
   const auto translation = handedness_conversion_matrix() * glm::vec3(matrix[3], matrix[7], matrix[11]);
   const auto rotation    = handedness_conversion_matrix() * glm::mat3(glm::make_mat3x4(matrix.data())) * handedness_conversion_matrix();
@@ -33,10 +33,6 @@ glm::mat4  convert_to_glm_matrix        (const std::array<float, 12>& matrix)
     glm::vec4(rotation[1], 0.0f),
     glm::vec4(rotation[2], 0.0f),
     glm::vec4(translation, 1.0f));
-}
-glm::mat4  make_projection_matrix       (const di::rectangle<float>& rectangle, const float near, const float far)
-{
-  return glm::frustum(-near * rectangle.right, -near * rectangle.left, -near * rectangle.bottom, -near * rectangle.top, near, far);
 }
 
 template <di::tracking_device_type type>
@@ -98,7 +94,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
       eye_metadata  ->tags.push_back("hmd_left_camera");
       eye_transform ->set_parent (transform);
       eye_transform ->set_matrix (convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::left )));
-      eye_projection->set_frustum({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, -z_range[0] * rectangle.bottom, -z_range[0] * rectangle.top}, z_range);
+      eye_projection->set_frustum({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, z_range[0] * rectangle.bottom, z_range[0] * rectangle.top}, z_range);
     }
     {
       auto eye               = scene->add_entity();
@@ -112,7 +108,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
       eye_metadata  ->tags.push_back("hmd_right_camera");
       eye_transform ->set_parent (transform);
       eye_transform ->set_matrix (convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::right)));
-      eye_projection->set_frustum({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, -z_range[0] * rectangle.bottom, -z_range[0] * rectangle.top}, z_range);
+      eye_projection->set_frustum({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, z_range[0] * rectangle.bottom, z_range[0] * rectangle.top}, z_range);
     }
   }
   
