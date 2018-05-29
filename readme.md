@@ -1,6 +1,34 @@
 ## Makina ##
 Makina is a ”not-game engine (NGE)” which provides a subset of common game engine features such as audio, input, physics, rendering, scripting but in contrary to most game engines, is easily extendable with prototypical computer graphics, scientific visualization and virtual reality research. It essentially is a collection of high-quality (or ambitious) libraries weaved together into a cohesive framework.
 
+## Intent ##
+- As a computer graphics scientist I want to load a standard test scene (e.g. Sponza) and apply/extend raytracing/rendering methods on it.
+  - I load the test scene as a model.
+  - I append the model to the default scene. 
+  - It is rendered with the default raytracing pipeline.
+  - I can then extend the rendering pipeline with custom render tasks or even completely replace it to my liking. [insert_research_here]
+  - Majority of research is done in render tasks.
+
+- As a visualization scientist I want to load various custom combustion/medical/... datasets and visualize them as line segments/meshes/point clouds/volumes/...
+  - I load the datasets as line segments/meshes/point clouds/volumes/...
+    - If necessary, I implement the appropriate loaders, or even completely new resources and their related components here.
+  	- I then filter the datasets as necessary - e.g. run particle tracing on a vector field to generate line segments, sample spherical harmonic coefficients to generate meshes, [insert_research_here].
+  - I create an entity with a line_render/mesh_render/point_render/volume_render/... component which points to the dataset.
+  - I add the entity to the default scene.
+  - It is rendered with the default raytracing pipeline, which is often good enough for me.
+  - Majority of research is done in components or externally - e.g. in a particle tracer.
+
+- As a virtual reality scientist I want to load custom scenes, including animated humanoids, and navigate/interact within/with them.
+  - I load the custom scene and the humanoids as models.
+    - If necessary, I implement the appropriate resources/loaders for importing animated meshes from a custom virtual human library.
+  - I append the models to the default scene.
+  - If necessary, I replace the default VR controller interaction. [insert_research_here]
+  - If necessary, I customize the UI as I like or even add new UI approaches. [insert research here]
+  - If necessary, I add custom components for assigning user study tasks and collecting feedback from the user. [insert research here]
+  - It is rendered with the default PBR shading pipeline, including appropriate physics, which is often good enough for me.
+  - Majority of research is done in components.
+
+
 ## Libraries and Tech ##
 - Build
   - [x] CMake
