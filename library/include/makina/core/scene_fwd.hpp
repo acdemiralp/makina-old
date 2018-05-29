@@ -30,7 +30,7 @@ struct mesh_render   ;
 struct point_render  ;
 class  projection    ;
 class  transform     ;
-class  volume_render ;
+struct volume_render ;
 
 using behaviors = std::vector<std::shared_ptr<behavior>>;
 

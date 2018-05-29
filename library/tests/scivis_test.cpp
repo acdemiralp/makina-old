@@ -56,9 +56,9 @@ TEST_CASE("SciVis test.", "[makina]")
 
   // Point cloud rendering.
   {
-    for (auto i = 0; i < 255; ++i)
-      for (auto j = 0; j < 255; ++j)
-        for (auto k = 0; k < 255; ++k)
+    for (auto i = 0; i < 255; i+=8)
+      for (auto j = 0; j < 255; j+=8)
+        for (auto k = 0; k < 255; k+=8)
         {
           point_cloud.vertices.push_back(glm::vec3  (i, j, k));
           point_cloud.colors  .push_back(glm::u8vec4(i, j, k, 255));
@@ -73,9 +73,9 @@ TEST_CASE("SciVis test.", "[makina]")
 
   // Streamline rendering.
   {
-    for (auto i = 0; i < 255; ++i)
-      for (auto j = 0; j < 255; ++j)
-        for (auto k = 0; k < 255; ++k)
+    for (auto i = 0; i < 255; i+=8)
+      for (auto j = 0; j < 255; j+=8)
+        for (auto k = 0; k < 255; k+=8)
         {
           line_segments.vertices.push_back(glm::vec3  (i, j, k));
           line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
