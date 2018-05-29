@@ -26,44 +26,72 @@ TEST_CASE("SciVis test.", "[makina]")
   auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   engine->scene()->copy_entity(model.scene->entities()[1]);
-  
-  mak::field<float, 3> field;
-  field.load(mak::hdf5_description<float, 3>
+
+  mak::field<float, 3>   field            ;
+  mak::transfer_function transfer_function;
+  mak::point_cloud       point_cloud      ;
+  mak::line_segments     line_segments    ;
+
+  // Volume rendering.
   {
-    "D:/data/pli/MSA/MSA0309_s0536-0695.h5",
-    "Retardation",
-    "Spacing"    ,
-    mak::selection<float, 3>{{0, 512, 512}, {64, 64, 64}, {1, 1, 1}}
-  });
+    field.load(mak::hdf5_description<float, 3>
+    {
+      "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
+      "Retardation",
+      "Spacing"    ,
+      mak::selection<float, 3>{{0, 512, 512}, {64, 64, 64}, {1, 1, 1}}
+    });
 
-  mak::point_cloud point_cloud;
-  for (auto i = 0; i < 255; ++i)
-    for (auto j = 0; j < 255; ++j)
-      for (auto k = 0; k < 255; ++k)
-      {
-        point_cloud.vertices.push_back(glm::vec3  (i, j, k));
-        point_cloud.colors  .push_back(glm::u8vec4(i, j, k, 255));
-      }
+    transfer_function.colors      = {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}};
+    transfer_function.opacities   = {0.0001f, 0.0255f};
+    transfer_function.value_range = {0.0f   , 255.0f };
+    
+    auto entity                      = engine->scene()->add_entity();
+    auto metadata                    = entity->add_component<mak::metadata>     ();
+    auto transform                   = entity->add_component<mak::transform>    (metadata);
+    auto volume_render               = entity->add_component<mak::volume_render>();
+    volume_render->volume            = &field;
+    volume_render->transfer_function = &transfer_function;
+  }
 
-  mak::line_segments line_segments;
-  for (auto i = 0; i < 255; ++i)
-    for (auto j = 0; j < 255; ++j)
-      for (auto k = 0; k < 255; ++k)
-      {
-        line_segments.vertices.push_back(glm::vec3  (i, j, k));
-        line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
-        if (line_segments.vertices.size() > 1)
+  // Point cloud rendering.
+  {
+    for (auto i = 0; i < 255; ++i)
+      for (auto j = 0; j < 255; ++j)
+        for (auto k = 0; k < 255; ++k)
         {
-          line_segments.indices.push_back(line_segments.vertices.size() - 2);
-          line_segments.indices.push_back(line_segments.vertices.size() - 1);
+          point_cloud.vertices.push_back(glm::vec3  (i, j, k));
+          point_cloud.colors  .push_back(glm::u8vec4(i, j, k, 255));
         }
-      }
 
-  auto entity       = engine->scene()->add_entity();
-  auto metadata     = entity->add_component<mak::metadata>    ();
-  auto transform    = entity->add_component<mak::transform>   (metadata);
-  auto field_render = entity->add_component<mak::field_render>();
-  // field_render->field = &field;
+    auto entity       = engine->scene()->add_entity();
+    auto metadata     = entity->add_component<mak::metadata>    ();
+    auto transform    = entity->add_component<mak::transform>   (metadata);
+    auto point_render = entity->add_component<mak::point_render>();
+    point_render->point_cloud = &point_cloud;
+  }
+
+  // Streamline rendering.
+  {
+    for (auto i = 0; i < 255; ++i)
+      for (auto j = 0; j < 255; ++j)
+        for (auto k = 0; k < 255; ++k)
+        {
+          line_segments.vertices.push_back(glm::vec3  (i, j, k));
+          line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
+          if (line_segments.vertices.size() > 1)
+          {
+            line_segments.indices.push_back(line_segments.vertices.size() - 2);
+            line_segments.indices.push_back(line_segments.vertices.size() - 1);
+          }
+        }
+    
+    auto entity      = engine->scene()->add_entity();
+    auto metadata    = entity->add_component<mak::metadata>   ();
+    auto transform   = entity->add_component<mak::transform>  (metadata);
+    auto line_render = entity->add_component<mak::line_render>();
+    line_render->line_segments = &line_segments;
+  }
 
   engine->run();
 }
