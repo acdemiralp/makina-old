@@ -11,12 +11,12 @@ Makina is a ”not-game engine (NGE)” which provides a subset of common game e
 
 - As a visualization scientist I want to load various custom combustion/medical/... datasets and visualize them as line segments/meshes/point clouds/volumes/...
   - I load the datasets as line segments/meshes/point clouds/volumes/...
-    - If necessary, I implement the appropriate loaders, or even completely new resources and their related components here.
+    - If necessary, I implement the appropriate loaders, or even complete new resources and their related behaviors here.
   	- I then filter the datasets as necessary - e.g. run particle tracing on a vector field to generate line segments, sample spherical harmonic coefficients to generate meshes, [insert_research_here].
   - I create an entity with a line_render/mesh_render/point_render/volume_render/... component which points to the dataset.
   - I add the entity to the default scene.
   - It is rendered with the default raytracing pipeline, which is often good enough for me.
-  - Majority of research is done in components or externally - e.g. in a particle tracer.
+  - Majority of research is done in behaviors or externally - e.g. in a particle tracer.
 
 - As a virtual reality scientist I want to load custom scenes, including animated humanoids, and navigate/interact within/with them.
   - I load the custom scene and the humanoids as models.
@@ -24,9 +24,17 @@ Makina is a ”not-game engine (NGE)” which provides a subset of common game e
   - I append the models to the default scene.
   - If necessary, I replace the default VR controller interaction. [insert_research_here]
   - If necessary, I customize the UI as I like or even add new UI approaches. [insert research here]
-  - If necessary, I add custom components for assigning user study tasks and collecting feedback from the user. [insert research here]
+  - If necessary, I add custom behavior for assigning user study tasks and collecting feedback from the user. [insert research here]
   - It is rendered with the default PBR shading pipeline, including appropriate physics, which is often good enough for me.
-  - Majority of research is done in components.
+  - Majority of research is done in behaviors.
+
+- As a simulation scientist / applied mathematician, I want to visualize iterative, stochastic algorithms in-situ (e.g. Markov Chain Monte Carlo, Variational Inference).
+  - I fire up an external library to crunch numbers and obtain the output stream. [insert research here]
+  - I create an entity and attach a behavior to it which gives me access to immediate mode rendering, i.e. rendering without any shaders as in OpenGL 1/2.
+    - I convert the stream of numbers into geometry in a lambda passed to the behavior, which is run every frame.
+  - I add the entity to the default scene.
+  - It is rendered with the default immediate mode pipeline, which is often good enough for me.
+  - Majority of research is done externally. The library is just for visualization / results.
 
 
 ## Libraries and Tech ##
