@@ -22,13 +22,14 @@
 #include <makina/renderer/point_render.hpp>
 #include <makina/renderer/projection.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/renderer/volume_render.hpp>
 
 namespace mak
 {
 class behavior  ;
 using behaviors = std::vector<std::shared_ptr<behavior>>;
 
-using entity    = ec::entity<metadata, audio_listener, audio_source, controller, mesh_collider, rigidbody, animator, bone, light, line_render, mesh_render, point_render, projection, transform, behaviors>;
+using entity    = ec::entity<metadata, audio_listener, audio_source, controller, mesh_collider, rigidbody, animator, bone, light, line_render, mesh_render, point_render, projection, transform, volume_render, behaviors>;
 using scene     = ec::scene<entity>;
 
 MAKINA_EXPORT void append_scene(scene* source, scene* target);
