@@ -5,13 +5,14 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <ra/resource.hpp>
 
 #include <makina/aspects/named.hpp>
 #include <makina/export.hpp>
 
 namespace mak
 {
-struct MAKINA_EXPORT line_segments : named
+struct MAKINA_EXPORT line_segments : named, ra::resource<line_segments>
 {
   std::vector<glm::vec3>     vertices;
   std::vector<glm::u8vec4>   colors  ;
