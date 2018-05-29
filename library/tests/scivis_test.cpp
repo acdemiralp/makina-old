@@ -52,10 +52,10 @@ TEST_CASE("SciVis test.", "[makina]")
       {
         line_segments.vertices.push_back(glm::vec3  (i, j, k));
         line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
-        if (k > 0)
+        if (line_segments.vertices.size() > 1)
         {
-          line_segments.indices.push_back(k - 1);
-          line_segments.indices.push_back(k);
+          line_segments.indices.push_back(line_segments.vertices.size() - 2);
+          line_segments.indices.push_back(line_segments.vertices.size() - 1);
         }
       }
 
