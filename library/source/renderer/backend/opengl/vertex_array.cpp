@@ -13,9 +13,10 @@ vertex_array::vertex_array(const description& description)
     set_vertex_buffer    (i, *binding.buffer->actual(), binding.offset, binding.stride != 0u ? binding.stride : binding.components * gl::type_size(binding.type));
     set_attribute_enabled(i, true);
 
-    if(binding.type == GL_BYTE  || binding.type == GL_UNSIGNED_BYTE  ||
+    if(!binding.normalize && (
+       binding.type == GL_BYTE  || binding.type == GL_UNSIGNED_BYTE  ||
        binding.type == GL_SHORT || binding.type == GL_UNSIGNED_SHORT ||
-       binding.type == GL_INT   || binding.type == GL_UNSIGNED_INT   || binding.type == GL_FIXED )
+       binding.type == GL_INT   || binding.type == GL_UNSIGNED_INT   || binding.type == GL_FIXED))
       set_attribute_format_integer(i, binding.components, binding.type, binding.relative_offset);
     else if(binding.type == GL_DOUBLE)
       set_attribute_format_long   (i, binding.components, binding.type, binding.relative_offset);
