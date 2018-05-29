@@ -47,11 +47,13 @@
 #include <makina/resources/field_load.hpp>
 #include <makina/resources/image.hpp>
 #include <makina/resources/image_load.hpp>
+#include <makina/resources/line_segments.hpp>
 #include <makina/resources/mesh.hpp>
 #include <makina/resources/model.hpp>
 #include <makina/resources/model_load.hpp>
 #include <makina/resources/phong_material.hpp>
 #include <makina/resources/physically_based_material.hpp>
+#include <makina/resources/point_cloud.hpp>
 #include <makina/scripting/behavior.hpp>
 #include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/imgui_context.hpp>
