@@ -69,6 +69,7 @@ layout(location = 0) in vs_output_type
 {
   vec3      vertex            ;
   vec3      normal            ;
+  vec4      color             ;
   vec2      texture_coordinate;
   flat uint material_index    ;
 } fs_input;
@@ -77,18 +78,29 @@ layout(location = 0) out vec4 output_color;
 
 void main()
 {
-  vec3  ka = materials[fs_input.material_index].use_image[0] == 1
-    ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[0]))).rgb 
-    : materials[fs_input.material_index].ambient.rgb ;             
-  vec3  kd = materials[fs_input.material_index].use_image[1] == 1
-    ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[1]))).rgb 
-    : materials[fs_input.material_index].diffuse.rgb ;             
-  vec3  ks = materials[fs_input.material_index].use_image[2] == 1
-    ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[2]))).rgb 
-    : materials[fs_input.material_index].specular.rgb;
-  float a  = max(materials[fs_input.material_index].specular.w, 0.0001f);
-  vec3  n  = normalize( fs_input.normal);
-  vec3  v  = normalize(-fs_input.vertex);
+  vec3 ka, kd, ks;
+  if (fs_input.color == vec4(0.0f))
+  {
+    ka = materials[fs_input.material_index].use_image[0] == 1
+      ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[0]))).rgb 
+      : materials[fs_input.material_index].ambient.rgb ;             
+    kd = materials[fs_input.material_index].use_image[1] == 1
+      ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[1]))).rgb 
+      : materials[fs_input.material_index].diffuse.rgb ;             
+    ks = materials[fs_input.material_index].use_image[2] == 1
+      ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[2]))).rgb 
+      : materials[fs_input.material_index].specular.rgb;
+  }
+  else
+  {
+    ka = fs_input.color.rgb;
+    kd = fs_input.color.rgb;
+    ks = fs_input.color.rgb;
+  }
+  
+  float a = max(materials[fs_input.material_index].specular.w, 0.0001f);
+  vec3  n = normalize( fs_input.normal);
+  vec3  v = normalize(-fs_input.vertex);
 
   vec3 color = vec3(0.0f);
   for(uint i = 0; i < lights_metadata.x; ++i)

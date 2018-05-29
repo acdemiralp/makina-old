@@ -71,6 +71,7 @@ layout(location = 0) in vs_output_type
 {
   vec3      vertex            ;
   vec3      normal            ;
+  vec4      color             ;
   vec2      texture_coordinate;
   flat uint material_index    ;
 } fs_input;
@@ -132,9 +133,14 @@ vec3   shade_ggx           (vec3 v, vec3 n, vec3 l, vec3 ka, float km, float kr,
 
 void main()
 {
-  vec3  ka  = materials[fs_input.material_index].use_image  [0] == 1
-    ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[0]))).rgb 
-    : materials[fs_input.material_index].albedo.rgb  ;             
+  vec3 ka;
+  if (fs_input.color == vec4(0.0f))
+    ka = materials[fs_input.material_index].use_image[0] == 1
+      ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[0]))).rgb 
+      : materials[fs_input.material_index].albedo.rgb  ;             
+  else
+    ka = fs_input.color.rgb;
+  
   float km  = materials[fs_input.material_index].use_image  [1] == 1
     ? texture(images, vec3(fs_input.texture_coordinate, float(materials[fs_input.material_index].image_ids[1]))).r 
     : materials[fs_input.material_index].properties.x;             

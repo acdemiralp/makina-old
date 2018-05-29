@@ -18,7 +18,7 @@ struct MAKINA_EXPORT mesh : public named
   std::vector<glm::vec3>     vertices           ;
   std::vector<glm::vec3>     normals            ;
   std::vector<glm::vec3>     texture_coordinates;
-  std::vector<glm::vec4>     colors             ;
+  std::vector<glm::u8vec4>   colors             ;
   std::vector<glm::vec3>     tangents           ;
   std::vector<glm::vec3>     bitangents         ;
   std::vector<std::uint32_t> indices            ;

@@ -22,8 +22,8 @@ namespace opengl
 {
 fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* framegraph, input_system* input_system, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
 {
-  const auto retained_attributes        = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Vertices"         , buffer_description{GLsizeiptr(4e+6) , GL_ARRAY_BUFFER         });
-  const auto retained_viewport          = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Viewport"         , buffer_description{sizeof(glm::vec2), GL_SHADER_STORAGE_BUFFER});
+  const auto retained_attributes        = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Vertices"         , buffer_description{GLsizeiptr(4e+6) });
+  const auto retained_viewport          = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Viewport"         , buffer_description{sizeof(glm::vec2)});
   const auto retained_points_program    = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Points Program"   , program::graphics_description
   {                                                                                                                                                            
     glsl::immediate_points_vertex_shader,                                                                                                                      

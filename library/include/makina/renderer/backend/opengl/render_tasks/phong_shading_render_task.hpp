@@ -19,6 +19,7 @@ struct MAKINA_EXPORT phong_shading_task_data
 {
   buffer_resource*           vertices           ;
   buffer_resource*           normals            ;
+  buffer_resource*           colors             ;
   buffer_resource*           texture_coordinates;
   buffer_resource*           instance_attributes;
   buffer_resource*           indices            ;

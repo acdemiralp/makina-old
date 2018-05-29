@@ -26,6 +26,7 @@ struct MAKINA_EXPORT upload_scene_task_data
 {
   buffer_resource*           vertices           ;
   buffer_resource*           normals            ;
+  buffer_resource*           colors             ;
   buffer_resource*           texture_coordinates;
   buffer_resource*           bone_ids           ;
   buffer_resource*           bone_weights       ;

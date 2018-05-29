@@ -27,6 +27,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
     {
       data.vertices            = builder.read(scene_data.vertices           );
       data.normals             = builder.read(scene_data.normals            );
+      data.colors              = builder.read(scene_data.colors             );
       data.texture_coordinates = builder.read(scene_data.texture_coordinates);
       data.instance_attributes = builder.read(scene_data.instance_attributes);
       data.indices             = builder.read(scene_data.indices            );
@@ -41,10 +42,11 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.vertex_array        = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
       {
         { 
-          {data.vertices           , 4, GL_FLOAT       }, 
-          {data.normals            , 4, GL_FLOAT       }, 
-          {data.texture_coordinates, 3, GL_FLOAT       }, 
-          {data.instance_attributes, 2, GL_UNSIGNED_INT, false, 0, 0, 0, 1}
+          {data.vertices           , 4, GL_FLOAT                           }, 
+          {data.normals            , 4, GL_FLOAT                           },
+          {data.colors             , 4, GL_UNSIGNED_BYTE, true             },
+          {data.texture_coordinates, 3, GL_FLOAT                           }, 
+          {data.instance_attributes, 2, GL_UNSIGNED_INT , false, 0, 0, 0, 1}
         }, 
         {
           data.transforms, 

@@ -37,13 +37,15 @@ layout(std430, set = 0, binding = 2) readonly buffer camera
 
 layout(location = 0) in vec4  vertex;
 layout(location = 1) in vec4  normal;
-layout(location = 2) in vec3  texture_coordinate;
-layout(location = 3) in uvec2 instance_attribute; // x transform id, y material id
+layout(location = 2) in vec4  color ;
+layout(location = 3) in vec3  texture_coordinate;
+layout(location = 4) in uvec2 instance_attribute; // x transform id, y material id
 
 layout(location = 0) out vs_output_type 
 {
   vec3      vertex            ;
   vec3      normal            ;
+  vec4      color             ;
   vec2      texture_coordinate;
   flat uint material_index    ;
 } vs_output;
@@ -62,6 +64,7 @@ void main()
   
   vs_output.vertex             = trans_vertex.xyz;
   vs_output.normal             = normalize((model_view * normal).xyz);
+  vs_output.color              = color;
   vs_output.texture_coordinate = texture_coordinate.xy;
   vs_output.material_index     = instance_attribute.y;
 
