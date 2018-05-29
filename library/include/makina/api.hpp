@@ -35,10 +35,13 @@
 #include <makina/renderer/field_render.hpp>
 #include <makina/renderer/im3d_context.hpp>
 #include <makina/renderer/light.hpp>
+#include <makina/renderer/line_render.hpp>
 #include <makina/renderer/mesh_render.hpp>
+#include <makina/renderer/point_render.hpp>
 #include <makina/renderer/projection.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/renderer/transform.hpp>
+#include <makina/renderer/volume_render.hpp>
 #include <makina/resources/animation_clip.hpp>
 #include <makina/resources/audio_clip.hpp>
 #include <makina/resources/audio_clip_load.hpp>
@@ -54,6 +57,7 @@
 #include <makina/resources/phong_material.hpp>
 #include <makina/resources/physically_based_material.hpp>
 #include <makina/resources/point_cloud.hpp>
+#include <makina/resources/transfer_function.hpp>
 #include <makina/scripting/behavior.hpp>
 #include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/imgui_context.hpp>
