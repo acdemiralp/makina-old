@@ -17,7 +17,7 @@ struct MAKINA_EXPORT line_segments : named, ra::resource<line_segments>
   std::vector<glm::vec3>     vertices;
   std::vector<glm::u8vec4>   colors  ;
   std::vector<std::uint32_t> indices ;
-  float                      radius  ; // Per vertex radius requires b-spline support.
+  float                      radius  = 1.0f; // Per vertex radius requires b-spline support.
 };
 }
 
