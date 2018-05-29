@@ -36,6 +36,29 @@ TEST_CASE("SciVis test.", "[makina]")
     mak::selection<float, 3>{{0, 512, 512}, {64, 64, 64}, {1, 1, 1}}
   });
 
+  mak::point_cloud point_cloud;
+  for (auto i = 0; i < 255; ++i)
+    for (auto j = 0; j < 255; ++j)
+      for (auto k = 0; k < 255; ++k)
+      {
+        point_cloud.vertices.push_back(glm::vec3  (i, j, k));
+        point_cloud.colors  .push_back(glm::u8vec4(i, j, k, 255));
+      }
+
+  mak::line_segments line_segments;
+  for (auto i = 0; i < 255; ++i)
+    for (auto j = 0; j < 255; ++j)
+      for (auto k = 0; k < 255; ++k)
+      {
+        line_segments.vertices.push_back(glm::vec3  (i, j, k));
+        line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
+        if (k > 0)
+        {
+          line_segments.indices.push_back(k - 1);
+          line_segments.indices.push_back(k);
+        }
+      }
+
   auto entity       = engine->scene()->add_entity();
   auto metadata     = entity->add_component<mak::metadata>    ();
   auto transform    = entity->add_component<mak::transform>   (metadata);
