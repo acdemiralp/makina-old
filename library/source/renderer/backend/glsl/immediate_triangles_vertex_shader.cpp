@@ -36,7 +36,7 @@ layout(location = 0) out vs_output_type
 void main()
 {
   vs_output.color = color.abgr;
-  gl_Position     = cameras[cameras_metadata.y].projection * vec4(attributes.xyz, 1.0f);
+  gl_Position     = cameras[cameras_metadata.y].projection * cameras[cameras_metadata.y].view * vec4(attributes.xyz, 1.0f);
 }
 )";
 }

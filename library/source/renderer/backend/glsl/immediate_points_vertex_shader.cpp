@@ -41,7 +41,7 @@ void main()
   vs_output.size     = max(attributes.w, antialiasing);
   vs_output.color    = color.abgr;
   vs_output.color.a *= smoothstep(0.0f, 1.0f, attributes.w / antialiasing);
-  gl_Position        = cameras[cameras_metadata.y].projection * vec4(attributes.xyz, 1.0f);
+  gl_Position        = cameras[cameras_metadata.y].projection * cameras[cameras_metadata.y].view * vec4(attributes.xyz, 1.0f);
   gl_PointSize       = vs_output.size;
 }
 )";
