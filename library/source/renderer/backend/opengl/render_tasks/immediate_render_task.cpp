@@ -103,22 +103,27 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* frame
         data.attributes->actual()->set_sub_data(0, draw_list.m_vertexCount * sizeof Im3d::VertexData, draw_list.m_vertexData);
         data.viewport  ->actual()->set_sub_data(0, sizeof glm::vec2, &size[0]);
 
+        data.target      ->actual()->bind();
         data.vertex_array->actual()->bind();
         if      (primitive_type == GL_POINTS) data.points_program   ->actual()->use  ();
         else if (primitive_type == GL_LINES ) data.lines_program    ->actual()->use  ();
         else                                  data.triangles_program->actual()->use  ();
-
-        gl::set_viewport          ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
-        gl::set_point_size_enabled(true);
-        gl::set_blending_enabled  (true);
-        gl::set_blend_equation    (GL_FUNC_ADD , GL_FUNC_ADD );
-        gl::set_blend_function    (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        gl::draw_arrays           (primitive_type, 0, draw_list.m_vertexCount);
+        
+        glClipControl              (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+        gl::set_depth_test_enabled (true);
+        gl::set_blending_enabled   (true);
+        gl::set_point_size_enabled (true);
+        gl::set_depth_function     (GL_LESS);
+        gl::set_blend_equation     (GL_FUNC_ADD , GL_FUNC_ADD );
+        gl::set_blend_function     (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl::set_viewport           ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
+        gl::draw_arrays            (primitive_type, 0, draw_list.m_vertexCount);
 
         if      (primitive_type == GL_POINTS) data.points_program   ->actual()->unuse();
         else if (primitive_type == GL_LINES ) data.lines_program    ->actual()->unuse();
         else                                  data.triangles_program->actual()->unuse();
         data.vertex_array->actual()->unbind();
+        data.target      ->actual()->unbind();
       };
 
       auto& app_data = Im3d::GetAppData();
