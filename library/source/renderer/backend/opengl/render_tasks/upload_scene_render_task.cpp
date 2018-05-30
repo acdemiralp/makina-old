@@ -102,22 +102,25 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
     },
     [=] (const upload_scene_task_data& data)
     {
-      auto& mutable_data        = const_cast<upload_scene_task_data&>(data);
-
-      auto scene                = framegraph->scene_cache();
-      auto mesh_render_entities = scene->entities<transform, mesh_render>();
-      auto light_entities       = scene->entities<transform, light>      ();
-      auto camera_entities      = scene->entities<transform, projection> ();
-      auto transforms           = std::vector<_transform>                        ();
-      auto pbr_materials        = std::vector<_physically_based_material>        ();
-      auto phong_materials      = std::vector<_phong_material>                   ();
-      auto cameras              = std::vector<_camera>                           ();
-      auto lights               = std::vector<_light>                            ();
-      auto rigs                 = std::vector<_rig>                              ();
-      auto draw_calls           = std::vector<gl::draw_elements_indirect_command>();
-      auto instance_attributes  = std::vector<glm::uvec2>                        ();
+      auto& mutable_data          = const_cast<upload_scene_task_data&>(data);
+                                 
+      auto scene                  = framegraph->scene_cache();
+      auto line_render_entities   = scene->entities<transform, line_render>        ();
+      auto mesh_render_entities   = scene->entities<transform, mesh_render>        ();
+      auto point_render_entities  = scene->entities<transform, point_render>       ();
+      auto volume_render_entities = scene->entities<transform, volume_render>      ();
+      auto light_entities         = scene->entities<transform, light>              ();
+      auto camera_entities        = scene->entities<transform, projection>         ();
+      auto transforms             = std::vector<_transform>                        ();
+      auto pbr_materials          = std::vector<_physically_based_material>        ();
+      auto phong_materials        = std::vector<_phong_material>                   ();
+      auto cameras                = std::vector<_camera>                           ();
+      auto lights                 = std::vector<_light>                            ();
+      auto rigs                   = std::vector<_rig>                              ();
+      auto draw_calls             = std::vector<gl::draw_elements_indirect_command>();
+      auto instance_attributes    = std::vector<glm::uvec2>                        ();
       
-      for (auto i = 0; i < mesh_render_entities.size(); ++i)
+      for (auto i = 0; i < mesh_render_entities  .size(); ++i)
       {
         const auto& entity      = mesh_render_entities[i];
         const auto  animator    = entity->component<mak::animator>   ();
@@ -424,6 +427,39 @@ fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* 
           for (auto& transform_bone_pair : mutable_data.rig_cache[animator])
             rigs.push_back(_rig{transform_bone_pair.first->matrix(true), transform_bone_pair.second->offset_matrix});
         }
+      }
+      for (auto i = 0; i < line_render_entities  .size(); ++i)
+      {
+        const auto& entity        = line_render_entities  [i];
+        const auto  metadata      = entity->component<mak::metadata>     ();
+        const auto  transform     = entity->component<mak::transform>    ();
+        const auto  line_render   = entity->component<mak::line_render>  ();
+
+        if (!metadata->active) continue;
+
+        // TODO.
+      }                                          
+      for (auto i = 0; i < point_render_entities .size(); ++i)
+      {
+        const auto& entity        = point_render_entities [i];
+        const auto  metadata      = entity->component<mak::metadata>     ();
+        const auto  transform     = entity->component<mak::transform>    ();
+        const auto  point_render  = entity->component<mak::point_render> ();
+
+        if (!metadata->active) continue;
+
+        // TODO.
+      }
+      for (auto i = 0; i < volume_render_entities.size(); ++i)
+      {
+        const auto& entity        = volume_render_entities[i];
+        const auto  metadata      = entity->component<mak::metadata>     ();
+        const auto  transform     = entity->component<mak::transform>    ();
+        const auto  volume_render = entity->component<mak::volume_render>();
+
+        if (!metadata->active) continue;
+
+        // TODO.
       }
       for (auto& entity : camera_entities)
       {

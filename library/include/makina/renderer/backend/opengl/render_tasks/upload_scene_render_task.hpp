@@ -46,9 +46,12 @@ struct MAKINA_EXPORT upload_scene_task_data
   GLuint                     image_offset       = 0;
   GLuint                     rig_offset         = 0;
   
-  std::map<mesh*    , gl::draw_elements_indirect_command>                  mesh_cache ;
-  std::map<image*   , std::uint64_t>                                       image_cache;
-  std::map<animator*, std::vector<std::pair<mak::transform*, mak::bone*>>> rig_cache  ;
+  std::map<line_segments*  , gl::draw_elements_indirect_command>                  line_segments_cache;
+  std::map<mesh*           , gl::draw_elements_indirect_command>                  mesh_cache         ;
+  std::map<point_cloud*    , gl::draw_elements_indirect_command>                  point_cloud_cache  ;
+  std::map<field<float, 3>*, std::uint64_t>                                       volume_cache       ; 
+  std::map<image*          , std::uint64_t>                                       image_cache        ;
+  std::map<animator*       , std::vector<std::pair<mak::transform*, mak::bone*>>> rig_cache          ;
 };
 
 MAKINA_EXPORT fg::render_task<upload_scene_task_data>* add_upload_scene_render_task(renderer* framegraph);
