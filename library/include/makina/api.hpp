@@ -15,6 +15,7 @@
 #include <makina/audio/audio_source.hpp>
 #include <makina/audio/audio_system.hpp>
 #include <makina/core/engine.hpp>
+#include <makina/core/file_system.hpp>
 #include <makina/core/frame_timer.hpp>
 #include <makina/core/logger.hpp>
 #include <makina/core/metadata.hpp>
