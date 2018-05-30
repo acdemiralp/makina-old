@@ -26,17 +26,19 @@ TEST_CASE("SciVis test.", "[makina]")
   auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   engine->scene()->copy_entity(model.scene->entities()[1]);
-
+  
+  mak::path::add_search_directories({"C:", "C:/dev", "D:", "D:/dev"});
+ 
   mak::field<float, 3>   field            ;
   mak::transfer_function transfer_function;
   mak::point_cloud       point_cloud      ;
   mak::line_segments     line_segments    ;
-
+  
   // Volume rendering.
   {
     field.load(mak::hdf5_description<float, 3>
     {
-      "C:/dev/data/pli/Human/MSA0309_s0536-0695.h5",
+      mak::path::find("data/pli/MSA/MSA0309_s0536-0695.h5").string(),
       "Retardation",
       "Spacing"    ,
       mak::selection<float, 3>{{0, 512, 512}, {64, 64, 64}, {1, 1, 1}}
