@@ -11,7 +11,10 @@
 #include <makina/renderer/backend/opengl/render_tasks/submit_hmd_textures_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/test_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/ui_render_task.hpp>
-#include <makina/renderer/backend/opengl/render_tasks/upload_scene_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/upload_common_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/upload_lines_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/upload_meshes_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/upload_points_render_task.hpp>
 #include <makina/export.hpp>
 
 namespace di

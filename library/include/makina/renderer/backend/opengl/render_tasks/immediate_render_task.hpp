@@ -7,7 +7,7 @@
 #include <im3d.h>
 
 #include <makina/input/input_system.hpp>
-#include <makina/renderer/backend/opengl/render_tasks/upload_scene_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/upload_common_render_task.hpp>
 #include <makina/renderer/backend/opengl/buffer.hpp>
 #include <makina/renderer/backend/opengl/framebuffer.hpp>
 #include <makina/renderer/backend/opengl/program.hpp>
@@ -30,10 +30,16 @@ struct MAKINA_EXPORT immediate_task_data
   graphics_program_resource*                 triangles_program;
   vertex_array_resource*                     vertex_array     ;
   framebuffer_resource*                      target           ;
+
   std::function<void(const Im3d::DrawList&)> draw_callback    ;
 };
 
-MAKINA_EXPORT fg::render_task<immediate_task_data>* add_immediate_render_task(renderer* framegraph, input_system* input_system, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag = std::string());
+MAKINA_EXPORT fg::render_task<immediate_task_data>* add_immediate_render_task(
+  renderer*                      framegraph  , 
+  input_system*                  input_system, 
+  framebuffer_resource*          target      , 
+  const upload_common_task_data& common_data , 
+  const std::string&             camera_tag  = std::string());
 }
 }
 

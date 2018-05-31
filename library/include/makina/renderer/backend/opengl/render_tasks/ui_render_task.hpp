@@ -15,14 +15,14 @@ namespace opengl
 {
 struct MAKINA_EXPORT ui_task_data
 {
-  buffer_resource*       attributes  ;
-  buffer_resource*       projection  ;
-  buffer_resource*       indices     ;
-  texture_2d_resource*   texture     ;
+  buffer_resource*           attributes  ;
+  buffer_resource*           indices     ;
+  buffer_resource*           projection  ;
+  texture_2d_resource*       texture     ;
                          
-  graphics_program_resource*      program     ;
-  vertex_array_resource* vertex_array;
-  framebuffer_resource*  target      ;
+  graphics_program_resource* program     ;
+  vertex_array_resource*     vertex_array;
+  framebuffer_resource*      target      ;
 };
 
 MAKINA_EXPORT fg::render_task<ui_task_data>* add_ui_render_task(renderer* framegraph, framebuffer_resource* target);

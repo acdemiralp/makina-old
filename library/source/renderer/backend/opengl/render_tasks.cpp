@@ -21,12 +21,15 @@ void opengl::make_default_framegraph(engine* engine, di::opengl_window* main_win
 
   const auto backbuffer                     = renderer->add_retained_resource("Backbuffer", mak::opengl::framebuffer::description(), mak::opengl::default_framebuffer(main_window));
 
-  const auto upload_scene_render_task       = mak::opengl::add_upload_scene_render_task      (renderer);
-  const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task(renderer, upload_scene_render_task->data());
-        auto upload_scene_task_data         = upload_scene_render_task      ->data();
+  const auto upload_common_render_task      = mak::opengl::add_upload_common_render_task     (renderer);
+  const auto upload_lines_render_task       = mak::opengl::add_upload_lines_render_task      (renderer);
+  const auto upload_meshes_render_task      = mak::opengl::add_upload_meshes_render_task     (renderer);
+  const auto upload_points_render_task      = mak::opengl::add_upload_points_render_task     (renderer);
+  const auto skeletal_animation_render_task = mak::opengl::add_skeletal_animation_render_task(renderer, upload_meshes_render_task->data());
+        auto upload_meshes_task_data        = upload_meshes_render_task     ->data();
   const auto skeletal_animation_task_data   = skeletal_animation_render_task->data();
-  upload_scene_task_data.vertices           = skeletal_animation_task_data.transformed_vertices;
-  upload_scene_task_data.normals            = skeletal_animation_task_data.transformed_normals ;
+  upload_meshes_task_data.vertices          = skeletal_animation_task_data.transformed_vertices;
+  upload_meshes_task_data.normals           = skeletal_animation_task_data.transformed_normals ;
 
   if (vr_system)
   {
@@ -38,19 +41,19 @@ void opengl::make_default_framegraph(engine* engine, di::opengl_window* main_win
     const auto left_texture                    = hmd_texture_data.left ;
     const auto right_texture                   = hmd_texture_data.right;
     const auto left_clear_render_task          = mak::opengl::add_clear_render_task                   (renderer,               left_texture , {0.1F, 0.1F, 0.1F, 1.0F});
-    const auto left_pbr_render_task            = mak::opengl::add_physically_based_shading_render_task(renderer,               left_texture , upload_scene_task_data, "hmd_left_camera" );
-    const auto left_immediate_render_task      = mak::opengl::add_immediate_render_task               (renderer, input_system, left_texture , upload_scene_task_data);
+    const auto left_pbr_render_task            = mak::opengl::add_physically_based_shading_render_task(renderer,               left_texture , upload_common_render_task->data(), upload_meshes_task_data, "hmd_left_camera" );
+    const auto left_immediate_render_task      = mak::opengl::add_immediate_render_task               (renderer, input_system, left_texture , upload_common_render_task->data());
     const auto right_clear_render_task         = mak::opengl::add_clear_render_task                   (renderer,               right_texture, {0.1F, 0.1F, 0.1F, 1.0F});
-    const auto right_pbr_render_task           = mak::opengl::add_physically_based_shading_render_task(renderer,               right_texture, upload_scene_task_data, "hmd_right_camera");
-    const auto right_immediate_render_task     = mak::opengl::add_immediate_render_task               (renderer, input_system, right_texture, upload_scene_task_data);
+    const auto right_pbr_render_task           = mak::opengl::add_physically_based_shading_render_task(renderer,               right_texture, upload_common_render_task->data(), upload_meshes_task_data, "hmd_right_camera");
+    const auto right_immediate_render_task     = mak::opengl::add_immediate_render_task               (renderer, input_system, right_texture, upload_common_render_task->data());
     const auto blit_render_task                = mak::opengl::add_blit_render_task                    (renderer,               left_texture , backbuffer);
     const auto submit_hmd_textures_render_task = mak::opengl::add_submit_hmd_textures_render_task     (renderer, hmd, hmd_texture_data);
   }
   else
   {                                                                                       
     const auto clear_render_task               = mak::opengl::add_clear_render_task                   (renderer,               backbuffer, {0.1F, 0.1F, 0.1F, 1.0F});
-    const auto pbr_render_task                 = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_scene_task_data);
-    const auto immediate_render_task           = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_scene_task_data);
+    const auto pbr_render_task                 = mak::opengl::add_physically_based_shading_render_task(renderer,               backbuffer, upload_common_render_task->data(), upload_meshes_task_data);
+    const auto immediate_render_task           = mak::opengl::add_immediate_render_task               (renderer, input_system, backbuffer, upload_common_render_task->data());
     const auto ui_render_task                  = mak::opengl::add_ui_render_task                      (renderer,               backbuffer);
   }
 }

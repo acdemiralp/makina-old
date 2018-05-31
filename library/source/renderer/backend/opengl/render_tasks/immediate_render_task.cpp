@@ -20,7 +20,12 @@ namespace mak
 {
 namespace opengl
 {
-fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* framegraph, input_system* input_system, framebuffer_resource* target, const upload_scene_task_data& scene_data, const std::string& camera_tag)
+fg::render_task<immediate_task_data>* add_immediate_render_task (
+  renderer*                      framegraph  , 
+  input_system*                  input_system, 
+  framebuffer_resource*          target      , 
+  const upload_common_task_data& common_data , 
+  const std::string&             camera_tag  )
 {
   const auto retained_attributes        = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Vertices"         , buffer_description{GLsizeiptr(4e+6) });
   const auto retained_viewport          = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Viewport"         , buffer_description{sizeof(glm::vec2)});
@@ -63,7 +68,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (renderer* frame
     [=] (      immediate_task_data& data, fg::render_task_builder& builder)
     {
       data.attributes        = builder.read(retained_attributes       );
-      data.cameras           = builder.read(scene_data.cameras        );
+      data.cameras           = builder.read(common_data.cameras       );
       data.viewport          = builder.read(retained_viewport         );
       data.points_program    = builder.read(retained_points_program   );
       data.lines_program     = builder.read(retained_lines_program    );

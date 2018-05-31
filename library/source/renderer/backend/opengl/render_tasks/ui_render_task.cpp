@@ -15,10 +15,10 @@ namespace opengl
 {
 fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebuffer_resource* target)
 {
-  const auto retained_attributes   = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Vertices"  , buffer_description{GLsizeiptr(4e+6) });
-  const auto retained_projection   = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Projection", buffer_description{sizeof(glm::mat4)});
-  const auto retained_indices      = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Indices"   , buffer_description{GLsizeiptr(4e+6) });
-  const auto retained_program      = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("UI Program"   , program::graphics_description
+  const auto retained_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Vertices"  , buffer_description{GLsizeiptr(4e+6) });
+  const auto retained_indices    = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Indices"   , buffer_description{GLsizeiptr(4e+6) });
+  const auto retained_projection = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("UI Projection", buffer_description{sizeof(glm::mat4)});
+  const auto retained_program    = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("UI Program"   , program::graphics_description
   {
     glsl::ui_vertex_shader, 
     glsl::ui_fragment_shader
@@ -50,8 +50,8 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
     [&] (      ui_task_data& data, fg::render_task_builder& builder)
     {
       data.attributes   = builder.read (retained_attributes  );
-      data.projection   = builder.read (retained_projection  );
       data.indices      = builder.read (retained_indices     );
+      data.projection   = builder.read (retained_projection  );
       data.texture      = builder.read (retained_texture     );
       data.program      = builder.read (retained_program     );
       data.vertex_array = builder.read (retained_vertex_array);

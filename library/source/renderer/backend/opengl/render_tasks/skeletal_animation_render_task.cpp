@@ -10,15 +10,11 @@ namespace mak
 {
 namespace opengl
 {
-fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_task(renderer* framegraph, const upload_scene_task_data& scene_data)
+fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_task(renderer* framegraph, const upload_meshes_task_data& mesh_data)
 {
-  const auto retained_vertices = framegraph->add_retained_resource<buffer_description, gl::buffer>(
-    "Skeletal Animation Vertices", buffer_description{GLsizeiptr(64e+6)});
-  const auto retained_normals  = framegraph->add_retained_resource<buffer_description, gl::buffer>(
-    "Skeletal Animation Normals" , buffer_description{GLsizeiptr(64e+6)});
-  // Totals to 64 * 2 = 128 MB of GPU memory for buffers.
-
-  const auto retained_program = framegraph->add_retained_resource<compute_program_resource::description_type, program>("Skeletal Animation Program", program::compute_description
+  const auto retained_vertices = framegraph->add_retained_resource<buffer_description                        , gl::buffer>("Skeletal Animation Vertices", buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_normals  = framegraph->add_retained_resource<buffer_description                        , gl::buffer>("Skeletal Animation Normals" , buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_program  = framegraph->add_retained_resource<compute_program_resource::description_type, program>   ("Skeletal Animation Program" , program::compute_description
   {
     glsl::skeletal_animation_compute_shader
   });
@@ -27,15 +23,15 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
     "Skeletal Animation Pass",
     [&] (      skeletal_animation_task_data& data, fg::render_task_builder& builder)
     {
-      data.vertices             = builder.read(scene_data.vertices     );
-      data.normals              = builder.read(scene_data.normals      );
-      data.bone_ids             = builder.read(scene_data.bone_ids     );
-      data.bone_weights         = builder.read(scene_data.bone_weights );
-      data.rigs                 = builder.read(scene_data.rigs         );
-      data.parameter_map        = builder.read(scene_data.parameter_map);
-      data.program              = builder.read(retained_program);
-      data.transformed_vertices = builder.write(retained_vertices);
-      data.transformed_normals  = builder.write(retained_normals );
+      data.vertices             = builder.read (mesh_data.vertices     );
+      data.normals              = builder.read (mesh_data.normals      );
+      data.bone_ids             = builder.read (mesh_data.bone_ids     );
+      data.bone_weights         = builder.read (mesh_data.bone_weights );
+      data.rigs                 = builder.read (mesh_data.rigs         );
+      data.parameter_map        = builder.read (mesh_data.parameter_map);
+      data.program              = builder.read (retained_program       );
+      data.transformed_vertices = builder.write(retained_vertices      );
+      data.transformed_normals  = builder.write(retained_normals       );
       data.vertex_array         = builder.create<vertex_array_resource>("Skeletal Animation Vertex Array", vertex_array::description
       {
         { }, 
