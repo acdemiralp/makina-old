@@ -88,9 +88,10 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
         {
           const auto& vertices = point_render->point_cloud->vertices;
           const auto& colors   = point_render->point_cloud->colors  ;
+          const auto  radius   = point_render->point_cloud->radius  ;
           
           std::vector<glm::vec4> transformed_vertices (vertices.size());
-          std::transform(vertices.begin(), vertices.end  (), transformed_vertices.begin(), [ ] (const glm::vec3&  vertex) { return glm::vec4(vertex, 1.0f); });
+          std::transform(vertices.begin(), vertices.end(), transformed_vertices.begin(), [radius] (const glm::vec3& vertex) { return glm::vec4(vertex, radius); });
           
           data.vertices->actual()->set_sub_data(sizeof transformed_vertices[0] * mutable_data.vertex_offset, sizeof transformed_vertices[0] * transformed_vertices.size(), transformed_vertices.data());
           data.colors  ->actual()->set_sub_data(sizeof colors              [0] * mutable_data.vertex_offset, sizeof colors              [0] * colors              .size(), colors              .data());
