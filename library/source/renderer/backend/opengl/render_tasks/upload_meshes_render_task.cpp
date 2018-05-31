@@ -81,12 +81,12 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
                                 
       auto  scene                = framegraph->scene_cache();
       auto  mesh_render_entities = scene->entities<transform, mesh_render>        ();
+      auto  instance_attributes  = std::vector<glm::uvec2>                        ();
+      auto  draw_calls           = std::vector<gl::draw_elements_indirect_command>();
       auto  transforms           = std::vector<_transform>                        ();
       auto  pbr_materials        = std::vector<_physically_based_material>        ();
       auto  phong_materials      = std::vector<_phong_material>                   ();
       auto  rigs                 = std::vector<_rig>                              ();
-      auto  draw_calls           = std::vector<gl::draw_elements_indirect_command>();
-      auto  instance_attributes  = std::vector<glm::uvec2>                        ();
       
       for (auto i = 0; i < mesh_render_entities.size(); ++i)
       {

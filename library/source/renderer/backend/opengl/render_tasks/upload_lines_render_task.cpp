@@ -57,11 +57,11 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
                                 
       auto  scene                = framegraph->scene_cache();
       auto  line_render_entities = scene->entities<transform, line_render>        ();
+      auto  instance_attributes  = std::vector<glm::uvec2>                        ();
+      auto  draw_calls           = std::vector<gl::draw_elements_indirect_command>();
       auto  transforms           = std::vector<_transform>                        ();
       auto  pbr_materials        = std::vector<_physically_based_material>        ();
       auto  phong_materials      = std::vector<_phong_material>                   ();
-      auto  draw_calls           = std::vector<gl::draw_elements_indirect_command>();
-      auto  instance_attributes  = std::vector<glm::uvec2>                        ();
       
       for (auto i = 0; i < line_render_entities.size(); ++i)
       {
