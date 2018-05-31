@@ -1,7 +1,7 @@
 #include <makina/renderer/backend/vulkan/render_tasks/phong_shading_render_task.hpp>
 
-#include <makina/renderer/backend/glsl/default_vertex_shader.hpp>
-#include <makina/renderer/backend/glsl/phong_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_phong_fragment_shader.hpp>
 
 #include <vkhlf/DescriptorSet.h>
 
@@ -44,8 +44,8 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
       data.sampler       = builder.read(scene_data.sampler      );
       data.parameter_map = builder.read(scene_data.parameter_map);
       data.pipeline      = builder.create<pipeline_resource>("Phong Shading Pipeline", pipeline_description{
-        glsl::default_vertex_shader,
-        glsl::phong_fragment_shader,
+        glsl::triangle_vertex_shader,
+        glsl::triangle_phong_fragment_shader,
         vk::PrimitiveTopology::eTriangleList,
         context().window_swapchains[0].render_pass, // Applies to the first window swapchain.
         {

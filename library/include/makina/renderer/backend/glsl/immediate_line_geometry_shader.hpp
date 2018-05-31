@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_GLSL_IMMEDIATE_LINES_GEOMETRY_SHADER_HPP_
-#define MAKINA_RENDERER_BACKEND_GLSL_IMMEDIATE_LINES_GEOMETRY_SHADER_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_GLSL_IMMEDIATE_LINE_GEOMETRY_SHADER_HPP_
+#define MAKINA_RENDERER_BACKEND_GLSL_IMMEDIATE_LINE_GEOMETRY_SHADER_HPP_
 
 #include <string>
 
@@ -9,7 +9,7 @@ namespace mak
 {
 namespace glsl
 {
-MAKINA_EXPORT extern std::string immediate_lines_geometry_shader;
+MAKINA_EXPORT extern std::string immediate_line_geometry_shader;
 }
 }
 

@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/phong_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_phong_fragment_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string phong_fragment_shader = R"(
+std::string triangle_phong_fragment_shader = R"(
 #version 450
 
 #ifdef VULKAN

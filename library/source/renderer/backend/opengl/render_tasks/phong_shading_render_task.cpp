@@ -6,8 +6,8 @@
 #include <gl/rasterization.hpp>
 #include <gl/viewport.hpp>
 
-#include <makina/renderer/backend/glsl/default_vertex_shader.hpp>
-#include <makina/renderer/backend/glsl/phong_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_phong_fragment_shader.hpp>
 
 namespace mak
 {
@@ -22,8 +22,8 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(
 {
   const auto retained_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Phong Shading Program", program::graphics_description
   {
-    glsl::default_vertex_shader,
-    glsl::phong_fragment_shader
+    glsl::triangle_vertex_shader,
+    glsl::triangle_phong_fragment_shader
   });
 
   return framegraph->add_render_task<phong_shading_task_data>(

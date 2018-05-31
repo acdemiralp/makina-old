@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/default_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_vertex_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string default_vertex_shader = R"(
+std::string triangle_vertex_shader = R"(
 #version 450
 
 #ifdef VULKAN

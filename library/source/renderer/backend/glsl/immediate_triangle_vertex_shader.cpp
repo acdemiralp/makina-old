@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/immediate_triangles_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_triangle_vertex_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string immediate_triangles_vertex_shader = R"(
+std::string immediate_triangle_vertex_shader = R"(
 #version 450
 
 #ifdef VULKAN

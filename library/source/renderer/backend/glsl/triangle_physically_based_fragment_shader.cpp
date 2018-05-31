@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/physically_based_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/triangle_physically_based_fragment_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string physically_based_fragment_shader = R"(
+std::string triangle_physically_based_fragment_shader = R"(
 #version 450
 
 #ifdef VULKAN

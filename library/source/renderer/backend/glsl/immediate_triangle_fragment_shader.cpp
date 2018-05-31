@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/immediate_triangles_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_triangle_fragment_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string immediate_triangles_fragment_shader = R"(
+std::string immediate_triangle_fragment_shader = R"(
 #version 450
 
 #ifdef VULKAN

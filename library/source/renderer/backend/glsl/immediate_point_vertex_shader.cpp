@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/immediate_points_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_point_vertex_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string immediate_points_vertex_shader = R"(
+std::string immediate_point_vertex_shader = R"(
 #version 450
 
 #ifdef VULKAN

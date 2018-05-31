@@ -1,10 +1,10 @@
-#include <makina/renderer/backend/glsl/immediate_lines_geometry_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_line_geometry_shader.hpp>
 
 namespace mak
 {
 namespace glsl
 {
-std::string immediate_lines_geometry_shader = R"(
+std::string immediate_line_geometry_shader = R"(
 #version 450
 
 #ifdef VULKAN

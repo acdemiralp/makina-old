@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_GLSL_PHONG_FRAGMENT_SHADER_HPP_
-#define MAKINA_RENDERER_BACKEND_GLSL_PHONG_FRAGMENT_SHADER_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_GLSL_TRIANGLE_PHONG_FRAGMENT_SHADER_HPP_
+#define MAKINA_RENDERER_BACKEND_GLSL_TRIANGLE_PHONG_FRAGMENT_SHADER_HPP_
 
 #include <string>
 
@@ -9,7 +9,7 @@ namespace mak
 {
 namespace glsl
 {
-MAKINA_EXPORT extern std::string phong_fragment_shader;
+MAKINA_EXPORT extern std::string triangle_phong_fragment_shader;
 }
 }
 

@@ -8,13 +8,13 @@
 #include <im3d.h>
 #include <im3d_math.h>
 
-#include <makina/renderer/backend/glsl/immediate_lines_fragment_shader.hpp>
-#include <makina/renderer/backend/glsl/immediate_lines_geometry_shader.hpp>
-#include <makina/renderer/backend/glsl/immediate_lines_vertex_shader.hpp>
-#include <makina/renderer/backend/glsl/immediate_points_fragment_shader.hpp>
-#include <makina/renderer/backend/glsl/immediate_points_vertex_shader.hpp>
-#include <makina/renderer/backend/glsl/immediate_triangles_fragment_shader.hpp>
-#include <makina/renderer/backend/glsl/immediate_triangles_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_line_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_line_geometry_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_line_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_point_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_point_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_triangle_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/immediate_triangle_vertex_shader.hpp>
 
 namespace mak
 {
@@ -31,19 +31,19 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
   const auto retained_viewport          = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Viewport"         , buffer_description{sizeof(glm::vec2)});
   const auto retained_points_program    = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Points Program"   , program::graphics_description
   {                                                                                                                                                            
-    glsl::immediate_points_vertex_shader,                                                                                                                      
-    glsl::immediate_points_fragment_shader                                                                                                                     
+    glsl::immediate_point_vertex_shader,                                                                                                                      
+    glsl::immediate_point_fragment_shader                                                                                                                     
   });                                                                                                                                                          
   const auto retained_lines_program     = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Lines Program"    , program::graphics_description
   {
-    glsl::immediate_lines_vertex_shader,
-    glsl::immediate_lines_fragment_shader,
-    glsl::immediate_lines_geometry_shader
+    glsl::immediate_line_vertex_shader,
+    glsl::immediate_line_fragment_shader,
+    glsl::immediate_line_geometry_shader
   });
   const auto retained_triangles_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Triangles Program", program::graphics_description
   {
-    glsl::immediate_triangles_vertex_shader,
-    glsl::immediate_triangles_fragment_shader
+    glsl::immediate_triangle_vertex_shader,
+    glsl::immediate_triangle_fragment_shader
   });
   
   input_system->on_key_press  .connect([ ] (di::key key)
