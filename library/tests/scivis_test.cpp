@@ -71,6 +71,7 @@ TEST_CASE("SciVis test.", "[makina]")
     auto transform    = entity->add_component<mak::transform>   (metadata);
     auto point_render = entity->add_component<mak::point_render>();
     point_render->point_cloud = &point_cloud;
+    point_render->material    = model.materials[0].get();
   }
 
   // Streamline rendering.
