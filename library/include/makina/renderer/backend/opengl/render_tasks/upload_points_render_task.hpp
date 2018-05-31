@@ -16,6 +16,7 @@ namespace opengl
 struct MAKINA_EXPORT upload_points_task_data
 {
   buffer_resource*                                         vertices           ;
+  buffer_resource*                                         normals            ;
   buffer_resource*                                         colors             ;
   buffer_resource*                                         instance_attributes;
   buffer_resource*                                         draw_calls         ;

@@ -38,12 +38,14 @@ layout(std430, set = 0, binding = 2) readonly buffer camera
 };
 
 layout(location = 0) in vec4  vertex; // w radius
-layout(location = 1) in vec4  color ;
-layout(location = 2) in uvec2 instance_attribute; // x transform id, y material id
+layout(location = 1) in vec4  normal;
+layout(location = 2) in vec4  color ;
+layout(location = 3) in uvec2 instance_attribute; // x transform id, y material id
 
 layout(location = 0) out vs_output_type 
 {
   vec3                vertex        ;
+  vec3                normal        ;
   vec4                color         ;
   noperspective float radius        ;
   flat uint           material_index;
@@ -63,6 +65,7 @@ void main()
   vec4 trans_vertex        = model_view * vec4(vertex.xyz, 1.0f);
   
   vs_output.vertex         = trans_vertex.xyz;
+  vs_output.normal         = (model_view * normal).xyz;
   vs_output.color          = color;
   vs_output.color.a       *= smoothstep(0.0f, 1.0f, vertex.w / antialiasing);
   vs_output.radius         = max(vertex.w, antialiasing);

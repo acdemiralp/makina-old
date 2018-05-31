@@ -30,6 +30,7 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
   };
 
   const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Vertices"           , buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Normals"            , buffer_description{GLsizeiptr(64e+6)});
   const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Colors"             , buffer_description{GLsizeiptr(64e+6)});
   const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Instance Attributes", buffer_description{GLsizeiptr(64e+6)});
   const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Draw Calls"         , buffer_description{GLsizeiptr(16e+6)});
@@ -42,6 +43,7 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
     [=] (      upload_points_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices            = builder.write<buffer_resource>       (retained_vertices           );
+      data.normals             = builder.write<buffer_resource>       (retained_normals            );
       data.colors              = builder.write<buffer_resource>       (retained_colors             );
       data.instance_attributes = builder.write<buffer_resource>       (retained_instance_attributes);
       data.draw_calls          = builder.write<buffer_resource>       (retained_draw_calls         );
@@ -87,13 +89,16 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
         if (!mutable_data.point_cloud_cache.count(point_render->point_cloud))
         {
           const auto& vertices = point_render->point_cloud->vertices;
+          const auto& normals  = point_render->point_cloud->normals ;
           const auto& colors   = point_render->point_cloud->colors  ;
           const auto  radius   = point_render->point_cloud->radius  ;
           
-          std::vector<glm::vec4> transformed_vertices (vertices.size());
+          std::vector<glm::vec4> transformed_vertices(vertices.size());
+          std::vector<glm::vec4> transformed_normals (normals .size());
           std::transform(vertices.begin(), vertices.end(), transformed_vertices.begin(), [radius] (const glm::vec3& vertex) { return glm::vec4(vertex, radius); });
           
           data.vertices->actual()->set_sub_data(sizeof transformed_vertices[0] * mutable_data.vertex_offset, sizeof transformed_vertices[0] * transformed_vertices.size(), transformed_vertices.data());
+          data.normals ->actual()->set_sub_data(sizeof transformed_normals [0] * mutable_data.vertex_offset, sizeof transformed_normals [0] * transformed_normals .size(), transformed_normals .data());
           data.colors  ->actual()->set_sub_data(sizeof colors              [0] * mutable_data.vertex_offset, sizeof colors              [0] * colors              .size(), colors              .data());
           
           mutable_data.point_cloud_cache[point_render->point_cloud] = gl::draw_arrays_indirect_command { static_cast<GLuint>(vertices.size()), 1, mutable_data.vertex_offset, 0 };
