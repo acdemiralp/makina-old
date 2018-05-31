@@ -29,14 +29,14 @@ struct _physically_based_material
 
 fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* framegraph)
 {
-  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Vertices"           , buffer_description{GLsizeiptr(64e+6)});
-  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Colors"             , buffer_description{GLsizeiptr(64e+6)});
-  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Instance Attributes", buffer_description{GLsizeiptr(64e+6)});
-  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Indices"            , buffer_description{GLsizeiptr(64e+6)});
-  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Draw Calls"         , buffer_description{GLsizeiptr(16e+6)});
-  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Transforms"         , buffer_description{GLsizeiptr(16e+6)});
-  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Materials"          , buffer_description{GLsizeiptr(16e+6)});
-  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, parameter_map>("Mesh Parameter Map"      , parameter_map::description());
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Vertices"           , buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Colors"             , buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Instance Attributes", buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Indices"            , buffer_description{GLsizeiptr(64e+6)});
+  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Draw Calls"         , buffer_description{GLsizeiptr(16e+6)});
+  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Transforms"         , buffer_description{GLsizeiptr(16e+6)});
+  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Line Materials"          , buffer_description{GLsizeiptr(16e+6)});
+  const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, parameter_map>("Line Parameter Map"      , parameter_map::description());
 
   return framegraph->add_render_task<upload_lines_task_data>(
     "Upload Lines Pass",
