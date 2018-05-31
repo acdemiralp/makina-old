@@ -9,36 +9,36 @@ namespace mak
 {
 namespace opengl
 {
-// Shader types with std430 alignment.
-struct _transform
-{
-  glm::mat4  model         ;
-};
-struct _phong_material
-{
-  glm::uvec4 use_texture   ; // ambient - diffuse - specular - unused
-  glm::vec4  ambient       ; // w is unused.
-  glm::vec4  diffuse       ; // w is unused.
-  glm::vec4  specular      ; // w is shininess.
-  glm::uvec4 texture_ids   ; // ambient - diffuse - specular - unused
-};
-struct _physically_based_material
-{
-  glm::uvec4 use_texture   ; // albedo - metallicity - roughness - normal
-  glm::uvec4 use_texture_2 ; // ambient occlusion - unused - unused - unused
-  glm::vec4  albedo        ; // w is unused.
-  glm::vec4  properties    ; // metallicity - roughness - unused - unused
-  glm::uvec4 textures_ids  ; // albedo - metallicity - roughness - normal
-  glm::uvec4 textures_ids_2; // ambient occlusion - unused - unused - unused
-};
-struct _rig
-{
-  glm::mat4  model         ;
-  glm::mat4  offset        ;
-};
-
 fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer* framegraph)
 {
+  // Shader types with std430 alignment.
+  struct _transform
+  {
+    glm::mat4  model         ;
+  };
+  struct _phong_material
+  {
+    glm::uvec4 use_texture   ; // ambient - diffuse - specular - unused
+    glm::vec4  ambient       ; // w is unused.
+    glm::vec4  diffuse       ; // w is unused.
+    glm::vec4  specular      ; // w is shininess.
+    glm::uvec4 texture_ids   ; // ambient - diffuse - specular - unused
+  };
+  struct _physically_based_material
+  {
+    glm::uvec4 use_texture   ; // albedo - metallicity - roughness - normal
+    glm::uvec4 use_texture_2 ; // ambient occlusion - unused - unused - unused
+    glm::vec4  albedo        ; // w is unused.
+    glm::vec4  properties    ; // metallicity - roughness - unused - unused
+    glm::uvec4 textures_ids  ; // albedo - metallicity - roughness - normal
+    glm::uvec4 textures_ids_2; // ambient occlusion - unused - unused - unused
+  };
+  struct _rig
+  {
+    glm::mat4  model         ;
+    glm::mat4  offset        ;
+  };
+
   const glm::uvec3 texture_size {2048, 2048, 32};
   
   const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Vertices"           , buffer_description{GLsizeiptr(64e+6)});

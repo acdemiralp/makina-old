@@ -10,25 +10,25 @@ namespace mak
 {
 namespace opengl
 {
-// Shader types with std430 alignment.
-struct _transform
-{
-  glm::mat4 model     ;
-};
-struct _phong_material
-{
-  glm::vec4 ambient   ; // w is unused.
-  glm::vec4 diffuse   ; // w is unused.
-  glm::vec4 specular  ; // w is shininess.
-};
-struct _physically_based_material
-{
-  glm::vec4 albedo    ; // w is unused.
-  glm::vec4 properties; // metallicity - roughness - unused - unused
-};
-
 fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer* framegraph)
 {
+  // Shader types with std430 alignment.
+  struct _transform
+  {
+    glm::mat4 model     ;
+  };
+  struct _phong_material
+  {
+    glm::vec4 ambient   ; // w is unused.
+    glm::vec4 diffuse   ; // w is unused.
+    glm::vec4 specular  ; // w is shininess.
+  };
+  struct _physically_based_material
+  {
+    glm::vec4 albedo    ; // w is unused.
+    glm::vec4 properties; // metallicity - roughness - unused - unused
+  };
+
   const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Vertices"           , buffer_description{GLsizeiptr(64e+6)});
   const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Colors"             , buffer_description{GLsizeiptr(64e+6)});
   const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Instance Attributes", buffer_description{GLsizeiptr(64e+6)});
