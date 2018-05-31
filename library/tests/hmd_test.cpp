@@ -25,7 +25,7 @@ TEST_CASE("HMD test.", "[makina]")
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
-  engine->scene()->copy_entity(model.scene->entities()[1]);
+  mak::append_scene(model.scene.get(), engine->scene());
   
   engine->run();
 }

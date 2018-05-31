@@ -25,7 +25,7 @@ TEST_CASE("SciVis test.", "[makina]")
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
-  engine->scene()->copy_entity(model.scene->entities()[1]);
+  mak::append_scene(model.scene.get(), engine->scene());
   
   mak::path::add_search_directories({"C:", "C:/dev", "D:", "D:/dev"});
  
@@ -71,7 +71,7 @@ TEST_CASE("SciVis test.", "[makina]")
     auto transform    = entity->add_component<mak::transform>   (metadata);
     auto point_render = entity->add_component<mak::point_render>();
     point_render->point_cloud = &point_cloud;
-    point_render->material    = model.materials[0].get();
+    //point_render->material    = model.materials[0].get();
   }
 
   // Streamline rendering.
@@ -94,7 +94,7 @@ TEST_CASE("SciVis test.", "[makina]")
     auto transform   = entity->add_component<mak::transform>  (metadata);
     auto line_render = entity->add_component<mak::line_render>();
     line_render->line_segments = &line_segments;
-    line_render->material      = model.materials[0].get();
+    //line_render->material      = model.materials[0].get();
   }
 
   engine->run();
