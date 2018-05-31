@@ -42,7 +42,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.cameras             = builder.read(common_data.cameras            );
       data.lights              = builder.read(common_data.lights             );
       data.textures            = builder.read(mesh_data  .textures           );
-      data.parameter_map       = builder.read(common_data.parameter_map      );
+      data.parameter_map       = builder.read(mesh_data  .parameter_map      );
       data.program             = builder.read(retained_program               );
       data.vertex_array        = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
       {

@@ -270,7 +270,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             specular_offset = mutable_data.image_cache[phong_material->specular_image.get()];
           }
 
-          phong_materials .push_back(_phong_material {
+          phong_materials.push_back(_phong_material {
             glm::uvec4 
             {
               static_cast<std::uint32_t>(ambient_offset .has_value()),
