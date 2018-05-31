@@ -37,7 +37,7 @@ struct _rig
   glm::mat4  offset        ;
 };
 
-fg::render_task<upload_meshes_task_data>* add_upload_scene_render_task(renderer* framegraph)
+fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer* framegraph)
 {
   const glm::uvec3 texture_size {2048, 2048, 32};
   
