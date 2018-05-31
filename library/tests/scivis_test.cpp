@@ -93,6 +93,7 @@ TEST_CASE("SciVis test.", "[makina]")
     auto transform   = entity->add_component<mak::transform>  (metadata);
     auto line_render = entity->add_component<mak::line_render>();
     line_render->line_segments = &line_segments;
+    line_render->material      = model.materials[0].get();
   }
 
   engine->run();
