@@ -56,16 +56,16 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
       auto& mutable_data         = const_cast<upload_lines_task_data&>(data);
                                 
       auto  scene                = framegraph->scene_cache();
-      auto  mesh_render_entities = scene->entities<transform, mesh_render>        ();
+      auto  line_render_entities = scene->entities<transform, line_render>        ();
       auto  transforms           = std::vector<_transform>                        ();
       auto  pbr_materials        = std::vector<_physically_based_material>        ();
       auto  phong_materials      = std::vector<_phong_material>                   ();
       auto  draw_calls           = std::vector<gl::draw_elements_indirect_command>();
       auto  instance_attributes  = std::vector<glm::uvec2>                        ();
       
-      for (auto i = 0; i < mesh_render_entities.size(); ++i)
+      for (auto i = 0; i < line_render_entities.size(); ++i)
       {
-        const auto& entity      = mesh_render_entities[i];
+        const auto& entity      = line_render_entities[i];
         const auto  metadata    = entity->component<mak::metadata>   ();
         const auto  transform   = entity->component<mak::transform>  ();
         const auto  line_render = entity->component<mak::line_render>();
