@@ -74,7 +74,10 @@ fg::render_task<phong_line_shading_task_data>* add_phong_triangle_shading_render
       
       glClipControl                   (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled      (true   );
+      gl::set_blending_enabled        (true   );
       gl::set_depth_function          (GL_LESS);
+      gl::set_blend_equation          (GL_FUNC_ADD, GL_FUNC_ADD);
+      gl::set_blend_function          (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       gl::set_viewport                ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
       gl::multi_draw_elements_indirect(GL_LINES, GL_UNSIGNED_INT, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
 

@@ -65,8 +65,8 @@ void main()
   
   vs_output.vertex         = trans_vertex.xyz;
   vs_output.color          = color;
-  vs_output.color.a       *= smoothstep(0.0f, 1.0f, attributes.w / antialiasing);
-  vs_output.radius         = max(attributes.w, antialiasing);
+  vs_output.color.a       *= smoothstep(0.0f, 1.0f, vertex.w / antialiasing);
+  vs_output.radius         = max(vertex.w, antialiasing);
   vs_output.material_index = instance_attribute.y;
 
   gl_Position              = cameras[cameras_metadata.y].projection * trans_vertex;
