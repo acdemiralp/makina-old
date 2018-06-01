@@ -84,7 +84,7 @@ fg::render_task<phong_point_shading_task_data>* add_phong_point_shading_render_t
       gl::set_blend_function        (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       gl::set_viewport              ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
       
-    gl::multi_draw_arrays_indirect(GL_POINTS, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
+      gl::multi_draw_arrays_indirect(GL_POINTS, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
       
       gl::set_depth_mask            (true);
 
