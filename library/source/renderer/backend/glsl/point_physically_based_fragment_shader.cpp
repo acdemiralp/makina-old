@@ -132,12 +132,7 @@ void main()
 {
   if (fs_input.normal != vec3(0.0f))
   {
-    vec3 ka;
-    if (fs_input.color == vec4(0.0f))
-      ka = materials[fs_input.material_index].albedo.rgb  ;             
-    else
-      ka = fs_input.color.rgb;
-  
+    vec3  ka  = fs_input.color != vec4(0.0f) ? fs_input.color.rgb : materials[fs_input.material_index].albedo.rgb;
     float km  = materials[fs_input.material_index].properties.x;             
     float kr  = materials[fs_input.material_index].properties.y; 
     vec3  n   = normalize(fs_input.normal); 
