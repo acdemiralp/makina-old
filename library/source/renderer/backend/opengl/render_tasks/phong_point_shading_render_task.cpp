@@ -3,6 +3,7 @@
 #include <gl/auxiliary/glm_uniforms.hpp>
 #include <gl/draw_commands.hpp>
 #include <gl/per_fragment_ops.hpp>
+#include <gl/rasterization.hpp>
 #include <gl/viewport.hpp>
 
 #include <makina/renderer/backend/glsl/point_vertex_shader.hpp>
@@ -74,8 +75,11 @@ fg::render_task<phong_point_shading_task_data>* add_phong_point_shading_render_t
       }
       
       glClipControl                 (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
-      gl::set_depth_test_enabled    (true   );
+      gl::set_blending_enabled      (true);
+      gl::set_point_size_enabled    (true);
       gl::set_depth_function        (GL_LESS);
+      gl::set_blend_equation        (GL_FUNC_ADD , GL_FUNC_ADD );
+      gl::set_blend_function        (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       gl::set_viewport              ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
       gl::multi_draw_arrays_indirect(GL_POINTS, 0, data.parameter_map->actual()->get<GLsizei>("draw_count"));
 
