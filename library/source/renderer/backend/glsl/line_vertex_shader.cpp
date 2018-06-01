@@ -47,7 +47,7 @@ layout(location = 0) out vs_output_type
   vec3                normal        ;
   vec4                color         ;
   noperspective float edge_distance ;
-  noperspective float size          ;
+  noperspective float radius        ;
   flat          uint  material_index;
 } vs_output;
 
@@ -66,7 +66,7 @@ void main()
   vs_output.vertex         = trans_vertex.xyz;
   vs_output.color          = color;
   vs_output.color.a       *= smoothstep(0.0f, 1.0f, attributes.w / antialiasing);
-  vs_output.size           = max(attributes.w, antialiasing);
+  vs_output.radius         = max(attributes.w, antialiasing);
   vs_output.material_index = instance_attribute.y;
 
   gl_Position              = cameras[cameras_metadata.y].projection * trans_vertex;
