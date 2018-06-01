@@ -65,6 +65,7 @@ TEST_CASE("SciVis test.", "[makina]")
           point_cloud.vertices.push_back(glm::vec3  (i, j, k));
           point_cloud.colors  .push_back(glm::u8vec4(i, j, k, 255));
         }
+
     point_cloud.radius = 4.0f;
 
     auto entity       = engine->scene()->add_entity();
@@ -83,14 +84,16 @@ TEST_CASE("SciVis test.", "[makina]")
         {
           line_segments.vertices.push_back(glm::vec3  (i, j, k));
           line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
-          if (line_segments.vertices.size() > 1)
-          {
-            line_segments.indices.push_back(line_segments.vertices.size() - 2);
-            line_segments.indices.push_back(line_segments.vertices.size() - 1);
-          }
         }
-    line_segments.radius = 32.0f;
     
+    for (auto i = 0; i < line_segments.vertices.size() - 1; i+=2)
+    {
+      line_segments.indices.push_back(i);
+      line_segments.indices.push_back(i + 1);
+    }
+
+    line_segments.radius = 32.0f;
+
     auto entity      = engine->scene()->add_entity();
     auto metadata    = entity->add_component<mak::metadata>   ();
     auto transform   = entity->add_component<mak::transform>  (metadata);

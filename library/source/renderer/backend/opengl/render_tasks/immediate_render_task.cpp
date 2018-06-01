@@ -8,6 +8,7 @@
 #include <im3d.h>
 #include <im3d_math.h>
 
+#include <makina/core/logger.hpp>
 #include <makina/renderer/backend/glsl/immediate_line_fragment_shader.hpp>
 #include <makina/renderer/backend/glsl/immediate_line_geometry_shader.hpp>
 #include <makina/renderer/backend/glsl/immediate_line_vertex_shader.hpp>
@@ -114,15 +115,15 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
         else if (primitive_type == GL_LINES ) data.lines_program    ->actual()->use  ();
         else                                  data.triangles_program->actual()->use  ();
         
-        glClipControl              (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
-        gl::set_depth_test_enabled (true);
-        gl::set_blending_enabled   (true);
-        gl::set_point_size_enabled (true);
-        gl::set_depth_function     (GL_LESS);
-        gl::set_blend_equation     (GL_FUNC_ADD , GL_FUNC_ADD );
-        gl::set_blend_function     (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        gl::set_viewport           ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
-        gl::draw_arrays            (primitive_type, 0, draw_list.m_vertexCount);
+        glClipControl             (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+        gl::set_depth_test_enabled(true);
+        gl::set_blending_enabled  (true);
+        gl::set_point_size_enabled(true);
+        gl::set_depth_function    (GL_LESS);
+        gl::set_blend_equation    (GL_FUNC_ADD , GL_FUNC_ADD );
+        gl::set_blend_function    (GL_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl::set_viewport          ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
+        gl::draw_arrays           (primitive_type, 0, draw_list.m_vertexCount);
 
         if      (primitive_type == GL_POINTS) data.points_program   ->actual()->unuse();
         else if (primitive_type == GL_LINES ) data.lines_program    ->actual()->unuse();

@@ -17,8 +17,6 @@ std::string immediate_line_geometry_shader = R"(
 layout(lines) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-const float antialiasing = 2.0f;
-
 layout(std430, set = 0, binding = 1) readonly buffer _viewport
 {
   vec2 viewport;
@@ -42,7 +40,7 @@ void main()
   vec2 position_start     = gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
   vec2 position_end       = gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
   
-  vec2 direction          = position_start - position_end;
+  vec2 direction          = position_end - position_start;
   direction               = normalize(vec2(direction.x, direction.y * viewport.y / viewport.x));
 
   vec2 tangent_start      = vec2(-direction.y, direction.x);

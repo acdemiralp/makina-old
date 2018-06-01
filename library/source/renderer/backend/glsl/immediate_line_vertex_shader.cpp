@@ -24,8 +24,8 @@ struct _camera
 
 layout(std430, set = 0, binding = 0) readonly buffer camera
 {
-  uvec4     cameras_metadata  ; // x size, y index
-  _camera   cameras[]         ;
+  uvec4   cameras_metadata; // x size, y index
+  _camera cameras[]       ;
 };
 
 layout(location = 0) in  vec4 attributes;
