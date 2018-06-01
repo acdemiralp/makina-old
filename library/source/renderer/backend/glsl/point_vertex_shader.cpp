@@ -14,7 +14,7 @@ std::string point_vertex_shader = R"(
 #extension GL_KHR_vulkan_glsl : enable
 #endif
 
-const float antialiasing = 2.0f;
+const float antialiasing = 1.0f;
 
 struct _transform
 {

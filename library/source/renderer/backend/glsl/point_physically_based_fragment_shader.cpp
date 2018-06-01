@@ -27,7 +27,7 @@ const float attenuation_constant   = 1.0;
 const float attenuation_linear     = 0.01;
 const float attenuation_quadratic  = 0.0001;
 
-const float antialiasing           = 2.0f;
+const float antialiasing           = 1.0f;
 
 struct _material
 {
@@ -185,7 +185,6 @@ void main()
     output_color = fs_input.color;
   
   output_color.a *= smoothstep(0.5f, 0.5f - (antialiasing / fs_input.radius), length(gl_PointCoord.xy - vec2(0.5f)));
-  if (output_color.a <= 0.2f) discard;
 }
 )";
 }
