@@ -61,7 +61,7 @@ out gl_PerVertex
 void main()
 {
   mat4 model_view          = cameras[cameras_metadata.y].view * transforms[instance_attribute.x].model;
-  vec4 trans_vertex        = model_view * vertex;
+  vec4 trans_vertex        = model_view * vec4(vertex.xyz, 1.0f);
   
   vs_output.vertex         = trans_vertex.xyz;
   vs_output.color          = color;

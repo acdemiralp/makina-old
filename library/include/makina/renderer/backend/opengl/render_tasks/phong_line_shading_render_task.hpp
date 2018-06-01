@@ -27,7 +27,8 @@ struct MAKINA_EXPORT phong_line_shading_task_data
   buffer_resource*           cameras            ;
   buffer_resource*           lights             ;
   parameter_map_resource*    parameter_map      ;
-
+  
+  buffer_resource*           viewport           ;
   graphics_program_resource* program            ;
   vertex_array_resource*     vertex_array       ;
   framebuffer_resource*      target             ;

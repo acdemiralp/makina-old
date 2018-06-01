@@ -5,8 +5,9 @@
 #include <gl/per_fragment_ops.hpp>
 #include <gl/viewport.hpp>
 
-#include <makina/renderer/backend/glsl/line_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/line_geometry_shader.hpp>
 #include <makina/renderer/backend/glsl/line_phong_fragment_shader.hpp>
+#include <makina/renderer/backend/glsl/line_vertex_shader.hpp>
 
 namespace mak
 {
@@ -19,11 +20,13 @@ fg::render_task<phong_line_shading_task_data>* add_phong_triangle_shading_render
   const upload_lines_task_data&  line_data  , 
   const std::string&             camera_tag )
 {
-  const auto retained_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Phong Line Shading Program", program::graphics_description
+  const auto retained_program  = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Phong Line Shading Program" , program::graphics_description
   {
     glsl::line_vertex_shader,
-    glsl::line_phong_fragment_shader
+    glsl::line_phong_fragment_shader,
+    glsl::line_geometry_shader
   });
+  const auto retained_viewport = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Phong Line Shading Viewport", buffer_description{sizeof(glm::vec2)});
 
   return framegraph->add_render_task<phong_line_shading_task_data>(
     "Phong Line Shading Pass",
@@ -39,6 +42,7 @@ fg::render_task<phong_line_shading_task_data>* add_phong_triangle_shading_render
       data.cameras             = builder.read(common_data.cameras            );
       data.lights              = builder.read(common_data.lights             );
       data.parameter_map       = builder.read(line_data  .parameter_map      );
+      data.viewport            = builder.read(retained_viewport              );
       data.program             = builder.read(retained_program               );
       data.vertex_array        = builder.create<vertex_array_resource>("Phong Line Shading Vertex Array", vertex_array::description
       {
@@ -51,7 +55,8 @@ fg::render_task<phong_line_shading_task_data>* add_phong_triangle_shading_render
           data.transforms, 
           data.materials , 
           data.cameras   , 
-          data.lights    
+          data.lights    ,
+          data.viewport
         }, 
         data.indices,
         data.draw_calls
@@ -71,6 +76,9 @@ fg::render_task<phong_line_shading_task_data>* add_phong_triangle_shading_render
           if (cameras[i]->component<metadata>()->contains_tag(camera_tag))
             data.cameras->actual()->set_sub_data(sizeof glm::uint, sizeof glm::uint, &i);
       }
+
+      glm::vec2 size {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()};
+      data.viewport->actual()->set_sub_data(0, sizeof glm::vec2, &size[0]);
       
       glClipControl                   (GL_LOWER_LEFT, GL_ZERO_TO_ONE);
       gl::set_depth_test_enabled      (true   );

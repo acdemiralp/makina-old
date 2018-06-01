@@ -60,15 +60,15 @@ void main()
   EmitVertex();
   
   gl_Position             = vec4((position_end   - tangent_end  ) * gl_in[1].gl_Position.w, gl_in[1].gl_Position.zw);
-  gs_output.edge_distance = -gs_input[0].size;
-  gs_output.size          =  gs_input[0].size;
-  gs_output.color         =  gs_input[0].color;
+  gs_output.edge_distance = -gs_input[1].size;
+  gs_output.size          =  gs_input[1].size;
+  gs_output.color         =  gs_input[1].color;
   EmitVertex();
 
   gl_Position             = vec4((position_end   + tangent_end  ) * gl_in[1].gl_Position.w, gl_in[1].gl_Position.zw);
-  gs_output.edge_distance =  gs_input[0].size;
-  gs_output.size          =  gs_input[0].size;
-  gs_output.color         =  gs_input[0].color;
+  gs_output.edge_distance =  gs_input[1].size;
+  gs_output.size          =  gs_input[1].size;
+  gs_output.color         =  gs_input[1].color;
   EmitVertex();
 }
 )";
