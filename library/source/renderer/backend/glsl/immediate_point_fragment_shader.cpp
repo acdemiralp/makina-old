@@ -28,6 +28,7 @@ void main()
 {
   color    = fs_input.color;
   color.a *= smoothstep(0.5f, 0.5f - (antialiasing / fs_input.size), length(gl_PointCoord.xy - vec2(0.5f)));
+  if (color.a <= 0.2f) discard;
 }
 )";
 }
