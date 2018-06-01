@@ -1,4 +1,4 @@
-#include <makina/renderer/backend/opengl/render_tasks/physically_based_shading_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/physically_based_triangle_shading_render_task.hpp>
 
 #include <gl/auxiliary/glm_uniforms.hpp>
 #include <gl/draw_commands.hpp>
@@ -13,22 +13,22 @@ namespace mak
 {
 namespace opengl
 {
-fg::render_task<physically_based_shading_task_data>* add_physically_based_shading_render_task(
+fg::render_task<physically_based_triangle_shading_task_data>* add_physically_based_triangle_shading_render_task(
   renderer*                      framegraph , 
   framebuffer_resource*          target     , 
   const upload_common_task_data& common_data, 
   const upload_meshes_task_data& mesh_data  , 
   const std::string&             camera_tag )
 {
-  const auto retained_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Physically Based Shading Program", program::graphics_description
+  const auto retained_program = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Physically Based Triangle Shading Program", program::graphics_description
   {
     glsl::triangle_vertex_shader,
     glsl::triangle_physically_based_fragment_shader
   });
 
-  return framegraph->add_render_task<physically_based_shading_task_data>(
-    "Physically Based Shading Pass",
-    [&] (      physically_based_shading_task_data& data, fg::render_task_builder& builder)
+  return framegraph->add_render_task<physically_based_triangle_shading_task_data>(
+    "Physically Based Triangle Shading Pass",
+    [&] (      physically_based_triangle_shading_task_data& data, fg::render_task_builder& builder)
     {
       data.vertices            = builder.read(mesh_data  .vertices           );
       data.normals             = builder.read(mesh_data  .normals            );
@@ -44,7 +44,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.textures            = builder.read(mesh_data  .textures           );
       data.parameter_map       = builder.read(mesh_data  .parameter_map      );
       data.program             = builder.read(retained_program               );
-      data.vertex_array        = builder.create<vertex_array_resource>("Physically Based Shading Vertex Array", vertex_array::description
+      data.vertex_array        = builder.create<vertex_array_resource>("Physically Based Triangle Shading Vertex Array", vertex_array::description
       {
         { 
           {data.vertices           , 4, GL_FLOAT                           }, 
@@ -64,7 +64,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       });
       data.target              = builder.write(target);
     },
-    [=] (const physically_based_shading_task_data& data)
+    [=] (const physically_based_triangle_shading_task_data& data)
     {
       data.program     ->actual()->use   ();
       data.vertex_array->actual()->bind  ();
@@ -96,7 +96,7 @@ fg::render_task<physically_based_shading_task_data>* add_physically_based_shadin
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
 
-      gl::print_error("Error in Physically Based Shading Pass");
+      gl::print_error("Error in Physically Based Triangle Shading Pass");
     });
 }
 }

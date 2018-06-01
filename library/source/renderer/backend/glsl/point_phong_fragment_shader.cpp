@@ -23,7 +23,7 @@ const float attenuation_constant   = 1.0;
 const float attenuation_linear     = 0.01;
 const float attenuation_quadratic  = 0.0001;
 
-const float antialiasing           = 4.0f;
+const float antialiasing           = 2.0f;
 
 struct _material
 {

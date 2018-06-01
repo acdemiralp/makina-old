@@ -96,7 +96,8 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
           std::vector<glm::vec4> transformed_vertices(vertices.size());
           std::vector<glm::vec4> transformed_normals (normals .size());
           std::transform(vertices.begin(), vertices.end(), transformed_vertices.begin(), [radius] (const glm::vec3& vertex) { return glm::vec4(vertex, radius); });
-          
+          std::transform(normals .begin(), normals .end(), transformed_normals .begin(), [ ]      (const glm::vec3& normal) { return glm::vec4(normal, 0.0f  ); });
+         
           data.vertices->actual()->set_sub_data(sizeof transformed_vertices[0] * mutable_data.vertex_offset, sizeof transformed_vertices[0] * transformed_vertices.size(), transformed_vertices.data());
           data.normals ->actual()->set_sub_data(sizeof transformed_normals [0] * mutable_data.vertex_offset, sizeof transformed_normals [0] * transformed_normals .size(), transformed_normals .data());
           data.colors  ->actual()->set_sub_data(sizeof colors              [0] * mutable_data.vertex_offset, sizeof colors              [0] * colors              .size(), colors              .data());

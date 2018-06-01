@@ -65,6 +65,7 @@ TEST_CASE("SciVis test.", "[makina]")
           point_cloud.vertices.push_back(glm::vec3  (i, j, k));
           point_cloud.colors  .push_back(glm::u8vec4(i, j, k, 255));
         }
+    point_cloud.radius = 10.0f;
 
     auto entity       = engine->scene()->add_entity();
     auto metadata     = entity->add_component<mak::metadata>    ();
