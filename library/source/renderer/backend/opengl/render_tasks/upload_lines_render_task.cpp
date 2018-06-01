@@ -91,9 +91,10 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
           const auto& vertices = line_render->line_segments->vertices;
           const auto& colors   = line_render->line_segments->colors  ;
           const auto& indices  = line_render->line_segments->indices ;
+          const auto& radius   = line_render->line_segments->radius  ;
           
           std::vector<glm::vec4> transformed_vertices (vertices.size());
-          std::transform(vertices.begin(), vertices.end  (), transformed_vertices.begin(), [ ] (const glm::vec3&  vertex) { return glm::vec4(vertex, 1.0f); });
+          std::transform(vertices.begin(), vertices.end  (), transformed_vertices.begin(), [radius] (const glm::vec3&  vertex) { return glm::vec4(vertex, radius); });
           
           data.vertices->actual()->set_sub_data(sizeof transformed_vertices[0] * mutable_data.vertex_offset, sizeof transformed_vertices[0] * transformed_vertices.size(), transformed_vertices.data());
           data.colors  ->actual()->set_sub_data(sizeof colors              [0] * mutable_data.vertex_offset, sizeof colors              [0] * colors              .size(), colors              .data());
