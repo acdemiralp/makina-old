@@ -14,6 +14,8 @@ std::string line_vertex_shader = R"(
 #extension GL_KHR_vulkan_glsl : enable
 #endif
 
+const float antialiasing = 1.0f;
+
 struct _transform
 {
   mat4 model     ;
@@ -41,11 +43,12 @@ layout(location = 2) in uvec2 instance_attribute; // x transform id, y material 
 
 layout(location = 0) out vs_output_type 
 {
-  vec3      vertex            ;
-  vec3      normal            ;
-  vec4      color             ;
-  vec2      texture_coordinate;
-  flat uint material_index    ;
+  vec3                vertex        ;
+  vec3                normal        ;
+  vec4                color         ;
+  noperspective float edge_distance ;
+  noperspective float size          ;
+  flat          uint  material_index;
 } vs_output;
 
 #ifdef VULKAN
@@ -57,16 +60,16 @@ out gl_PerVertex
 
 void main()
 {
-  mat4 model_view   = cameras[cameras_metadata.y].view * transforms[instance_attribute.x].model;
-  vec4 trans_vertex = model_view * vertex;
+  mat4 model_view          = cameras[cameras_metadata.y].view * transforms[instance_attribute.x].model;
+  vec4 trans_vertex        = model_view * vertex;
   
-  vs_output.vertex             = trans_vertex.xyz;
-  vs_output.normal             = normalize((model_view * normal).xyz);
-  vs_output.color              = color;
-  vs_output.texture_coordinate = texture_coordinate.xy;
-  vs_output.material_index     = instance_attribute.y;
+  vs_output.vertex         = trans_vertex.xyz;
+  vs_output.color          = color;
+  vs_output.color.a       *= smoothstep(0.0f, 1.0f, attributes.w / antialiasing);
+  vs_output.size           = max(attributes.w, antialiasing);
+  vs_output.material_index = instance_attribute.y;
 
-  gl_Position = cameras[cameras_metadata.y].projection * trans_vertex;
+  gl_Position              = cameras[cameras_metadata.y].projection * trans_vertex;
 }
 )";
 }
