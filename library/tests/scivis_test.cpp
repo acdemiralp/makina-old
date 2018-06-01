@@ -89,7 +89,7 @@ TEST_CASE("SciVis test.", "[makina]")
             line_segments.indices.push_back(line_segments.vertices.size() - 1);
           }
         }
-    line_segments.radius = 8.0f;
+    line_segments.radius = 32.0f;
     
     auto entity      = engine->scene()->add_entity();
     auto metadata    = entity->add_component<mak::metadata>   ();

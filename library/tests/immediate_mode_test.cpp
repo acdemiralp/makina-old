@@ -40,16 +40,6 @@ TEST_CASE("Immediate mode test.", "[makina]")
     Im3d::SetContext        (mak::im3d_context());
     Im3d::PushDrawState     ();
     Im3d::SetSize           (10.0f);
-    Im3d::BeginLineLoop     ();
-    
-    for (auto i = 0; i < 100; ++i)
-    {
-      Im3d::Vertex          (rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Magenta);
-      Im3d::Vertex          (rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Yellow );
-      Im3d::Vertex          (rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Cyan   );
-    }
-    
-    Im3d::End               ();
     Im3d::BeginPoints       ();
     
     for (auto i = 0; i < 100; ++i)
@@ -60,13 +50,23 @@ TEST_CASE("Immediate mode test.", "[makina]")
     }
     
     Im3d::End               ();
+    Im3d::BeginLineLoop     ();
+    
+    for (auto i = 0; i < 100; ++i)
+    {
+      Im3d::Vertex          (10.0f + rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Magenta);
+      Im3d::Vertex          (10.0f + rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Yellow );
+      Im3d::Vertex          (10.0f + rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Cyan   );
+    }
+    
+    Im3d::End               ();
     Im3d::BeginTriangles    ();
     
     for (auto i = 0; i < 100; ++i)
     {
-      Im3d::Vertex          (rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Magenta);
-      Im3d::Vertex          (rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Yellow );
-      Im3d::Vertex          (rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Cyan   );
+      Im3d::Vertex          (20.0f + rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Magenta);
+      Im3d::Vertex          (20.0f + rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Yellow );
+      Im3d::Vertex          (20.0f + rng.generate(), rng.generate(), rng.generate(), Im3d::Color_Cyan   );
     }
     
     Im3d::End               ();
