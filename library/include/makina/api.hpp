@@ -33,7 +33,6 @@
 #include <makina/renderer/animation_system.hpp>
 #include <makina/renderer/animator.hpp>
 #include <makina/renderer/bone.hpp>
-#include <makina/renderer/function_render.hpp>
 #include <makina/renderer/im3d_context.hpp>
 #include <makina/renderer/light.hpp>
 #include <makina/renderer/line_render.hpp>
