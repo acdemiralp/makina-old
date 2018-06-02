@@ -44,30 +44,10 @@ public:
 
     return field;
   }
-  std::unique_ptr<point_cloud>             to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
-  {
-    auto   point_cloud = std::make_unique<mak::point_cloud>();
-
-    return point_cloud;
-  }
-  std::unique_ptr<line_segments>           to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
-  {
-    auto   line_segments = std::make_unique<mak::line_segments>();
-
-    return line_segments;
-  }
-  std::unique_ptr<mesh>                    to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
-  {
-    auto   mesh = std::make_unique<mak::mesh>();
-
-    return mesh;
-  }
-  std::unique_ptr<point_cloud>             control_points_to_point_cloud()
-  {
-    auto   point_cloud = std::make_unique<mak::point_cloud>();
-
-    return point_cloud;
-  }
+  std::unique_ptr<point_cloud>             to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples);
+  std::unique_ptr<line_segments>           to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples);
+  std::unique_ptr<mesh>                    to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples);
+  std::unique_ptr<point_cloud>             control_points_to_point_cloud();
 
 protected:
   SPLINTER::BSpline from_table(

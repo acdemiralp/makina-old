@@ -1,5 +1,7 @@
 #include <makina/resources/b_spline.hpp>
 
+#include <cstdint>
+
 #include <splinter/bsplinebuilder.h>
 #include <splinter/datatable.h>
 
@@ -28,6 +30,37 @@ b_spline::b_spline(
 double b_spline::evaluate(const std::vector<double>& parameters) const
 {
   return native_.eval(parameters);
+}
+
+std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+{
+  auto   point_cloud = std::make_unique<mak::point_cloud>();
+
+  return point_cloud;
+}
+std::unique_ptr<line_segments> b_spline::to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+{
+  auto   line_segments = std::make_unique<mak::line_segments>();
+
+  return line_segments;
+}
+std::unique_ptr<mesh>          b_spline::to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+{
+  auto   mesh = std::make_unique<mak::mesh>();
+
+  return mesh;
+}
+std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud()
+{
+  auto point_cloud    = std::make_unique<mak::point_cloud>();
+  auto control_points = native_.getControlPoints();
+  
+  point_cloud->vertices.resize(control_points.cols());
+  point_cloud->colors  .resize(control_points.cols(), {255, 255, 255, 255});
+  for (auto i = 0; i < control_points.cols(); ++i)
+    std::copy_n(control_points.col(i).data(), std::min(std::int32_t(control_points.rows()), 3), &point_cloud->vertices[i][0]);
+
+  return point_cloud;
 }
 
 SPLINTER::BSpline b_spline::from_table(
