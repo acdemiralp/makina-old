@@ -55,6 +55,7 @@ void main()
                            
   gl_Position              = vec4((position_start - tangent_start) * gl_in[0].gl_Position.w, gl_in[0].gl_Position.zw);
   gs_output.vertex         =  gs_input[0].vertex;
+  gs_output.normal         =  (-normalize(cross(normalize(gs_input[1].vertex - gs_input[0].vertex), -normalize(gs_input[0].vertex))) - normalize(gs_input[0].vertex)) / 2;
   gs_output.color          =  gs_input[0].color ;
   gs_output.edge_distance  = -gs_input[0].radius;
   gs_output.radius         =  gs_input[0].radius;
@@ -63,6 +64,7 @@ void main()
 
   gl_Position              = vec4((position_start + tangent_start) * gl_in[0].gl_Position.w, gl_in[0].gl_Position.zw);
   gs_output.vertex         =  gs_input[0].vertex;
+  gs_output.normal         =  (normalize(cross(normalize(gs_input[1].vertex - gs_input[0].vertex), -normalize(gs_input[0].vertex))) - normalize(gs_input[0].vertex)) / 2;
   gs_output.color          =  gs_input[0].color ;
   gs_output.edge_distance  =  gs_input[0].radius;
   gs_output.radius         =  gs_input[0].radius;
@@ -71,6 +73,7 @@ void main()
                            
   gl_Position              = vec4((position_end   - tangent_end  ) * gl_in[1].gl_Position.w, gl_in[1].gl_Position.zw);
   gs_output.vertex         =  gs_input[1].vertex;
+  gs_output.normal         =  (normalize(cross(normalize(gs_input[0].vertex - gs_input[1].vertex), -normalize(gs_input[1].vertex))) - normalize(gs_input[1].vertex)) / 2;
   gs_output.color          =  gs_input[1].color ;
   gs_output.edge_distance  = -gs_input[1].radius;
   gs_output.radius         =  gs_input[1].radius;
@@ -79,6 +82,7 @@ void main()
                            
   gl_Position              = vec4((position_end   + tangent_end  ) * gl_in[1].gl_Position.w, gl_in[1].gl_Position.zw);
   gs_output.vertex         =  gs_input[1].vertex;
+  gs_output.normal         =  (-normalize(cross(normalize(gs_input[0].vertex - gs_input[1].vertex), -normalize(gs_input[1].vertex))) - normalize(gs_input[1].vertex)) / 2;
   gs_output.color          =  gs_input[1].color ;
   gs_output.edge_distance  =  gs_input[1].radius;
   gs_output.radius         =  gs_input[1].radius;

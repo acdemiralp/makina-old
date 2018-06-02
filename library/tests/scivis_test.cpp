@@ -78,12 +78,13 @@ TEST_CASE("SciVis test.", "[makina]")
 
   // Streamline rendering.
   {
+    mak::random_number_generator<> rng(0.0, 255.0);
     for (auto i = 0; i < 255; i+=8)
       for (auto j = 0; j < 255; j+=8)
         for (auto k = 0; k < 255; k+=8)
         {
-          line_segments.vertices.push_back(glm::vec3  (i, j, k));
-          line_segments.colors  .push_back(glm::u8vec4(i, j, k, 255));
+          line_segments.vertices.push_back(glm::vec3  (rng.generate(), rng.generate(), rng.generate()));
+          line_segments.colors  .push_back(glm::u8vec4(rng.generate(), rng.generate(), rng.generate(), 255));
         }
     
     for (auto i = 0; i < line_segments.vertices.size() - 1; i+=2)
