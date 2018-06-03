@@ -84,8 +84,8 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
       std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &line_segments->vertices[index][0]);
       if (index != sample_count - 1)
       {
-        line_segments->indices[index]     = index;
-        line_segments->indices[index + 1] = index + 1;
+        line_segments->indices[2 * index]     = index;
+        line_segments->indices[2 * index + 1] = index + 1;
       }
     },
     std::vector<std::size_t>(samples.size(), 0),
