@@ -51,6 +51,7 @@ std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std
       for (auto i = 0; i < parameters.size(); ++i)
         parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
       parameters.push_back(evaluate(parameters));
+
       std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &point_cloud->vertices[ravel_multi_index(indices, samples)][0]);
     },
     std::vector<std::size_t>(samples.size(), 0),
@@ -81,7 +82,11 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
 
       auto index = ravel_multi_index(indices, samples);
       std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &line_segments->vertices[index][0]);
-      std::copy_n(index            , 1                                           , &line_segments->indices [index]   );
+      if (index != sample_count - 1)
+      {
+        line_segments->indices[index]     = index;
+        line_segments->indices[index + 1] = index + 1;
+      }
     },
     std::vector<std::size_t>(samples.size(), 0),
     samples,
