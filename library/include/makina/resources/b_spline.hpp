@@ -13,6 +13,8 @@
 #include <makina/resources/point_cloud.hpp>
 #include <makina/resources/line_segments.hpp>
 #include <makina/resources/mesh.hpp>
+#include <makina/utility/indexing.hpp>
+#include <makina/utility/permute_for.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -40,7 +42,24 @@ public:
   template<typename type, std::size_t dimensions>
   std::unique_ptr<field<type, dimensions>> to_field                     (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
   {
-    auto   field = std::make_unique<mak::field<type, dimensions>>();
+    auto field = std::make_unique<mak::field<type, dimensions>>();
+    field->data.resize(samples);
+    
+    std::vector<double> step_sizes(lower_bounds.size(), 0.0);
+    for (auto i = 0; i < step_sizes.size(); ++i)
+      step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
+
+    mak::permute_for(
+      [&] (const std::vector<std::size_t>& indices)
+      { 
+        std::vector<double> parameters(indices.size(), 0.0);
+        for (auto i = 0; i < parameters.size(); ++i)
+          parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
+        field[indices] = evaluate(parameters);
+      },
+      std::vector<std::size_t>(samples.size(), 0),
+      samples,
+      std::vector<std::size_t>(samples.size(), 1));
 
     return field;
   }

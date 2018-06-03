@@ -5,9 +5,6 @@
 #include <splinter/bsplinebuilder.h>
 #include <splinter/datatable.h>
 
-#include <makina/utility/indexing.hpp>
-#include <makina/utility/permute_for.hpp>
-
 namespace mak
 {
 b_spline::b_spline(
@@ -97,7 +94,7 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
 std::unique_ptr<mesh>          b_spline::to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
 {
   auto   mesh = std::make_unique<mak::mesh>();
-
+  // TODO
   return mesh;
 }
 std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud() const

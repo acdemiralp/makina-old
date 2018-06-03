@@ -52,8 +52,8 @@ TEST_CASE("B-Spline test.", "[makina]")
   auto control_point_cloud = bivariate_spline .control_points_to_point_cloud();
   auto point_cloud         = bivariate_spline .to_point_cloud               ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
   auto mesh                = bivariate_spline .to_mesh                      ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
+  auto field               = bivariate_spline .to_field<float, 2>           ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
   auto line_segments       = univariate_spline.to_line_segments             ({0.0}, {8.0}, {100});
-  
   { 
     auto entity                 = engine->scene()->add_entity();
     auto metadata               = entity->add_component<mak::metadata>    ();
