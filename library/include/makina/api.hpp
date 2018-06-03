@@ -45,6 +45,7 @@
 #include <makina/resources/animation_clip.hpp>
 #include <makina/resources/audio_clip.hpp>
 #include <makina/resources/audio_clip_load.hpp>
+#include <makina/resources/b_spline.hpp>
 #include <makina/resources/dynamic_material.hpp>
 #include <makina/resources/field.hpp>
 #include <makina/resources/field_load.hpp>

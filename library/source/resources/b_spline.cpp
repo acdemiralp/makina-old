@@ -105,10 +105,13 @@ std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud() const
   auto point_cloud    = std::make_unique<mak::point_cloud>();
   auto control_points = native_.getControlPoints();
   
-  point_cloud->vertices.resize(control_points.cols());
-  point_cloud->colors  .resize(control_points.cols(), {255, 255, 255, 255});
-  for (auto i = 0; i < control_points.cols(); ++i)
-    std::copy_n(control_points.col(i).data(), std::min(std::int32_t(control_points.rows()), 3), &point_cloud->vertices[i][0]);
+  point_cloud->vertices.resize(control_points.rows());
+  point_cloud->colors  .resize(control_points.rows(), {255, 255, 255, 255});
+  for (auto i = 0; i < control_points.rows(); ++i)
+  {
+    SPLINTER::DenseVector row = control_points.row(i);
+    std::copy_n(row.data(), std::min(std::int32_t(control_points.cols()), 3), &point_cloud->vertices[i][0]);
+  }
 
   return point_cloud;
 }
