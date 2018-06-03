@@ -3,6 +3,7 @@
 
 #include <makina/renderer/backend/opengl/render_tasks/blit_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/clear_render_task.hpp>
+#include <makina/renderer/backend/opengl/render_tasks/composite_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/create_hmd_textures_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/immediate_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/phong_line_shading_render_task.hpp>

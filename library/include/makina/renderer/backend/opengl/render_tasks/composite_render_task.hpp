@@ -15,7 +15,7 @@ struct MAKINA_EXPORT composite_task_data
   framebuffer_resource* target;
 };
 
-MAKINA_EXPORT fg::render_task<composite_task_data>* add_composite_render_task(renderer* framegraph, framebuffer_resource* source, framebuffer_resource* target);
+MAKINA_EXPORT fg::render_task<composite_task_data>* add_composite_render_task(renderer* framegraph, framebuffer_resource* source, framebuffer_resource* target, float alpha_threshold = 0.01f);
 }
 }
 

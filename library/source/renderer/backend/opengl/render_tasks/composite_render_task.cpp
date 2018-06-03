@@ -1,10 +1,13 @@
 #include <makina/renderer/backend/opengl/render_tasks/composite_render_task.hpp>
 
+#include <makina/renderer/backend/glsl/composite_vertex_shader.hpp>
+#include <makina/renderer/backend/glsl/composite_fragment_shader.hpp>
+
 namespace mak
 {
 namespace opengl
 {
-fg::render_task<composite_task_data>* add_composite_render_task(renderer* framegraph, framebuffer_resource* source, framebuffer_resource* target)
+fg::render_task<composite_task_data>* add_composite_render_task(renderer* framegraph, framebuffer_resource* source, framebuffer_resource* target, float alpha_threshold)
 {
   return framegraph->add_render_task<composite_task_data>(
     "Composite Pass",

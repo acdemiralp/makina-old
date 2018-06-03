@@ -19,7 +19,7 @@ TEST_CASE("Ospray test.", "[makina]")
     engine->scene()->entities<mak::projection>()[0]->component<mak::projection>()->set_perspective(60.0f, float(size[0]) / float(size[1]), {0.3f, 1000.0f});
   });
 
-  // mak::opengl::make_default_framegraph(engine.get(), window);
+  mak::opengl::make_default_framegraph(engine.get(), window);
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
