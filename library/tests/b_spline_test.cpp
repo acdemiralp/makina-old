@@ -38,7 +38,8 @@ TEST_CASE("SciVis test.", "[makina]")
     {{2.0, 1.0}, 0.0},
     {{2.0, 2.0}, 0.0}}, 2);
   
-  auto point_cloud         = b_spline.to_point_cloud({0.0, 0.0}, {2.0, 2.0}, {100, 100});
+  auto point_cloud         = b_spline.to_point_cloud  ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
+  auto line_segments       = b_spline.to_line_segments({0.0, 0.0}, {2.0, 2.0}, {100, 100});
   auto control_point_cloud = b_spline.control_points_to_point_cloud();
   
   { 
@@ -50,6 +51,17 @@ TEST_CASE("SciVis test.", "[makina]")
     auto point_render = entity->add_component<mak::point_render>();
     point_render->point_cloud = point_cloud.get();
     point_render->material    = model.materials[0].get();
+  }
+
+  {
+    line_segments->radius = 4.0f;
+
+    auto entity      = engine->scene()->add_entity();
+    auto metadata    = entity->add_component<mak::metadata>   ();
+    auto transform   = entity->add_component<mak::transform>  (metadata);
+    auto line_render = entity->add_component<mak::line_render>();
+    line_render->line_segments = line_segments.get();
+    line_render->material      = model.materials[0].get();
   }
 
   { 
