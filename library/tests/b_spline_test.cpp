@@ -3,7 +3,7 @@
 #include <makina/renderer/backend/opengl/render_tasks.hpp>
 #include <makina/api.hpp>
 
-TEST_CASE("SciVis test.", "[makina]")
+TEST_CASE("B-Spline test.", "[makina]")
 {
   auto engine = mak::make_default_engine();
   engine->remove_system<mak::vr_system>();
@@ -27,7 +27,18 @@ TEST_CASE("SciVis test.", "[makina]")
   model.load(mak::model::description{std::string("data/model/cube/cube.obj"), true});
   mak::append_scene(model.scene.get(), engine->scene());
   
-  mak::b_spline b_spline(std::vector<std::tuple<std::vector<double>, double>>{
+  mak::b_spline univariate_spline(std::vector<std::tuple<std::vector<double>, double>>{
+    {{0.0}, 0.0},
+    {{1.0}, 1.0},
+    {{2.0}, 2.0},
+    {{3.0}, 1.0},
+    {{4.0}, 0.0},
+    {{5.0},-1.0},
+    {{6.0},-2.0},
+    {{7.0},-1.0},
+    {{8.0}, 0.0}}, 3);
+
+  mak::b_spline bivariate_spline(std::vector<std::tuple<std::vector<double>, double>>{
     {{0.0, 0.0}, 0.0},
     {{0.0, 1.0}, 0.0},
     {{0.0, 2.0}, 0.0},
@@ -38,43 +49,49 @@ TEST_CASE("SciVis test.", "[makina]")
     {{2.0, 1.0}, 0.0},
     {{2.0, 2.0}, 0.0}}, 2);
   
-  auto point_cloud         = b_spline.to_point_cloud  ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
-  auto line_segments       = b_spline.to_line_segments({0.0, 0.0}, {2.0, 2.0}, {100, 100});
-  auto control_point_cloud = b_spline.control_points_to_point_cloud();
+  auto control_point_cloud = bivariate_spline .control_points_to_point_cloud();
+  auto point_cloud         = bivariate_spline .to_point_cloud               ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
+  auto mesh                = bivariate_spline .to_mesh                      ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
+  auto line_segments       = univariate_spline.to_line_segments             ({0.0}, {8.0}, {100});
   
   { 
-    point_cloud->radius = 2.0f;
-
-    auto entity       = engine->scene()->add_entity();
-    auto metadata     = entity->add_component<mak::metadata>    ();
-    auto transform    = entity->add_component<mak::transform>   (metadata);
-    auto point_render = entity->add_component<mak::point_render>();
-    point_render->point_cloud = point_cloud.get();
-    point_render->material    = model.materials[0].get();
+    auto entity                 = engine->scene()->add_entity();
+    auto metadata               = entity->add_component<mak::metadata>    ();
+    auto transform              = entity->add_component<mak::transform>   (metadata);
+    auto point_render           = entity->add_component<mak::point_render>();
+    point_render->point_cloud   = control_point_cloud.get();
+    point_render->material      = model.materials[0].get();
+    control_point_cloud->radius = 10.0f;
+  }
+  
+  { 
+    auto entity                 = engine->scene()->add_entity();
+    auto metadata               = entity->add_component<mak::metadata>    ();
+    auto transform              = entity->add_component<mak::transform>   (metadata);
+    auto point_render           = entity->add_component<mak::point_render>();
+    point_render->point_cloud   = point_cloud.get();
+    point_render->material      = model.materials[0].get();
+    point_cloud->radius         = 2.0f;
+  }                            
+                               
+  {                            
+    auto entity                 = engine->scene()->add_entity();
+    auto metadata               = entity->add_component<mak::metadata>     ();
+    auto transform              = entity->add_component<mak::transform>    (metadata);
+    auto mesh_render            = entity->add_component<mak::mesh_render>  ();
+    mesh_render->mesh           = mesh.get();
+    mesh_render->material       = model.materials[0].get();
   }
 
   {
-    line_segments->radius = 4.0f;
-
-    auto entity      = engine->scene()->add_entity();
-    auto metadata    = entity->add_component<mak::metadata>   ();
-    auto transform   = entity->add_component<mak::transform>  (metadata);
-    auto line_render = entity->add_component<mak::line_render>();
-    line_render->line_segments = line_segments.get();
-    line_render->material      = model.materials[0].get();
+    auto entity                 = engine->scene()->add_entity();
+    auto metadata               = entity->add_component<mak::metadata>     ();
+    auto transform              = entity->add_component<mak::transform>    (metadata);
+    auto line_render            = entity->add_component<mak::line_render>  ();
+    line_render->line_segments  = line_segments.get();
+    line_render->material       = model.materials[0].get();
+    line_segments->radius       = 4.0f;
   }
-
-  { 
-    control_point_cloud->radius = 10.0f;
-
-    auto entity       = engine->scene()->add_entity();
-    auto metadata     = entity->add_component<mak::metadata>    ();
-    auto transform    = entity->add_component<mak::transform>   (metadata);
-    auto point_render = entity->add_component<mak::point_render>();
-    point_render->point_cloud = control_point_cloud.get();
-    point_render->material    = model.materials[0].get();
-  }
-
 
   engine->run();
 }
