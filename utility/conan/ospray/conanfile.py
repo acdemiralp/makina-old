@@ -42,9 +42,6 @@ class Project(ConanFile):
     def package_info(self):
         if self.settings.os == "Windows":
             self.cpp_info.libs = [
-                "tbb"                   , 
-                "tbbmalloc"             ,
-                "embree3"               , 
                 "ospray"                , 
                 "ospray_common"         , 
                 "ospray_module_ispc"    , 
