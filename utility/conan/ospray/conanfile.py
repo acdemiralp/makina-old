@@ -8,7 +8,7 @@ class Project(ConanFile):
     description = "Conan package for ospray raytracing framework."           
     url         = "https://github.com/ospray/ospray"
     license     = "Apache 2.0"                                         
-    settings    = "arch", "build_type", "compiler", "os"
+    settings    = "os"
     root_folder = ""
 
     def source(self):
@@ -24,10 +24,10 @@ class Project(ConanFile):
 
         self.root_folder = "%s-%s.%s" % (self.name, self.version, suffix)
         download_url     = "%s/releases/download/v%s/%s.%s" % (self.url, self.version, self.root_folder, extension)
-        zip_name         = "%s.zip" % self.version
-        download (download_url, zip_name, verify=False)
-        unzip    (zip_name)
-        os.unlink(zip_name)
+        archive_name     = "%s.%s" % (self.root_folder, extension)
+        download (download_url, archive_name, verify=False)
+        unzip    (archive_name)
+        os.unlink(archive_name)
 
     def package(self):
         include_folder = "%s/include" % self.root_folder
@@ -40,6 +40,7 @@ class Project(ConanFile):
         self.copy("*.dll"   , dst="bin"    , keep_path=False   )
 
     def package_info(self):
+        self.cpp_info.includedirs = ["include"]
         if self.settings.os == "Windows":
             self.cpp_info.libs = [
                 "ospray"                , 
