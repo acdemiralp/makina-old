@@ -54,6 +54,7 @@ TEST_CASE("B-Spline test.", "[makina]")
   auto mesh                = bivariate_spline .to_mesh                      ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
   auto field               = bivariate_spline .to_field<float, 2>           ({0.0, 0.0}, {2.0, 2.0}, {100, 100});
   auto line_segments       = univariate_spline.to_line_segments             ({0.0}, {8.0}, {100});
+
   { 
     auto entity                 = engine->scene()->add_entity();
     auto metadata               = entity->add_component<mak::metadata>    ();
@@ -61,7 +62,7 @@ TEST_CASE("B-Spline test.", "[makina]")
     auto point_render           = entity->add_component<mak::point_render>();
     point_render->point_cloud   = control_point_cloud.get();
     point_render->material      = model.materials[0].get();
-    control_point_cloud->radius = 10.0f;
+    control_point_cloud->radius = 8.0f;
   }
   
   { 
@@ -80,7 +81,7 @@ TEST_CASE("B-Spline test.", "[makina]")
     auto transform              = entity->add_component<mak::transform>    (metadata);
     auto mesh_render            = entity->add_component<mak::mesh_render>  ();
     mesh_render->mesh           = mesh.get();
-    mesh_render->material       = model.materials[0].get();
+    mesh_render->material       = model.materials[1].get();
   }
 
   {

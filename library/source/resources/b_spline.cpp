@@ -5,6 +5,8 @@
 #include <splinter/bsplinebuilder.h>
 #include <splinter/datatable.h>
 
+#include <makina/utility/indexing.hpp>
+
 namespace mak
 {
 b_spline::b_spline(
@@ -25,7 +27,7 @@ b_spline::b_spline(
 
 }
 
-double b_spline::evaluate(const std::vector<double>& parameters) const
+double                         b_spline::evaluate                     (const std::vector<double>& parameters) const
 {
   return native_.eval(parameters);
 }
@@ -66,9 +68,9 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
     step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
   
   const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
-  line_segments->vertices.resize(    sample_count);
-  line_segments->colors  .resize(    sample_count, {255, 255, 255, 255});
-  line_segments->indices .resize(2 * sample_count);
+  line_segments->vertices.resize(     sample_count);
+  line_segments->colors  .resize(     sample_count, {255, 255, 255, 255});
+  line_segments->indices .resize(2 * (sample_count - 1));
   mak::permute_for(
     [&] (const std::vector<std::size_t>& indices)
     { 
@@ -93,8 +95,51 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
 }
 std::unique_ptr<mesh>          b_spline::to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
 {
-  auto   mesh = std::make_unique<mak::mesh>();
-  // TODO
+  auto mesh = std::make_unique<mak::mesh>();
+  
+  std::vector<double> step_sizes(lower_bounds.size(), 0.0);
+  for (auto i = 0; i < step_sizes.size(); ++i)
+    step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
+  
+  const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
+  mesh->vertices.resize(    sample_count);
+  mesh->normals .resize(    sample_count, {0, 0, 0});
+  mesh->colors  .resize(    sample_count, {255, 255, 255, 255});
+  mesh->indices .resize(6 * sample_count);
+  mak::permute_for(
+    [&] (const std::vector<std::size_t>& indices)
+    { 
+      std::vector<double> parameters(indices.size(), 0.0);
+      for (auto i = 0; i < parameters.size(); ++i)
+        parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
+      parameters.push_back(evaluate(parameters));
+  
+      auto index = ravel_multi_index(indices, samples);    
+      std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &mesh->vertices[index][0]);
+      if (indices[0] > 0 && indices[1] > 0)
+      {
+        auto indices_e  = indices; indices_e [0]--;
+        auto indices_se = indices; indices_se[0]--; indices_se[1]--;
+        auto indices_s  = indices; indices_s [1]--;
+        auto index_e    = ravel_multi_index(indices_e , samples);
+        auto index_se   = ravel_multi_index(indices_se, samples);
+        auto index_s    = ravel_multi_index(indices_s , samples);
+        mesh->indices[6 * index + 0] = index_se;
+        mesh->indices[6 * index + 1] = index_s ;
+        mesh->indices[6 * index + 2] = index   ;
+        mesh->indices[6 * index + 3] = index_se;
+        mesh->indices[6 * index + 4] = index   ;
+        mesh->indices[6 * index + 5] = index_e ;
+
+        auto x = normalize(mesh->vertices[index_s] - mesh->vertices[index_se]);
+        auto y = normalize(mesh->vertices[index_e] - mesh->vertices[index_se]);
+        mesh->normals[index] = cross(x, y); // TODO: Mix the face normals into smooth vertex normals.
+      }
+    },
+    std::vector<std::size_t>(samples.size(), 0),
+    samples,
+    std::vector<std::size_t>(samples.size(), 1));
+
   return mesh;
 }
 std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud() const

@@ -13,7 +13,6 @@
 #include <makina/resources/point_cloud.hpp>
 #include <makina/resources/line_segments.hpp>
 #include <makina/resources/mesh.hpp>
-#include <makina/utility/indexing.hpp>
 #include <makina/utility/permute_for.hpp>
 #include <makina/export.hpp>
 
@@ -37,7 +36,7 @@ public:
   b_spline& operator=(const b_spline&  that) = default;
   b_spline& operator=(      b_spline&& temp) = default;
 
-  double evaluate(const std::vector<double>& parameters) const;
+  double                                   evaluate                     (const std::vector<double>& parameters) const;
 
   template<typename type, std::size_t dimensions>
   std::unique_ptr<field<type, dimensions>> to_field                     (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
@@ -48,6 +47,7 @@ public:
     std::vector<double> step_sizes(lower_bounds.size(), 0.0);
     for (auto i = 0; i < step_sizes.size(); ++i)
       step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
+    std::copy(step_sizes.begin(), step_sizes.end(), field->spacing.begin());
 
     mak::permute_for(
       [&] (const std::vector<std::size_t>& indices)
@@ -55,7 +55,7 @@ public:
         std::vector<double> parameters(indices.size(), 0.0);
         for (auto i = 0; i < parameters.size(); ++i)
           parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
-        field[indices] = evaluate(parameters);
+        field->data(indices) = evaluate(parameters);
       },
       std::vector<std::size_t>(samples.size(), 0),
       samples,
