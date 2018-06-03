@@ -38,16 +38,16 @@ public:
   double evaluate(const std::vector<double>& parameters) const;
 
   template<typename type, std::size_t dimensions>
-  std::unique_ptr<field<type, dimensions>> to_field                     (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+  std::unique_ptr<field<type, dimensions>> to_field                     (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
   {
     auto   field = std::make_unique<mak::field<type, dimensions>>();
 
     return field;
   }
-  std::unique_ptr<point_cloud>             to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples);
-  std::unique_ptr<line_segments>           to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples);
-  std::unique_ptr<mesh>                    to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples);
-  std::unique_ptr<point_cloud>             control_points_to_point_cloud();
+  std::unique_ptr<point_cloud>             to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const;
+  std::unique_ptr<line_segments>           to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const;
+  std::unique_ptr<mesh>                    to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const;
+  std::unique_ptr<point_cloud>             control_points_to_point_cloud() const;
 
 protected:
   SPLINTER::BSpline from_table(

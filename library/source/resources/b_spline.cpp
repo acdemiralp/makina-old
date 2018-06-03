@@ -5,6 +5,7 @@
 #include <splinter/bsplinebuilder.h>
 #include <splinter/datatable.h>
 
+#include <makina/utility/indexing.hpp>
 #include <makina/utility/permute_for.hpp>
 
 namespace mak
@@ -32,25 +33,45 @@ double b_spline::evaluate(const std::vector<double>& parameters) const
   return native_.eval(parameters);
 }
 
-std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
 {
-  auto   point_cloud = std::make_unique<mak::point_cloud>();
+  auto point_cloud = std::make_unique<mak::point_cloud>();
+
+  std::vector<double> step_sizes(lower_bounds.size(), 0.0);
+  for (auto i = 0; i < step_sizes.size(); ++i)
+    step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
+
+  const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
+  point_cloud->vertices.resize(sample_count);
+  point_cloud->colors  .resize(sample_count, {255, 255, 255, 255});
+  mak::permute_for(
+    [&] (const std::vector<std::size_t>& indices)
+    { 
+      std::vector<double> parameters(indices.size(), 0.0);
+      for (auto i = 0; i < parameters.size(); ++i)
+        parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
+      parameters.push_back(evaluate(parameters));
+      std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &point_cloud->vertices[ravel_multi_index(indices, samples)][0]);
+    },
+    std::vector<std::size_t>(samples.size(), 0),
+    samples,
+    std::vector<std::size_t>(samples.size(), 1));
 
   return point_cloud;
 }
-std::unique_ptr<line_segments> b_spline::to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+std::unique_ptr<line_segments> b_spline::to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
 {
   auto   line_segments = std::make_unique<mak::line_segments>();
 
   return line_segments;
 }
-std::unique_ptr<mesh>          b_spline::to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples)
+std::unique_ptr<mesh>          b_spline::to_mesh                      (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
 {
   auto   mesh = std::make_unique<mak::mesh>();
 
   return mesh;
 }
-std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud()
+std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud() const
 {
   auto point_cloud    = std::make_unique<mak::point_cloud>();
   auto control_points = native_.getControlPoints();
