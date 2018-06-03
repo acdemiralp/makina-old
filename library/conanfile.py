@@ -31,6 +31,7 @@ class MakinaConan(ConanFile):
                        ("imgui/1.53@acdemiralp/makina"         ),
                        ("jsonformoderncpp/3.1.1@vthiery/stable"),
                        ("memory/0.6-1@acdemiralp/makina"       ),
+                       ("ospray/1.6.0@acdemiralp/makina"       ),
                        ("ra/1.0.0@acdemiralp/makina"           ),
                        ("rttr/0.9.5@acdemiralp/makina"         ),
                        ("spdlog/0.16.3@bincrafters/stable"     ),
