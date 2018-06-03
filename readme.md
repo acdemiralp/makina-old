@@ -67,7 +67,7 @@ Makina is a ”not-game engine (NGE)” which provides a subset of common game e
   - [x] bkaradzic/bgfx (DX9-12 + Metal + OpenGL + Vulkan)
   - [ ] DX12
   - [x] OptiX
-  - [ ] ospray/ospray
+  - [x] ospray/ospray
   - [x] VkHLF (Vulkan)
 - Audio
   - [x] FMOD
