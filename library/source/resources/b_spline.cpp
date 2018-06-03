@@ -61,7 +61,31 @@ std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std
 }
 std::unique_ptr<line_segments> b_spline::to_line_segments             (const std::vector<double>& lower_bounds, const std::vector<double>& upper_bounds, const std::vector<std::size_t>& samples) const
 {
-  auto   line_segments = std::make_unique<mak::line_segments>();
+  auto line_segments = std::make_unique<mak::line_segments>();
+
+  std::vector<double> step_sizes(lower_bounds.size(), 0.0);
+  for (auto i = 0; i < step_sizes.size(); ++i)
+    step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
+  
+  const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
+  line_segments->vertices.resize(    sample_count);
+  line_segments->colors  .resize(    sample_count, {255, 255, 255, 255});
+  line_segments->indices .resize(2 * sample_count);
+  mak::permute_for(
+    [&] (const std::vector<std::size_t>& indices)
+    { 
+      std::vector<double> parameters(indices.size(), 0.0);
+      for (auto i = 0; i < parameters.size(); ++i)
+        parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
+      parameters.push_back(evaluate(parameters));
+
+      auto index = ravel_multi_index(indices, samples);
+      std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &line_segments->vertices[index][0]);
+      std::copy_n(index            , 1                                           , &line_segments->indices [index]   );
+    },
+    std::vector<std::size_t>(samples.size(), 0),
+    samples,
+    std::vector<std::size_t>(samples.size(), 1));
 
   return line_segments;
 }
