@@ -19,7 +19,7 @@ class engine;
 
 namespace ospray
 {
-MAKINA_EXPORT void make_default_framegraph(engine* engine, di::window* window, bool pathtracing = false);
+MAKINA_EXPORT void make_default_framegraph(engine* engine, di::window* main_window);
 }
 }
 

@@ -25,6 +25,6 @@ TEST_CASE("Ospray test.", "[makina]")
   auto& model  = models.emplace_back();
   model.load(mak::model::description{"data/model/dabrovic/sponza.obj", true});
   mak::append_scene(model.scene.get(), engine->scene());
-  
+
   engine->run();
 }
