@@ -3,7 +3,7 @@
 
 #include <array>
 
-#include <di/systems/display/opengl_window.hpp>
+#include <di/systems/display/window.hpp>
 #include <fg/resource.hpp>
 #include <gl/framebuffer.hpp>
 #include <gl/texture.hpp>
@@ -25,7 +25,7 @@ public:
     GLenum                 depth_format = GL_DEPTH_COMPONENT24;
   };
 
-  explicit framebuffer  (di::opengl_window* window); // Default framebuffer constructor.
+  explicit framebuffer  (di::window* window); // Default framebuffer constructor.
   explicit framebuffer  (const description&  description);
   framebuffer           (const framebuffer&  that) = delete ;
   framebuffer           (      framebuffer&& temp) = default;
@@ -43,7 +43,7 @@ protected:
   gl::texture_2d depth_texture_;
 };
 
-MAKINA_EXPORT framebuffer* default_framebuffer(di::opengl_window* window);
+MAKINA_EXPORT framebuffer* default_framebuffer(di::window* window);
 
 using framebuffer_resource = fg::resource<framebuffer::description, framebuffer>;
 }

@@ -11,7 +11,7 @@
 
 namespace mak
 {
-void opengl::make_default_framegraph(engine* engine, di::opengl_window* main_window)
+void opengl::make_default_framegraph(engine* engine, di::window* main_window)
 {
   gl::initialize();
 

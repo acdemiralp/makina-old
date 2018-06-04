@@ -6,7 +6,7 @@ namespace mak
 {
 namespace opengl
 {
-framebuffer::framebuffer(di::opengl_window* window) : gl::framebuffer(0)
+framebuffer::framebuffer(di::window* window) : gl::framebuffer(0)
 {
   auto size = window->size();
   color_texture_.set_storage(1, GL_RGBA8            , size[0], size[1]);
@@ -43,7 +43,7 @@ bool framebuffer::is_default() const
   return id_ == 0;
 }
 
-framebuffer* default_framebuffer(di::opengl_window* window)
+framebuffer* default_framebuffer(di::window* window)
 {
   static auto default_framebuffer = framebuffer(window);
   return &default_framebuffer;

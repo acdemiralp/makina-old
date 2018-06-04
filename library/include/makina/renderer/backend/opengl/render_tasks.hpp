@@ -24,7 +24,7 @@
 
 namespace di
 {
-class opengl_window;
+class window;
 }
 
 namespace mak
@@ -33,7 +33,7 @@ class engine;
 
 namespace opengl
 {
-MAKINA_EXPORT void make_default_framegraph(engine* engine, di::opengl_window* main_window);
+MAKINA_EXPORT void make_default_framegraph(engine* engine, di::window* main_window);
 }
 }
 
