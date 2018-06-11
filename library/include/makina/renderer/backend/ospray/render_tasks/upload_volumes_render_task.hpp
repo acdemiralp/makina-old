@@ -7,7 +7,10 @@
 
 namespace mak
 {
+namespace ospray
+{
   
+}
 }
 
 #endif

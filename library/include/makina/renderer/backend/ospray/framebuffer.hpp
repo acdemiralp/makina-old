@@ -17,7 +17,6 @@ struct MAKINA_EXPORT framebuffer_description
   ospcommon::vec2i     size     ; 
   OSPFrameBufferFormat format   = OSP_FB_SRGBA;
   std::int32_t         channels = OSP_FB_COLOR;
-  bool                 clear    = true        ;
 };
 using framebuffer_resource = fg::resource<framebuffer_description, ::ospray::cpp::FrameBuffer>;
 }
@@ -26,10 +25,7 @@ using framebuffer_resource = fg::resource<framebuffer_description, ::ospray::cpp
 template<>
 inline std::unique_ptr<ospray::cpp::FrameBuffer> fg::realize(const mak::ospray::framebuffer_description& description)
 {
-  auto framebuffer = std::make_unique<ospray::cpp::FrameBuffer>(description.size, description.format, description.channels);
-  if (description.clear) 
-    framebuffer->clear(description.channels);
-  return framebuffer;
+  return std::make_unique<ospray::cpp::FrameBuffer>(description.size, description.format, description.channels);
 }
 
 #endif

@@ -2,5 +2,8 @@
 
 namespace mak
 {
-
+namespace ospray
+{
+  
+}
 }

@@ -1,6 +1,8 @@
 #ifndef MAKINA_RENDERER_OSPRAY_RENDER_TASKS_CREATE_HMD_TEXTURES_RENDER_TASK_HPP_
 #define MAKINA_RENDERER_OSPRAY_RENDER_TASKS_CREATE_HMD_TEXTURES_RENDER_TASK_HPP_
 
+#include <fg/render_task.hpp>
+
 #include <makina/renderer/backend/ospray/framebuffer.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/export.hpp>
