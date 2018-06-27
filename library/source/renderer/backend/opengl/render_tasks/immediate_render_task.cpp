@@ -172,7 +172,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
       app_data.m_viewOrigin      = Im3d::Vec3(camera_position .x, camera_position .y, camera_position .z);
       app_data.m_viewDirection   = Im3d::Vec3(camera_direction.x, camera_direction.y, camera_direction.z);
       app_data.m_worldUp         = Im3d::Vec3(0.0f, 1.0f, 0.0f);
-      app_data.m_projOrtho       = camera_projection->mode() == projection::projection_mode::orthogonal;
+      app_data.m_projOrtho       = camera_projection->mode() == projection::mode::orthographic;
       app_data.m_projScaleY      = 2.0f / projection_matrix[1][1];
       app_data.m_snapTranslation = 0.0f;
       app_data.m_snapRotation    = 0.0f;
