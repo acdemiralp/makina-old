@@ -71,6 +71,8 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
           // camera.set("stereoMode"            , 0); // 0 no stereo 1 left 2 right 3 side-by-side
           // camera.set("interpupillaryDistance", 67.0f);
         }
+
+        camera.commit();
       }
 
       std::vector<::ospray::cpp::Light> lights;
@@ -117,9 +119,11 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
           ospray_light.set("radius"         , light->range);
         }
 
-        lights.push_back(ospray_light);
+        ospray_light.commit   ();
+        lights      .push_back(ospray_light);
       }
       mutable_data.lights = std::make_unique<::ospray::cpp::Data>(lights.size(), OSP_LIGHT, lights.data());
+      mutable_data.lights->commit();
     });
 }
 }

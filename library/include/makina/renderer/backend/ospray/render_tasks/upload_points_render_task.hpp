@@ -1,12 +1,12 @@
 #ifndef MAKINA_RENDERER_BACKEND_OSPRAY_RENDER_TASKS_UPLOAD_POINTS_RENDER_TASK_HPP_
 #define MAKINA_RENDERER_BACKEND_OSPRAY_RENDER_TASKS_UPLOAD_POINTS_RENDER_TASK_HPP_
 
+#include <map>
 #include <memory>
 
 #include <fg/render_task.hpp>
 #include <ospray/ospray_cpp.h>
 
-#include <makina/renderer/backend/ospray/buffer.hpp>
 #include <makina/renderer/renderer.hpp>
 #include <makina/resources/point_cloud.hpp>
 #include <makina/export.hpp>
