@@ -41,17 +41,17 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
           spheres.begin(), 
           [&] (const glm::vec3& vertex) { return sphere{vertex.x, vertex.y, vertex.z, index++}; });
 
-        auto geometry = std::make_shared<::ospray::cpp::Geometry>("spheres");
-        auto vertices = std::make_shared<::ospray::cpp::Data>(spheres.size() * sizeof sphere          , OSP_CHAR  , spheres.data()                          ); vertices->commit();
-        auto colors   = std::make_shared<::ospray::cpp::Data>(point_render->point_cloud->colors.size(), OSP_UCHAR4, point_render->point_cloud->colors.data()); colors  ->commit();
-        geometry->set("spheres"         , *vertices.get());
-        geometry->set("color"           , *colors  .get());
+        const auto geometry = std::make_shared<::ospray::cpp::Geometry>("spheres");
+        const auto vertices = std::make_shared<::ospray::cpp::Data>(spheres.size() * sizeof sphere          , OSP_CHAR  , spheres.data()                          ); vertices->commit();
+        const auto colors   = std::make_shared<::ospray::cpp::Data>(point_render->point_cloud->colors.size(), OSP_UCHAR4, point_render->point_cloud->colors.data()); colors  ->commit();
+        geometry->set("spheres"         , *vertices);
+        geometry->set("color"           , *colors  );
         geometry->set("radius"          , point_render->point_cloud->radius);
         geometry->set("bytes_per_sphere", std::int32_t(sizeof sphere   ));
         geometry->set("offset_colorID"  , std::int32_t(sizeof glm::vec3));
         
-        auto phong_material = dynamic_cast<mak::phong_material*>           (point_render->material);
-        if  (phong_material)
+        const auto phong_material = dynamic_cast<mak::phong_material*>           (point_render->material);
+        if (phong_material)
         {
           ::ospray::cpp::Material material(only_raytracing ? "raytracer" : "pathtracer", "OBJMaterial");
           material.set   ("Kd", ospcommon::vec3f(phong_material->diffuse .x, phong_material->diffuse .y, phong_material->diffuse .z));
@@ -60,8 +60,8 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
           material.commit();
           geometry->setMaterial(material);
         }
-        auto pbr_material   = dynamic_cast<mak::physically_based_material*>(point_render->material);
-        if  (pbr_material)
+        const auto pbr_material   = dynamic_cast<mak::physically_based_material*>(point_render->material);
+        if (pbr_material)
         {
           if (only_raytracing)
           {
@@ -87,9 +87,9 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
 
         mutable_data.point_cloud_cache[point_render->point_cloud] = upload_points_task_data::point_data
         {
-          std::move(geometry),
-          std::move(vertices),
-          std::move(colors  )
+          geometry,
+          vertices,
+          colors  
         };
       }
     });

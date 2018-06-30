@@ -11,7 +11,7 @@ namespace ospray
 fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* renderer, bool only_raytracing)
 {
   return renderer->add_render_task<upload_lines_task_data>(
-    "Ospray Upload Points Pass",
+    "Ospray Upload Lines Pass",
     [=] (      upload_lines_task_data& data, fg::render_task_builder& builder)
     {
 
@@ -44,17 +44,17 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
         for (auto i = 0; i < transformed_indices.size(); ++i)
           transformed_indices[i] = line_render->line_segments->indices[i * 2];
 
-        auto geometry = std::make_shared<::ospray::cpp::Geometry>("streamlines");
-        auto vertices = std::make_shared<::ospray::cpp::Data>(transformed_vertices.size(), OSP_FLOAT3A, transformed_vertices.data()); vertices->commit();
-        auto colors   = std::make_shared<::ospray::cpp::Data>(transformed_colors  .size(), OSP_FLOAT4 , transformed_colors  .data()); colors  ->commit();
-        auto indices  = std::make_shared<::ospray::cpp::Data>(transformed_indices .size(), OSP_INT    , transformed_indices .data()); indices ->commit();
-        geometry->set("vertex"      , *vertices.get());
-        geometry->set("vertex.color", *colors  .get());
-        geometry->set("index"       , *indices .get());
+        const auto geometry = std::make_shared<::ospray::cpp::Geometry>("streamlines");
+        const auto vertices = std::make_shared<::ospray::cpp::Data>(transformed_vertices.size(), OSP_FLOAT3A, transformed_vertices.data()); vertices->commit();
+        const auto colors   = std::make_shared<::ospray::cpp::Data>(transformed_colors  .size(), OSP_FLOAT4 , transformed_colors  .data()); colors  ->commit();
+        const auto indices  = std::make_shared<::ospray::cpp::Data>(transformed_indices .size(), OSP_INT    , transformed_indices .data()); indices ->commit();
+        geometry->set("vertex"      , *vertices);
+        geometry->set("vertex.color", *colors  );
+        geometry->set("index"       , *indices );
         geometry->set("radius"      , line_render->line_segments->radius);
 
-        auto phong_material = dynamic_cast<mak::phong_material*>           (line_render->material);
-        if  (phong_material)
+        const auto phong_material = dynamic_cast<mak::phong_material*>           (line_render->material);
+        if (phong_material)
         {
           ::ospray::cpp::Material material(only_raytracing ? "raytracer" : "pathtracer", "OBJMaterial");
           material.set   ("Kd", ospcommon::vec3f(phong_material->diffuse .x, phong_material->diffuse .y, phong_material->diffuse .z));
@@ -63,8 +63,8 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
           material.commit();
           geometry->setMaterial(material);
         }
-        auto pbr_material   = dynamic_cast<mak::physically_based_material*>(line_render->material);
-        if  (pbr_material)
+        const auto pbr_material   = dynamic_cast<mak::physically_based_material*>(line_render->material);
+        if (pbr_material)
         {
           if (only_raytracing)
           {
@@ -90,10 +90,10 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
 
         mutable_data.line_segments_cache[line_render->line_segments] = upload_lines_task_data::line_data
         {
-          std::move(geometry),
-          std::move(vertices),
-          std::move(colors  ),
-          std::move(indices )
+          geometry,
+          vertices,
+          colors  ,
+          indices 
         };
       }
     });
