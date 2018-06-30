@@ -10,7 +10,7 @@ namespace ospray
 {
   fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer* renderer, bool only_raytracing)
   {
-    renderer->add_render_task<upload_points_task_data>(
+    return renderer->add_render_task<upload_points_task_data>(
       "Ospray Upload Points Pass",
       [=] (      upload_points_task_data& data, fg::render_task_builder& builder)
       {
@@ -41,9 +41,9 @@ namespace ospray
             spheres.begin(), 
             [&] (const glm::vec3& vertex) { return sphere{vertex.x, vertex.y, vertex.z, index++}; });
 
-          auto geometry = std::make_unique<::ospray::cpp::Geometry>("spheres");
-          auto vertices = std::make_unique<::ospray::cpp::Data>(spheres.size() * sizeof sphere          , OSP_CHAR  , spheres.data()                          );
-          auto colors   = std::make_unique<::ospray::cpp::Data>(point_render->point_cloud->colors.size(), OSP_UCHAR4, point_render->point_cloud->colors.data());
+          auto geometry = std::make_shared<::ospray::cpp::Geometry>("spheres");
+          auto vertices = std::make_shared<::ospray::cpp::Data>(spheres.size() * sizeof sphere          , OSP_CHAR  , spheres.data()                          );
+          auto colors   = std::make_shared<::ospray::cpp::Data>(point_render->point_cloud->colors.size(), OSP_UCHAR4, point_render->point_cloud->colors.data());
           geometry->set        ("spheres"         , *vertices.get());
           geometry->set        ("color"           , *colors  .get());
           geometry->set        ("radius"          , point_render->point_cloud->radius);

@@ -18,7 +18,7 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
     {
       auto& mutable_data = const_cast<upload_common_task_data&>(data);
       mutable_data.cameras.clear();
-      mutable_data.lights .clear();
+      mutable_data.lights .reset();
 
       const auto scene          = renderer->scene_cache();
       const auto raytracer_type = only_raytracing ? "raytracer" : "pathtracer";
@@ -72,6 +72,8 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
           // camera.set("interpupillaryDistance", 67.0f);
         }
       }
+
+      std::vector<::ospray::cpp::Light> lights;
       for (auto& entity : scene->entities<transform, light>())
       {
         auto metadata  = entity->component<mak::metadata> ();
@@ -87,7 +89,7 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
         else if (light->type == light::type::spot)
           light_type = "spot";
 
-        auto& ospray_light = mutable_data.lights.emplace_back(raytracer_type, light_type);
+        auto ospray_light = ::ospray::cpp::Light(raytracer_type, light_type);
         ospray_light.set("color"    , ospcommon::vec3f(light->color.x, light->color.y, light->color.z));
         ospray_light.set("intensity", light->intensity);
         ospray_light.set("isVisible", true);
@@ -114,7 +116,10 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
           ospray_light.set("penumbraAngle"  , light->spot_angles[1]);
           ospray_light.set("radius"         , light->range);
         }
+
+        lights.push_back(ospray_light);
       }
+      mutable_data.lights = std::make_unique<::ospray::cpp::Data>(lights.size(), OSP_LIGHT, lights.data());
     });
 }
 }

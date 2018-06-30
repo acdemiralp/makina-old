@@ -20,8 +20,8 @@ struct MAKINA_EXPORT upload_common_task_data
   upload_common_task_data& operator=(const upload_common_task_data&  that) = delete ;
   upload_common_task_data& operator=(      upload_common_task_data&& temp) = default;
 
-  std::vector<::ospray::cpp::Camera> cameras;
-  std::vector<::ospray::cpp::Data>   lights ;
+  std::vector    <::ospray::cpp::Camera> cameras;
+  std::unique_ptr<::ospray::cpp::Data>   lights ;
 };
 
 MAKINA_EXPORT fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer* renderer, bool only_raytracing = true);

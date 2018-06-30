@@ -19,9 +19,9 @@ struct MAKINA_EXPORT upload_points_task_data
 {
   struct MAKINA_EXPORT point_data
   {
-    std::unique_ptr<::ospray::cpp::Geometry> geometry;
-    std::unique_ptr<::ospray::cpp::Data>     vertices;
-    std::unique_ptr<::ospray::cpp::Data>     colors  ;
+    std::shared_ptr<::ospray::cpp::Geometry> geometry;
+    std::shared_ptr<::ospray::cpp::Data>     vertices;
+    std::shared_ptr<::ospray::cpp::Data>     colors  ;
   };
 
   std::map<point_cloud*, point_data> point_cloud_cache;

@@ -20,6 +20,7 @@ namespace ospray
 {
 void make_default_framegraph(engine* engine, di::window* main_window)
 {
+  /*
   // A resize implies reconstruction of the framegraph since Ospray framebuffers are of fixed size.
   main_window->on_resize.connect([=] (const std::array<std::size_t, 2>& size)
   {
@@ -115,6 +116,7 @@ void make_default_framegraph(engine* engine, di::window* main_window)
       ospray_backbuffer                   , 
       backbuffer                          );
   }
+  */
 }
 }
 }
