@@ -9,7 +9,7 @@ namespace ospray
 fg::render_task<tone_mapping_task_data>* add_tone_mapping_render_task(renderer* renderer, framebuffer_resource* target, tone_mapping_settings settings)
 {
   return renderer->add_render_task<tone_mapping_task_data>(
-    "Tone Mapping Render Pass",
+    "Tone Mapping Pass",
     [&] (      tone_mapping_task_data& data, fg::render_task_builder& builder)
     {
       data.target = builder.write(target);

@@ -1,6 +1,9 @@
 #include <makina/renderer/backend/ospray/render_tasks/upload_common_render_task.hpp>
 
 #include <makina/core/logger.hpp>
+#include <makina/core/metadata.hpp>
+#include <makina/renderer/transform.hpp>
+#include <makina/renderer/projection.hpp>
 
 namespace mak
 {

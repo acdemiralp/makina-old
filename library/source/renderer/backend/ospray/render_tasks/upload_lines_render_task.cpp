@@ -1,6 +1,8 @@
 #include <makina/renderer/backend/ospray/render_tasks/upload_lines_render_task.hpp>
 
+#include <makina/core/metadata.hpp>
 #include <makina/renderer/line_render.hpp>
+#include <makina/renderer/transform.hpp>
 #include <makina/resources/phong_material.hpp>
 #include <makina/resources/physically_based_material.hpp>
 
@@ -23,10 +25,11 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
       const auto scene = renderer->scene_cache();
       for (auto entity : scene->entities<transform, point_render>())
       {
+        auto metadata    = entity->component<mak::metadata>   ();
         auto transform   = entity->component<mak::transform>  ();
         auto line_render = entity->component<mak::line_render>();
 
-        if (mutable_data.line_segments_cache.count(line_render->line_segments)) continue;
+        if (!metadata->active || mutable_data.line_segments_cache.count(line_render->line_segments)) continue;
 
         std::vector<glm::vec4>     transformed_vertices(line_render->line_segments->vertices.size());
         std::vector<glm::vec4>     transformed_colors  (line_render->line_segments->colors  .size());
