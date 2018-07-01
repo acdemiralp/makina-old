@@ -1,94 +1,91 @@
-#ifndef MAKINA_CORE_ENGINE_HPP
-#define MAKINA_CORE_ENGINE_HPP
+#ifndef MAKINA_CORE_ENGINE_HPP_
+#define MAKINA_CORE_ENGINE_HPP_
 
 #include <algorithm>
-#include <cstddef>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
-#include <makina/core/entity_component_system/scene.hpp>
-#include <makina/core/entity_component_system/system.hpp>
-#include <makina/core/time/frame_timer.hpp>
+#include <tbb/flow_graph.h>
 
-#include <export.hpp>
+#include <makina/export.hpp>
+#include <makina/core/flow_node.hpp>
+#include <makina/core/frame_timer.hpp>
+#include <makina/core/logger.hpp>
+#include <makina/core/scene.hpp>
+#include <makina/core/system.hpp>
 
 namespace mak
 {
+// An engine is a container of and is responsible for the updating of systems.
 class MAKINA_EXPORT engine
 {
 public:
-  engine()                    = default;
-  engine(const engine&  that) = delete ;
-  engine(      engine&& temp) = default;
-  virtual ~engine()           = default;
-
+  engine           ();
+  engine           (const engine&  that) = delete ;
+  engine           (      engine&& temp) = default;
+  virtual ~engine  ()                    = default;
   engine& operator=(const engine&  that) = delete ;
   engine& operator=(      engine&& temp) = default;
 
-  std::vector<system*> systems() const;
-  scene*               scene  () const;
-  
-  void  set_scene    (std::unique_ptr<mak::scene> scene);
-           
-  template <typename type, typename... args>
-  type* add_system   (args&&...   arguments);
-  template <typename type>
-  type* copy_system  (const type& system   );
-  template <typename type>
-  type* get_system   () const;
-  template <typename type>
-  void  remove_system();
-                   
-  void  run          ();
-  void  stop         ();
-  bool  is_running   () const;
-  
-private:        
-  void  initialize   ();
-  void  update       (float time);
-  void  terminate    ();
-       
-  frame_timer<float>                   frame_timer_;
-  std::vector<std::unique_ptr<system>> systems_    ;
-  std::unique_ptr<mak::scene>          scene_      ;
-  bool                                 is_running_ = false;
-};
+  template<typename system_type, typename... system_arguments>
+  system_type* add_system       (system_arguments&&... arguments)
+  {
+    static_assert(std::is_base_of<system, system_type>::value, "The type does not inherit from system.");
+    systems_.push_back(std::make_unique<system_type>(arguments...));
+    const auto system = systems_.back().get();
+    system->owner_ = this;
+    return static_cast<system_type*>(system);
+  }
+  template<typename system_type>
+  system_type* get_system       ()
+  {
+    static_assert(std::is_base_of<system, system_type>::value, "The type does not inherit from system.");
+    auto iterator = std::find_if(systems_.begin(), systems_.end(), system_type_predicate<system_type>);
+    if  (iterator == systems_.end())
+    {
+      logger->warn("System does not exist within the engine.");
+      return nullptr;
+    }
+    return static_cast<system_type*>(iterator->get());
+  }
+  template<typename system_type>
+  void         remove_system    ()
+  {
+    static_assert(std::is_base_of<system, system_type>::value, "The type does not inherit from system.");
+    auto iterator = std::remove_if(systems_.begin(), systems_.end(), system_type_predicate<system_type>);
+    if  (iterator == systems_.end())
+    {
+      logger->warn("System does not exist within the engine.");
+      return;
+    }
+    systems_.erase(iterator, systems_.end());
+  }
 
-template <typename type, typename ... args>
-type* engine::add_system   (args&&...  arguments)
-{
-  systems_.emplace_back(new type(arguments...));
-  auto system = systems_.back().get();
-  system->owner_ = this;
-  return static_cast<type*>(system);
-}
-template <typename type>
-type* engine::copy_system  (const type& system  )
-{
-  systems_.emplace_back(new type(system));
-  auto new_system = systems_.back().get();
-  new_system->owner_ = this;
-  return static_cast<type*>(new_system);
-}
-template <typename type>
-type* engine::get_system   () const
-{
-  auto it = std::find_if(systems_.begin(), systems_.end(), 
-  [](const std::unique_ptr<system>& iteratee)
+  scene*       scene            () const;
+  void         set_scene        (std::unique_ptr<mak::scene> scene);
+
+  void         run              ();
+  void         stop             ();
+  bool         is_running       () const;
+
+protected:
+  friend system;
+
+  template<typename system_type>
+  static bool system_type_predicate(const std::unique_ptr<system>& iteratee)
   {
-    return typeid(type) == typeid(*iteratee.get());
-  });
-  return it != systems_.end() ? static_cast<type*>(it->get()) : nullptr;
-}
-template <typename type>
-void  engine::remove_system()
-{
-  systems_.erase(std::remove_if(systems_.begin(), systems_.end(), 
-  [] (const std::unique_ptr<system>& iteratee)
-  {
-    return typeid(type) == typeid(*iteratee.get());
-  }), systems_.end());
-}
+    return typeid(system_type) == typeid(*iteratee.get());
+  }
+
+  std::unique_ptr<mak::scene>          scene_      ;
+  std::vector<std::unique_ptr<system>> systems_    ;
+  frame_timer                          frame_timer_;
+  bool                                 is_running_ = false;
+                                                   
+  tbb::flow::graph                     flow_graph_ ;
+  entry_node                           entry_node_ ;
+};
 }
 
 #endif
