@@ -7,8 +7,8 @@
 #include <fg/render_task.hpp>
 #include <ospray/ospray_cpp.h>
 
+#include <makina/renderer/line_render.hpp>
 #include <makina/renderer/renderer.hpp>
-#include <makina/resources/line_segments.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -25,7 +25,7 @@ struct MAKINA_EXPORT upload_lines_task_data
     std::shared_ptr<::ospray::cpp::Data>     indices ;
   };
 
-  std::map<line_segments*, line_data> line_segments_cache;
+  std::map<line_render*, line_data> cache;
 };
 
 MAKINA_EXPORT fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* renderer, bool only_raytracing = true);

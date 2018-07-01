@@ -1,10 +1,10 @@
 #include <makina/renderer/backend/ospray/render_tasks/upload_points_render_task.hpp>
 
 #include <makina/core/metadata.hpp>
-#include <makina/renderer/point_render.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/phong_material.hpp>
 #include <makina/resources/physically_based_material.hpp>
+#include <makina/resources/point_cloud.hpp>
 
 namespace mak
 {
@@ -29,7 +29,7 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
         auto transform    = entity->component<mak::transform>   ();
         auto point_render = entity->component<mak::point_render>();
 
-        if (!metadata->active || mutable_data.point_cloud_cache.count(point_render->point_cloud)) continue;
+        if (!metadata->active || mutable_data.cache.count(point_render)) continue;
 
         struct sphere
         {
@@ -88,7 +88,7 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
 
         geometry->commit();
 
-        mutable_data.point_cloud_cache[point_render->point_cloud] = upload_points_task_data::point_data
+        mutable_data.cache[point_render] = upload_points_task_data::point_data
         {
           geometry,
           vertices,

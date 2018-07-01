@@ -8,7 +8,7 @@
 #include <ospray/ospray_cpp.h>
 
 #include <makina/renderer/renderer.hpp>
-#include <makina/resources/field.hpp>
+#include <makina/renderer/volume_render.hpp>
 #include <makina/export.hpp>
 
 namespace mak
@@ -26,7 +26,7 @@ struct MAKINA_EXPORT upload_volumes_task_data
     std::shared_ptr<::ospray::cpp::Data>             opacities        ;
   };
 
-  std::map<field<float, 3>*, volume_data> volume_cache;
+  std::map<volume_render*, volume_data> cache;
 };
 
 MAKINA_EXPORT fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(renderer* renderer, bool only_raytracing = true);

@@ -2,7 +2,6 @@
 
 #include <makina/core/metadata.hpp>
 #include <makina/renderer/transform.hpp>
-#include <makina/renderer/volume_render.hpp>
 
 namespace mak
 {
@@ -27,7 +26,7 @@ fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(render
         auto transform     = entity->component<mak::transform>    ();
         auto volume_render = entity->component<mak::volume_render>();
 
-        if (!metadata->active || mutable_data.volume_cache.count(volume_render->volume)) continue;
+        if (!metadata->active || mutable_data.cache.count(volume_render)) continue;
 
         const auto volume            = std::make_shared<::ospray::cpp::Volume>          ("shared_structured_volume");
         const auto voxel_data        = std::make_shared<::ospray::cpp::Data>            (volume_render->volume->data.num_elements(), OSP_FLOAT, volume_render->volume->data.data()); voxel_data->commit();
@@ -45,7 +44,7 @@ fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(render
         volume           ->set   ("voxelType"       , "float");
         volume           ->commit();
         
-        mutable_data.volume_cache[volume_render->volume] = upload_volumes_task_data::volume_data
+        mutable_data.cache[volume_render] = upload_volumes_task_data::volume_data
         {
           volume           ,
           voxel_data       ,
