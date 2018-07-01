@@ -18,7 +18,9 @@ namespace ospray
 {
 struct MAKINA_EXPORT raytracing_task_data
 {
-  framebuffer_resource* target;
+  framebuffer_resource*                    target  ;
+  std::unique_ptr<::ospray::cpp::Renderer> renderer;
+  std::unique_ptr<::ospray::cpp::Model>    model   ;
 };
 
 MAKINA_EXPORT fg::render_task<raytracing_task_data>* add_raytracing_render_task(
