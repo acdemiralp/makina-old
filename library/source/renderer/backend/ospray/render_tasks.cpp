@@ -20,7 +20,6 @@ namespace ospray
 {
 void make_default_framegraph(engine* engine, di::window* main_window)
 {
-  /*
   // A resize implies reconstruction of the framegraph since Ospray framebuffers are of fixed size.
   main_window->on_resize.connect([=] (const std::array<std::size_t, 2>& size)
   {
@@ -33,11 +32,11 @@ void make_default_framegraph(engine* engine, di::window* main_window)
   const auto renderer                           = engine->get_system<mak::renderer> ();
   const auto vr_system                          = engine->get_system<mak::vr_system>();
 
-  const auto upload_common_render_task          = ospray::add_upload_common_render_task      (renderer);
-  const auto upload_points_render_task          = ospray::add_upload_points_render_task      (renderer);
-  const auto upload_lines_render_task           = ospray::add_upload_lines_render_task       (renderer);
-  const auto upload_triangles_render_task       = ospray::add_upload_triangles_render_task   (renderer);
-  const auto upload_volumes_render_task         = ospray::add_upload_volumes_render_task     (renderer);
+  const auto upload_common_render_task          = ospray::add_upload_common_render_task (renderer);
+  const auto upload_points_render_task          = ospray::add_upload_points_render_task (renderer);
+  const auto upload_lines_render_task           = ospray::add_upload_lines_render_task  (renderer);
+  const auto upload_meshes_render_task          = ospray::add_upload_meshes_render_task (renderer);
+  const auto upload_volumes_render_task         = ospray::add_upload_volumes_render_task(renderer);
                        
   const auto window_size = main_window->size();
   const auto backbuffer  = renderer->add_retained_resource(
@@ -56,36 +55,36 @@ void make_default_framegraph(engine* engine, di::window* main_window)
     const auto ospray_hmd_texture_data          = ospray_hmd_textures_task->data();
                                                 
     const auto left_clear_render_task           = ospray::add_clear_render_task              (
-      renderer                            , 
-      ospray_hmd_texture_data.left        );
+      renderer                         , 
+      ospray_hmd_texture_data.left     );
     const auto left_raytracing_render_task      = ospray::add_raytracing_render_task         (
-      renderer                            ,                                                       
-      upload_common_render_task   ->data(),                                                       
-      upload_points_render_task   ->data(),                                                       
-      upload_lines_render_task    ->data(),                                                       
-      upload_triangles_render_task->data(),                                                       
-      ospray_hmd_texture_data.left        ,
-      "hmd_left_camera"                   );
+      renderer                         ,                                                       
+      upload_common_render_task->data(),                                                       
+      upload_points_render_task->data(),                                                       
+      upload_lines_render_task ->data(),                                                       
+      upload_meshes_render_task->data(),                                                       
+      ospray_hmd_texture_data.left     ,
+      "hmd_left_camera"                );
     const auto left_opengl_adapter_render_task  = ospray::add_opengl_adapter_render_task     (
-      renderer                            ,                                                       
-      ospray_hmd_texture_data.left        ,
-      opengl_hmd_texture_data.left        );                                                 
+      renderer                         ,                                                       
+      ospray_hmd_texture_data.left     ,
+      opengl_hmd_texture_data.left     );                                                 
                                                                                                   
     const auto right_clear_render_task          = ospray::add_clear_render_task              (
-      renderer                            ,                                                        
-      ospray_hmd_texture_data.right       );                                             
+      renderer                         ,                                                        
+      ospray_hmd_texture_data.right    );                                             
     const auto right_raytracing_render_task     = ospray::add_raytracing_render_task         (
-      renderer,                                                                              
-      upload_common_render_task   ->data(),                                                  
-      upload_points_render_task   ->data(),                                                  
-      upload_lines_render_task    ->data(),                                                  
-      upload_triangles_render_task->data(),                                                           
-      ospray_hmd_texture_data.right       ,
-      "hmd_right_camera"                  );
+      renderer                         ,                                                                              
+      upload_common_render_task->data(),                                                  
+      upload_points_render_task->data(),                                                  
+      upload_lines_render_task ->data(),                                                  
+      upload_meshes_render_task->data(),                                                           
+      ospray_hmd_texture_data.right    ,
+      "hmd_right_camera"               );
     const auto right_opengl_adapter_render_task = ospray::add_opengl_adapter_render_task     (
-      renderer                            ,                                                    
-      ospray_hmd_texture_data.right       ,
-      opengl_hmd_texture_data.right       );
+      renderer                         ,                                                    
+      ospray_hmd_texture_data.right    ,
+      opengl_hmd_texture_data.right    );
 
     const auto blit_render_task                 = opengl::add_blit_render_task               (renderer, opengl_hmd_texture_data.left, backbuffer);
     const auto submit_hmd_textures_render_task  = opengl::add_submit_hmd_textures_render_task(renderer, hmd, opengl_hmd_texture_data);
@@ -102,21 +101,20 @@ void make_default_framegraph(engine* engine, di::window* main_window)
       });
 
     const auto clear_render_task                = ospray::add_clear_render_task              (
-      renderer                            , 
-      ospray_backbuffer                   );
+      renderer                         , 
+      ospray_backbuffer                );
     const auto raytracing_render_task           = ospray::add_raytracing_render_task         (
-      renderer                            ,                                                  
-      upload_common_render_task   ->data(),                                                  
-      upload_points_render_task   ->data(),                                                  
-      upload_lines_render_task    ->data(),                                                  
-      upload_triangles_render_task->data(),                                                  
-      ospray_backbuffer                   );                                                 
+      renderer                         ,                                                  
+      upload_common_render_task->data(),                                                  
+      upload_points_render_task->data(),                                                  
+      upload_lines_render_task ->data(),                                                  
+      upload_meshes_render_task->data(),                                                  
+      ospray_backbuffer                );                                                 
     const auto opengl_adapter_render_task       = ospray::add_opengl_adapter_render_task     (
-      renderer                            , 
-      ospray_backbuffer                   , 
-      backbuffer                          );
+      renderer                         , 
+      ospray_backbuffer                , 
+      backbuffer                       );
   }
-  */
 }
 }
 }
