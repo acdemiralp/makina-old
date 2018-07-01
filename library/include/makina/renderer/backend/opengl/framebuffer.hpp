@@ -2,6 +2,7 @@
 #define MAKINA_RENDERER_BACKEND_OPENGL_FRAMEBUFFER_HPP_
 
 #include <array>
+#include <memory>
 
 #include <di/systems/display/window.hpp>
 #include <fg/resource.hpp>

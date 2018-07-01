@@ -12,8 +12,8 @@ namespace ospray
 {
 fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer* renderer, bool only_raytracing)
 {
-  return renderer->add_render_task<upload_points_task_data>(
-    "Ospray Upload Points Pass",
+  auto render_task = renderer->add_render_task<upload_points_task_data>(
+    "Upload Points Pass",
     [=] (      upload_points_task_data& data, fg::render_task_builder& builder)
     {
 
@@ -42,7 +42,7 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
           point_render->point_cloud->vertices.begin(), 
           point_render->point_cloud->vertices.end  (), 
           spheres.begin(), 
-          [&] (const glm::vec3& vertex) { return sphere{vertex.x, vertex.y, vertex.z, index++}; });
+          [&] (const glm::vec3& vertex) { return sphere{vertex.x, vertex.y, -vertex.z, index++}; });
 
         const auto geometry = std::make_shared<::ospray::cpp::Geometry>("spheres");
         const auto vertices = std::make_shared<::ospray::cpp::Data>(spheres.size() * sizeof sphere          , OSP_CHAR  , spheres.data()                          ); vertices->commit();
@@ -96,6 +96,8 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
         };
       }
     });
+  render_task->set_cull_immune(true);
+  return render_task;
 }
 }
 }

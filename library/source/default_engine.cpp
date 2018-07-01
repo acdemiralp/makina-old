@@ -34,7 +34,6 @@ std::unique_ptr<engine> make_default_engine()
   auto animation_system          = engine->add_system<mak::animation_system>();
   if (mak::vr_system::available()) engine->add_system<mak::vr_system>       ();
   auto renderer                  = engine->add_system<mak::renderer>        ();
-  input_system    ->set_async(true);
   audio_system    ->set_async(true);
   physics_system  ->set_async(true);
   animation_system->set_async(true);

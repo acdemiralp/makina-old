@@ -11,7 +11,7 @@ namespace ospray
 {
 fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer* renderer, bool only_raytracing)
 {
-  return renderer->add_render_task<upload_common_task_data>(
+  auto render_task = renderer->add_render_task<upload_common_task_data>(
     "Upload Common Data Pass",
     [=] (      upload_common_task_data& data, fg::render_task_builder& builder)
     {
@@ -38,11 +38,9 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
         const auto position     = transform->translation(true);
         const auto forward      = transform->forward    (true);
         const auto up           = transform->up         (true);
-        camera.set("pos"        , ospcommon::vec3f(position.x, position.y, position.z));
-        camera.set("dir"        , ospcommon::vec3f(forward .x, forward .y, forward .z));
-        camera.set("up"         , ospcommon::vec3f(up      .x, up      .y, up      .z));
-        camera.set("imageStart" , ospcommon::vec2f(0.0f, 1.0f));
-        camera.set("imageEnd"   , ospcommon::vec2f(1.0f, 0.0f));
+        camera.set("pos"        , ospcommon::vec3f(position.x, position.y, -position.z));
+        camera.set("dir"        , ospcommon::vec3f(forward .x, forward .y, -forward .z));
+        camera.set("up"         , ospcommon::vec3f(up      .x, up      .y, -up      .z));
 
         if      (projection->mode() == projection::mode::perspective)
         {
@@ -62,9 +60,11 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
           const auto height     = std::abs(parameters.rectangle.top   - parameters.rectangle.bottom);
           const auto width      = std::abs(parameters.rectangle.right - parameters.rectangle.left  );
           const auto aspect     = width / height;
-          camera.set("height"   , height);
-          camera.set("aspect"   , aspect);
-          camera.set("nearClip" , parameters.z_range[0]);
+          camera.set("height"    , height);
+          camera.set("aspect"    , aspect);
+          camera.set("nearClip"  , parameters.z_range[0]);
+          camera.set("imageStart", ospcommon::vec2f(0.0f, 1.0f));
+          camera.set("imageEnd"  , ospcommon::vec2f(1.0f, 0.0f));
         }
         else if (projection->mode() == projection::mode::frustum    )
         {
@@ -78,7 +78,7 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
         camera.commit();
       }
 
-      std::vector<::ospray::cpp::Light> lights;
+      std::vector<OSPLight> lights;
       for (auto& entity : scene->entities<transform, light>())
       {
         auto metadata  = entity->component<mak::metadata> ();
@@ -103,31 +103,33 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
         const auto forward  = transform->forward    (true);
         if      (light->type == light::type::directional)
         {
-          ospray_light.set("direction"      , ospcommon::vec3f(forward.x, forward.y, forward.z));
+          ospray_light.set("direction"      , ospcommon::vec3f(forward .x, forward .y, -forward .z));
 
           // TODO: Support the missing in the light class.
           // ospray_light.set("angularDiameter", 1.0f);
         }
         else if (light->type == light::type::point)
         {
-          ospray_light.set("position"       , ospcommon::vec3f(position.x, position.y, position.z));
+          ospray_light.set("position"       , ospcommon::vec3f(position.x, position.y, -position.z));
           ospray_light.set("radius"         , light->range);
         }
         else if (light->type == light::type::spot)
         {
-          ospray_light.set("position"       , ospcommon::vec3f(position.x, position.y, position.z));
-          ospray_light.set("direction"      , ospcommon::vec3f(forward .x, forward .y, forward .z));
+          ospray_light.set("position"       , ospcommon::vec3f(position.x, position.y, -position.z));
+          ospray_light.set("direction"      , ospcommon::vec3f(forward .x, forward .y, -forward .z));
           ospray_light.set("openingAngle"   , light->spot_angles[0]);
           ospray_light.set("penumbraAngle"  , light->spot_angles[1]);
           ospray_light.set("radius"         , light->range);
         }
 
         ospray_light.commit   ();
-        lights      .push_back(ospray_light);
+        lights      .push_back(ospray_light.handle());
       }
       mutable_data.lights = std::make_unique<::ospray::cpp::Data>(lights.size(), OSP_LIGHT, lights.data());
       mutable_data.lights->commit();
     });
+  render_task->set_cull_immune(true);
+  return render_task;
 }
 }
 }

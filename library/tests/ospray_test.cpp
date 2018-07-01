@@ -23,7 +23,7 @@ TEST_CASE("Ospray test.", "[makina]")
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
+  model.load(mak::model::description{"data/model/setesh/setesh.fbx", true});
   mak::append_scene(model.scene.get(), engine->scene());
 
   engine->run();

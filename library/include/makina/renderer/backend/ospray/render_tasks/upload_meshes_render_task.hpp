@@ -21,7 +21,6 @@ struct MAKINA_EXPORT upload_meshes_task_data
   {
     std::shared_ptr<::ospray::cpp::Geometry> geometry           ;
     std::shared_ptr<::ospray::cpp::Data>     vertices           ;
-    std::shared_ptr<::ospray::cpp::Data>     normals            ;
     std::shared_ptr<::ospray::cpp::Data>     colors             ;
     std::shared_ptr<::ospray::cpp::Data>     texture_coordinates;
     std::shared_ptr<::ospray::cpp::Data>     indices            ;

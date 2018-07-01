@@ -12,8 +12,8 @@ namespace ospray
 {
 fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* renderer, bool only_raytracing)
 {
-  return renderer->add_render_task<upload_lines_task_data>(
-    "Ospray Upload Lines Pass",
+  auto render_task = renderer->add_render_task<upload_lines_task_data>(
+    "Upload Lines Pass",
     [=] (      upload_lines_task_data& data, fg::render_task_builder& builder)
     {
 
@@ -23,7 +23,7 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
       auto& mutable_data = const_cast<upload_lines_task_data&>(data);
 
       const auto scene = renderer->scene_cache();
-      for (auto entity : scene->entities<transform, point_render>())
+      for (auto entity : scene->entities<transform, line_render>())
       {
         auto metadata    = entity->component<mak::metadata>   ();
         auto transform   = entity->component<mak::transform>  ();
@@ -38,7 +38,7 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
           line_render->line_segments->vertices.begin(),
           line_render->line_segments->vertices.end  (),
           transformed_vertices.begin(),
-          [&] (const glm::vec3&   vertex) { return glm::vec4 {vertex.x, vertex.y, vertex.z, 1.0f}; });
+          [&] (const glm::vec3&   vertex) { return glm::vec4 {vertex.x, vertex.y, -vertex.z, 1.0f}; });
         std::transform(
           line_render->line_segments->colors  .begin(),
           line_render->line_segments->colors  .end  (),
@@ -100,6 +100,8 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
         };
       }
     });
+  render_task->set_cull_immune(true);
+  return render_task;
 }
 }
 }

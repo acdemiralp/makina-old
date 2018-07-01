@@ -9,8 +9,8 @@ namespace ospray
 {
 fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(renderer* renderer, bool only_raytracing)
 {
-  return renderer->add_render_task<upload_volumes_task_data>(
-    "Ospray Upload Volumes Pass",
+  auto render_task = renderer->add_render_task<upload_volumes_task_data>(
+    "Upload Volumes Pass",
     [=] (      upload_volumes_task_data& data, fg::render_task_builder& builder)
     {
 
@@ -20,7 +20,7 @@ fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(render
       auto& mutable_data = const_cast<upload_volumes_task_data&>(data);
 
       const auto scene = renderer->scene_cache();
-      for (auto entity : scene->entities<transform, point_render>())
+      for (auto entity : scene->entities<transform, volume_render>())
       {
         auto metadata      = entity->component<mak::metadata>     ();
         auto transform     = entity->component<mak::transform>    ();
@@ -54,6 +54,8 @@ fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(render
         };
       }
     });
+  render_task->set_cull_immune(true);
+  return render_task;
 }
 }
 }

@@ -94,7 +94,12 @@ endif ()
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
 list           (APPEND PROJECT_INCLUDE_DIRS ${CONAN_INCLUDE_DIRS_RELEASE})
 list           (APPEND PROJECT_COMPILE_DEFINITIONS ${CONAN_COMPILE_DEFINITIONS_RELEASE})
-list           (APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
+if             (CONAN_LIBS_DEBUG)
+  list         (APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG})
+endif          ()  
+if             (CONAN_LIBS_RELEASE)
+  list         (APPEND PROJECT_LIBRARIES optimized ${CONAN_LIBS_RELEASE})
+endif          ()
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_SOURCES})
@@ -121,30 +126,17 @@ generate_export_header(${PROJECT_NAME}
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
 
-# Copy dlls to build directory.
-if(WIN32)
-  foreach   (FOLDER ${CONAN_BIN_DIRS_DEBUG})
-    file    (GLOB BINARIES ${FOLDER}/*.dll)
-    file    (COPY ${BINARIES} DESTINATION ${PROJECT_BINARY_DIR}/Debug  )
-  endforeach()
-  foreach   (FOLDER ${CONAN_BIN_DIRS_RELEASE})
-    file    (GLOB BINARIES ${FOLDER}/*.dll)
-    file    (COPY ${BINARIES} DESTINATION ${PROJECT_BINARY_DIR}/Release)
-  endforeach()
-endif()
-
 # Copy data folder to build directory.
 file(COPY ${PROJECT_SOURCE_DIR}/../data DESTINATION ${PROJECT_BINARY_DIR})
 
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
-  enable_testing()
-
-  set                  (TEST_MAIN_NAME catch_main)
-  set                  (TEST_MAIN_SOURCES "tests/catch/catch.hpp" "tests/catch/main.cpp")
-  add_library          (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
-  set_property         (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER "tests/catch")
-  assign_source_group  (${TEST_MAIN_SOURCES})
+  enable_testing     ()
+  set                (TEST_MAIN_NAME catch_main)
+  set                (TEST_MAIN_SOURCES tests/catch/main.cpp)
+  add_library        (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
+  set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests/catch)
+  assign_source_group(${TEST_MAIN_SOURCES})
 
   file(GLOB PROJECT_TEST_CPPS tests/*.cpp)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
@@ -152,16 +144,16 @@ if(BUILD_TESTS)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
     target_link_libraries (${_NAME} ${PROJECT_NAME})
     add_test              (${_NAME} ${_NAME})
-    set_property          (TARGET ${_NAME} PROPERTY FOLDER "tests")
+    set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})
   endforeach()
 endif()
 
 ##################################################  Installation  ##################################################
-install(TARGETS ${PROJECT_NAME} EXPORT "${PROJECT_NAME}-config"
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-config
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
-install(EXPORT  "${PROJECT_NAME}-config" DESTINATION cmake)
-export (TARGETS "${PROJECT_NAME}"        FILE        "${PROJECT_NAME}-config.cmake")
+install(EXPORT  ${PROJECT_NAME}-config DESTINATION cmake)
+export (TARGETS ${PROJECT_NAME}        FILE        ${PROJECT_NAME}-config.cmake)

@@ -23,17 +23,8 @@ TEST_CASE("OpenGL test.", "[makina]")
 
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
-  model.load(mak::model::description{"data/model/nightsaber/nightsaber.fbx", true});
-  for(auto i = 0; i < 8; ++i)
-    mak::append_scene(model.scene.get(), engine->scene());
+  model.load(mak::model::description{"data/model/setesh/setesh.fbx", true});
+  mak::append_scene(model.scene.get(), engine->scene());
   
-  mak::random_number_generator<std::uniform_real_distribution<float>> rng(0.0f, 5.0f);
-  for (auto entity : engine->scene()->entities<mak::mesh_render>())
-  {
-    auto transform = entity->component<mak::transform>();
-    transform->set_translation(glm::vec3(rng.generate(), 0.0f, rng.generate()));
-    transform->set_scale      (glm::vec3(0.01f));
-  }
-
   engine->run();
 }
