@@ -1,5 +1,6 @@
 #include <makina/resources/b_spline.hpp>
 
+#include <cstddef>
 #include <cstdint>
 
 #include <splinter/bsplinebuilder.h>
@@ -37,7 +38,7 @@ std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std
   auto point_cloud = std::make_unique<mak::point_cloud>();
 
   std::vector<double> step_sizes(lower_bounds.size(), 0.0);
-  for (auto i = 0; i < step_sizes.size(); ++i)
+  for (std::size_t i = 0; i < step_sizes.size(); ++i)
     step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
 
   const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
@@ -47,7 +48,7 @@ std::unique_ptr<point_cloud>   b_spline::to_point_cloud               (const std
     [&] (const std::vector<std::size_t>& indices)
     { 
       std::vector<double> parameters(indices.size(), 0.0);
-      for (auto i = 0; i < parameters.size(); ++i)
+      for (std::size_t i = 0; i < parameters.size(); ++i)
         parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
       parameters.push_back(evaluate(parameters));
 
@@ -64,7 +65,7 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
   auto line_segments = std::make_unique<mak::line_segments>();
 
   std::vector<double> step_sizes(lower_bounds.size(), 0.0);
-  for (auto i = 0; i < step_sizes.size(); ++i)
+  for (std::size_t i = 0; i < step_sizes.size(); ++i)
     step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
   
   const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
@@ -75,7 +76,7 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
     [&] (const std::vector<std::size_t>& indices)
     { 
       std::vector<double> parameters(indices.size(), 0.0);
-      for (auto i = 0; i < parameters.size(); ++i)
+      for (std::size_t i = 0; i < parameters.size(); ++i)
         parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
       parameters.push_back(evaluate(parameters));
 
@@ -98,7 +99,7 @@ std::unique_ptr<mesh>          b_spline::to_mesh                      (const std
   auto mesh = std::make_unique<mak::mesh>();
   
   std::vector<double> step_sizes(lower_bounds.size(), 0.0);
-  for (auto i = 0; i < step_sizes.size(); ++i)
+  for (std::size_t i = 0; i < step_sizes.size(); ++i)
     step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
   
   const auto sample_count = std::accumulate(samples.begin(), samples.end(), 1, std::multiplies<std::size_t>());
@@ -110,7 +111,7 @@ std::unique_ptr<mesh>          b_spline::to_mesh                      (const std
     [&] (const std::vector<std::size_t>& indices)
     { 
       std::vector<double> parameters(indices.size(), 0.0);
-      for (auto i = 0; i < parameters.size(); ++i)
+      for (std::size_t i = 0; i < parameters.size(); ++i)
         parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
       parameters.push_back(evaluate(parameters));
   
@@ -175,7 +176,7 @@ SPLINTER::BSpline b_spline::from_function(
   const std::size_t                                           degree      ) const
 {
   std::vector<double> step_sizes(lower_bounds.size(), 0.0);
-  for (auto i = 0; i < step_sizes.size(); ++i)
+  for (std::size_t i = 0; i < step_sizes.size(); ++i)
     step_sizes[i] = (upper_bounds[i] - lower_bounds[i]) / samples[i];
 
   SPLINTER::DataTable data_table;
@@ -183,7 +184,7 @@ SPLINTER::BSpline b_spline::from_function(
     [&] (const std::vector<std::size_t>& indices)
     {
       std::vector<double> parameters(indices.size(), 0.0);
-      for (auto i = 0; i < parameters.size(); ++i)
+      for (std::size_t i = 0; i < parameters.size(); ++i)
         parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
       data_table.addSample(parameters, function(parameters));
     }, 

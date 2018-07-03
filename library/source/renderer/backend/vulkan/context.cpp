@@ -14,17 +14,17 @@ _context::_context()
   std::vector<std::string> extensions {"VK_KHR_surface"};
 
 #if defined VK_USE_PLATFORM_ANDROID_KHR
-  extensions.push_back("VK_KHR_android_surface");
+  extensions.emplace_back("VK_KHR_android_surface");
 #elif defined VK_USE_PLATFORM_MIR_KHR
-  extensions.push_back("VK_KHR_mir_surface");
+  extensions.emplace_back("VK_KHR_mir_surface");
 #elif defined VK_USE_PLATFORM_WAYLAND_KHR
-  extensions.push_back("VK_KHR_wayland_surface");
+  extensions.emplace_back("VK_KHR_wayland_surface");
 #elif defined VK_USE_PLATFORM_WIN32_KHR
-  extensions.push_back("VK_KHR_win32_surface");
+  extensions.emplace_back("VK_KHR_win32_surface");
 #elif defined VK_USE_PLATFORM_XCB_KHR
-  extensions.push_back("VK_KHR_xcb_surface");
+  extensions.emplace_back("VK_KHR_xcb_surface");
 #elif defined VK_USE_PLATFORM_XLIB_KHR
-  extensions.push_back("VK_KHR_xlib_surface");
+  extensions.emplace_back("VK_KHR_xlib_surface");
 #endif
 
   instance       = vkhlf::Instance::create(name, version, layers, extensions, nullptr);

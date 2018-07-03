@@ -11,7 +11,7 @@ audio_clip::audio_clip           (const description& description) : named(descri
   if (result != FMOD_OK)
     throw std::runtime_error("Failed to load audio clip: " + description.filepath);
 }
-audio_clip::audio_clip           (audio_clip&& temp) noexcept: native_(std::move(temp.native_))
+audio_clip::audio_clip           (audio_clip&& temp) noexcept: native_(temp.native_)
 {
   temp.native_ = nullptr;
 }
@@ -24,7 +24,7 @@ audio_clip& audio_clip::operator=(audio_clip&& temp) noexcept
 {
   if (this != &temp)
   {
-    native_      = std::move(temp.native_);
+    native_      = temp.native_;
     temp.native_ = nullptr;
   }
   return *this;

@@ -8,7 +8,7 @@ namespace opengl
 {
 program::program(const compute_description& description)
 {
-  if (description.compute_stage.size() > 0)
+  if (!description.compute_stage.empty())
   {
     compute_stage_. emplace   (GL_COMPUTE_SHADER);
     compute_stage_->set_source(description.compute_stage);
@@ -27,7 +27,7 @@ program::program(const compute_description& description)
 }
 program::program(const graphics_description& description)
 {
-  if (description.vertex_stage.size() > 0)
+  if (!description.vertex_stage.empty())
   {
     vertex_stage_. emplace   (GL_VERTEX_SHADER);
     vertex_stage_->set_source(description.vertex_stage);
@@ -39,7 +39,7 @@ program::program(const graphics_description& description)
     attach_shader(vertex_stage_.value());
   }
   
-  if (description.tessellation_control_stage.size() > 0)
+  if (!description.tessellation_control_stage.empty())
   {
     tessellation_control_stage_. emplace   (GL_TESS_CONTROL_SHADER);
     tessellation_control_stage_->set_source(description.tessellation_control_stage);
@@ -51,7 +51,7 @@ program::program(const graphics_description& description)
     attach_shader(tessellation_control_stage_.value());
   }
 
-  if (description.tessellation_evaluation_stage.size() > 0)
+  if (!description.tessellation_evaluation_stage.empty())
   {
     tessellation_evaluation_stage_. emplace   (GL_TESS_EVALUATION_SHADER);
     tessellation_evaluation_stage_->set_source(description.tessellation_evaluation_stage);
@@ -63,7 +63,7 @@ program::program(const graphics_description& description)
     attach_shader(tessellation_evaluation_stage_.value());
   }
   
-  if (description.geometry_stage.size() > 0)
+  if (!description.geometry_stage.empty())
   {
     geometry_stage_. emplace   (GL_GEOMETRY_SHADER);
     geometry_stage_->set_source(description.geometry_stage);
@@ -75,7 +75,7 @@ program::program(const graphics_description& description)
     attach_shader(geometry_stage_.value());
   }
   
-  if (description.fragment_stage.size() > 0)
+  if (!description.fragment_stage.empty())
   {
     fragment_stage_. emplace   (GL_FRAGMENT_SHADER);
     fragment_stage_->set_source(description.fragment_stage);

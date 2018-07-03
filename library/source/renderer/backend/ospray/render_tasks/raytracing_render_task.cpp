@@ -76,8 +76,8 @@ fg::render_task<raytracing_task_data>* add_raytracing_render_task(
       if (!mutable_data.transform_cache  || transform ->matrix() != mutable_data.transform_cache ->matrix() ||
           !mutable_data.projection_cache || projection->matrix() != mutable_data.projection_cache->matrix())
         data.target->actual()->clear(OSP_FB_COLOR | OSP_FB_DEPTH | OSP_FB_ACCUM);
-      mutable_data.transform_cache  = *transform ;
-      mutable_data.projection_cache = *projection;
+      mutable_data.transform_cache .emplace(*transform );
+      mutable_data.projection_cache.emplace(*projection);
 
       data.renderer->set        ("camera", *ospray_camera      );
       data.renderer->set        ("lights", *common_data->lights);

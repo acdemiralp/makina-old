@@ -20,14 +20,14 @@ struct MAKINA_EXPORT phong_material : public material
   phong_material& operator=(const phong_material&  that) = delete ;
   phong_material& operator=(      phong_material&& temp) = default;
 
-  glm::vec3              ambient       ;
-  glm::vec3              diffuse       ;
-  glm::vec3              specular      ;
-  float                  shininess     ;
+  glm::vec3              ambient        = glm::vec3(0.1f);
+  glm::vec3              diffuse        = glm::vec3(1.0f);
+  glm::vec3              specular       = glm::vec3(1.0f);
+  float                  shininess      = 1.0f;
 
-  std::unique_ptr<image> ambient_image ;
-  std::unique_ptr<image> diffuse_image ;
-  std::unique_ptr<image> specular_image;
+  std::unique_ptr<image> ambient_image  = nullptr;
+  std::unique_ptr<image> diffuse_image  = nullptr;
+  std::unique_ptr<image> specular_image = nullptr;
 };
 }
 

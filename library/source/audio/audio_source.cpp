@@ -118,7 +118,7 @@ bool                 audio_source::playing     () const
   if (native_) native_->isPlaying(&is_playing);
   return is_playing;
 }
-void                 audio_source::stop        ()
+void                 audio_source::stop        () const
 {
   if (native_) native_->stop();
 }

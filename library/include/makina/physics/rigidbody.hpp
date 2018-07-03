@@ -19,7 +19,7 @@ public:
   void      set_mass    (const float      value);
 
   glm::vec3 velocity    () const;
-  void      set_velocity(const glm::vec3& value);
+  void      set_velocity(const glm::vec3& value) const;
 
 protected:
   friend physics_system;

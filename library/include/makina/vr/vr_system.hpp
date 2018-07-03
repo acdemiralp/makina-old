@@ -18,7 +18,7 @@ namespace mak
 class MAKINA_EXPORT vr_system : public system, public di::vr_system
 {
 public:
-  explicit vr_system  (const di::tracking_mode tracking_mode = di::tracking_mode::seated);
+  explicit vr_system  (di::tracking_mode tracking_mode = di::tracking_mode::seated);
   vr_system           (const vr_system&  that) = delete ;
   vr_system           (      vr_system&& temp) = default;
   virtual ~vr_system  ()                       = default;

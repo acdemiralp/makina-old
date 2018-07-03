@@ -12,7 +12,7 @@ program::program(const description& description)
   const auto fragment_handle = createShader(fragment_shader);
   native_ = createProgram(vertex_handle, fragment_handle, true);
 }
-program::program(program&& temp) noexcept : native_(std::move(temp.native_))
+program::program(program&& temp) noexcept : native_(temp.native_)
 {
   temp.native_.idx = ::bgfx::kInvalidHandle;
 }
@@ -25,7 +25,7 @@ program& program::operator=(program&& temp) noexcept
 {
   if(&temp != this)
   {
-    native_          = std::move(temp.native_);
+    native_          = temp.native_;
     temp.native_.idx = ::bgfx::kInvalidHandle ;
   }
   return *this;

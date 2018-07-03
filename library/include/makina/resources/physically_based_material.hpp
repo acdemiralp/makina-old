@@ -20,15 +20,15 @@ struct MAKINA_EXPORT physically_based_material : public material
   physically_based_material& operator=(const physically_based_material&  that) = delete ;
   physically_based_material& operator=(      physically_based_material&& temp) = default;
 
-  glm::vec3              albedo                 ;
-  float                  metallicity            ;
-  float                  roughness              ;
+  glm::vec3              albedo                  = glm::vec3(1.0f);
+  float                  metallicity             = 0.0f;
+  float                  roughness               = 0.5f;
 
-  std::unique_ptr<image> albedo_image           ;
-  std::unique_ptr<image> metallicity_image      ;
-  std::unique_ptr<image> roughness_image        ;
-  std::unique_ptr<image> normal_image           ;
-  std::unique_ptr<image> ambient_occlusion_image;
+  std::unique_ptr<image> albedo_image            = nullptr;
+  std::unique_ptr<image> metallicity_image       = nullptr;
+  std::unique_ptr<image> roughness_image         = nullptr;
+  std::unique_ptr<image> normal_image            = nullptr;
+  std::unique_ptr<image> ambient_occlusion_image = nullptr;
 };
 }
 

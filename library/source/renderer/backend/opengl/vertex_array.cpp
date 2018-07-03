@@ -1,5 +1,7 @@
 #include <makina/renderer/backend/opengl/vertex_array.hpp>
 
+#include <cstddef>
+
 namespace mak
 {
 namespace opengl
@@ -7,7 +9,7 @@ namespace opengl
 vertex_array::vertex_array(const description& description)
 {
   // Important: Vertex arrays must be realized after all of the referred buffers are realized.
-  for(auto i = 0; i < description.attribute_bindings.size(); ++i)
+  for(std::size_t i = 0; i < description.attribute_bindings.size(); ++i)
   {
     auto& binding = description.attribute_bindings[i];
     set_vertex_buffer    (i, *binding.buffer->actual(), binding.offset, binding.stride != 0u ? binding.stride : binding.components * gl::type_size(binding.type));
@@ -36,7 +38,7 @@ vertex_array::vertex_array(const description& description)
 void vertex_array::bind  () const
 {
   gl::vertex_array::bind  ();
-  for (auto i = 0; i < shader_storage_buffers_.size(); ++i)
+  for (std::size_t i = 0; i < shader_storage_buffers_.size(); ++i)
     shader_storage_buffers_[i]->actual()->bind_base  (GL_SHADER_STORAGE_BUFFER, i);
   if (draw_indirect_buffer_)
       draw_indirect_buffer_->actual()->bind  (GL_DRAW_INDIRECT_BUFFER);
@@ -45,7 +47,7 @@ void vertex_array::unbind() const
 {
   if (draw_indirect_buffer_)
       draw_indirect_buffer_->actual()->unbind(GL_DRAW_INDIRECT_BUFFER);
-  for (auto i = 0; i < shader_storage_buffers_.size(); ++i)
+  for (std::size_t i = 0; i < shader_storage_buffers_.size(); ++i)
     shader_storage_buffers_[i]->actual()->unbind_base(GL_SHADER_STORAGE_BUFFER, i);
   gl::vertex_array::unbind();
 }

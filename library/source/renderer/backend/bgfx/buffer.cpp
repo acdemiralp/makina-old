@@ -13,7 +13,7 @@ buffer::buffer           (const description& description)
   else if (description.type == description::type::draw_call)
     native_ = ::bgfx::createIndirectBuffer(description.size);
 }
-buffer::buffer           (buffer&& temp) noexcept : native_(std::move(temp.native_))
+buffer::buffer           (buffer&& temp) noexcept : native_(temp.native_)
 {
   std::get<::bgfx::DynamicVertexBufferHandle>(temp.native_).idx = ::bgfx::kInvalidHandle;
 }
@@ -30,7 +30,7 @@ buffer& buffer::operator=(buffer&& temp) noexcept
 {
   if (&temp != this)
   {
-    native_ = std::move(temp.native_);
+    native_ = temp.native_;
     std::get<::bgfx::DynamicVertexBufferHandle>(temp.native_).idx = ::bgfx::kInvalidHandle;
   }
   return *this;

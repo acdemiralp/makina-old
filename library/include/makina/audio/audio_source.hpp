@@ -38,7 +38,7 @@ public:
 
   void                 play          ();
   bool                 playing       () const;
-  void                 stop          ();
+  void                 stop          () const;
 
 protected:
   friend audio_system;

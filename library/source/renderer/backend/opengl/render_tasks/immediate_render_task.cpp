@@ -179,7 +179,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
       app_data.m_snapScale       = 0.0f;
 
       Im3d::Vec2 cursor(di::mouse::relative_position()[0], di::mouse::relative_position()[1]);
-      cursor   = cursor / app_data.m_viewportSize * 2.0f - 1.0f;
+      cursor   = 2.0f * cursor / app_data.m_viewportSize - 1.0f;
       cursor.y = -cursor.y;
       
       Im3d::Vec3 ray_origin, ray_direction;
