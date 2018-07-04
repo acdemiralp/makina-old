@@ -38,6 +38,7 @@ class MakinaConan(ConanFile):
                        ("splinter/3.0@acdemiralp/makina"       ),
                        ("stb/20180214@conan/stable"            ),
                        ("TBB/2018_U3@RWTH-VR/thirdparty"       ),
+                       ("uWebSockets/0.14.8@acdemiralp/makina" ),
                        ("vkhlf/master@acdemiralp/makina"       )) 
     options         = {"shared": [True, False]} 
     default_options = "shared=True"
