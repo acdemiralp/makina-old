@@ -74,10 +74,13 @@ Makina is a ”not-game engine (NGE)” which provides a subset of common game e
 - Physics
   - [x] Bullet
 - Networking
-  - [ ] RakNet
+  - [ ] SLikeNet (RakNet)
+  - [x] uWebSockets
   - [x] ZeroMQ
 - Scripting
+  - [ ] CppSharp
   - [ ] Mono
+  - [ ] Rcpp
   - [ ] V8
 - UI
   - [x] ocornut/imgui
