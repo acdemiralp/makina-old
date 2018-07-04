@@ -14,8 +14,8 @@ framebuffer::framebuffer(di::window* window) : gl::framebuffer(0)
   {
     color_texture_ = gl::texture_2d();
     depth_texture_ = gl::texture_2d();
-    color_texture_.set_storage(1, GL_RGBA8            , size[0], size[1]);
-    depth_texture_.set_storage(1, GL_DEPTH_COMPONENT24, size[0], size[1]);
+    color_texture_.set_storage(1, GL_RGBA8            , static_cast<GLsizei>(size[0]), static_cast<GLsizei>(size[1]));
+    depth_texture_.set_storage(1, GL_DEPTH_COMPONENT24, static_cast<GLsizei>(size[0]), static_cast<GLsizei>(size[1]));
   });
 }
 framebuffer::framebuffer(const description& description)

@@ -18,7 +18,7 @@ void load_image(mak::image* source, std::shared_ptr<vkhlf::Buffer> intermediate,
   auto command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
   command_buffer->begin               ();
   intermediate  ->update<std::uint8_t>(0, {static_cast<std::uint32_t>(source->pixels().size), source->pixels().data}, command_buffer);
-  command_buffer->copyBufferToImage   (intermediate, target, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 0), vk::Offset3D(0, 0, offset), vk::Extent3D(source->dimensions()[0], source->dimensions()[1], 1)));
+  command_buffer->copyBufferToImage   (intermediate, target, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 0), vk::Offset3D(0, 0, static_cast<std::int32_t>(offset)), vk::Extent3D(static_cast<std::uint32_t>(source->dimensions()[0]), static_cast<std::uint32_t>(source->dimensions()[1]), 1)));
   command_buffer->end                 ();
   vkhlf::submitAndWait                (vulkan::context().graphics_queue, command_buffer);
 }

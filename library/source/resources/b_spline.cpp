@@ -12,7 +12,7 @@ namespace mak
 {
 b_spline::b_spline(
   const std::vector<std::tuple<std::vector<double>, double>>& table       , 
-  const std::size_t                                           degree      )
+  const std::uint32_t                                         degree      )
 : native_(from_table(table, degree))
 {
 
@@ -22,7 +22,7 @@ b_spline::b_spline(
   const std::vector<double>&                                  lower_bounds, 
   const std::vector<double>&                                  upper_bounds, 
   const std::vector<std::size_t>&                             samples     , 
-  const std::size_t                                           degree      )
+  const std::uint32_t                                         degree      )
 : native_(from_function(function, lower_bounds, upper_bounds, samples, degree))
 {
 
@@ -84,8 +84,8 @@ std::unique_ptr<line_segments> b_spline::to_line_segments             (const std
       std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &line_segments->vertices[index][0]);
       if (index != sample_count - 1)
       {
-        line_segments->indices[2 * index]     = index;
-        line_segments->indices[2 * index + 1] = index + 1;
+        line_segments->indices[2 * index]     = static_cast<std::uint32_t>(index);
+        line_segments->indices[2 * index + 1] = static_cast<std::uint32_t>(index + 1);
       }
     },
     std::vector<std::size_t>(samples.size(), 0),
@@ -122,9 +122,9 @@ std::unique_ptr<mesh>          b_spline::to_mesh                      (const std
         auto indices_e  = indices; indices_e [0]--;
         auto indices_se = indices; indices_se[0]--; indices_se[1]--;
         auto indices_s  = indices; indices_s [1]--;
-        auto index_e    = ravel_multi_index(indices_e , samples);
-        auto index_se   = ravel_multi_index(indices_se, samples);
-        auto index_s    = ravel_multi_index(indices_s , samples);
+        auto index_e    = static_cast<std::uint32_t>(ravel_multi_index(indices_e , samples));
+        auto index_se   = static_cast<std::uint32_t>(ravel_multi_index(indices_se, samples));
+        auto index_s    = static_cast<std::uint32_t>(ravel_multi_index(indices_s , samples));
         mesh->indices[6 * index + 0] = index_se;
         mesh->indices[6 * index + 1] = index_s ;
         mesh->indices[6 * index + 2] = index   ;
@@ -161,7 +161,7 @@ std::unique_ptr<point_cloud>   b_spline::control_points_to_point_cloud() const
 
 SPLINTER::BSpline b_spline::from_table(
   const std::vector<std::tuple<std::vector<double>, double>>& table       ,
-  const std::size_t                                           degree      ) const
+  const std::uint32_t                                         degree      ) const
 {
   SPLINTER::DataTable data_table;
   for (auto entry : table)
@@ -173,7 +173,7 @@ SPLINTER::BSpline b_spline::from_function(
   const std::vector<double>&                                  lower_bounds,
   const std::vector<double>&                                  upper_bounds,
   const std::vector<std::size_t>&                             samples     ,
-  const std::size_t                                           degree      ) const
+  const std::uint32_t                                         degree      ) const
 {
   std::vector<double> step_sizes(lower_bounds.size(), 0.0);
   for (std::size_t i = 0; i < step_sizes.size(); ++i)

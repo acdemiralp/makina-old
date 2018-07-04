@@ -55,7 +55,7 @@ void ui_system::prepare(                                   scene* scene)
   if (display_system_->windows().size() > 0)
   {
     auto main_window_size = display_system_->windows()[0]->size();
-    io.DisplaySize        = ImVec2(main_window_size[0], main_window_size[1]);
+    io.DisplaySize        = ImVec2(static_cast<float>(main_window_size[0]), static_cast<float>(main_window_size[1]));
 #ifdef _WIN32
     io.ImeWindowHandle    = std::get<HWND>(display_system_->windows()[0]->driver_data());
 #endif
@@ -91,13 +91,13 @@ void ui_system::update (const frame_timer::duration delta, scene* scene)
 {
   auto& io             = ImGui::GetIO();
   auto  mouse_position = di::mouse::relative_position();
-  io.MousePos          = ImVec2(mouse_position[0], mouse_position[1]);
+  io.MousePos          = ImVec2(static_cast<float>(mouse_position[0]), static_cast<float>(mouse_position[1]));
   io.DeltaTime         = std::chrono::duration_cast<std::chrono::duration<float>>(delta).count();
 
   if(display_system_->windows().size() > 0)
   {
     auto main_window_size = display_system_->windows()[0]->size();
-    io.DisplaySize        = ImVec2(main_window_size[0], main_window_size[1]);
+    io.DisplaySize        = ImVec2(static_cast<float>(main_window_size[0]), static_cast<float>(main_window_size[1]));
   }
 
   const auto cursor = ImGui::GetMouseCursor();

@@ -6,8 +6,8 @@ namespace bgfx
 {
 program::program(const description& description)
 {
-  const auto vertex_shader   = ::bgfx::copy(description.vertex_shader_source  .data(), description.vertex_shader_source  .size());
-  const auto fragment_shader = ::bgfx::copy(description.fragment_shader_source.data(), description.fragment_shader_source.size());
+  const auto vertex_shader   = ::bgfx::copy(description.vertex_shader_source  .data(), static_cast<std::uint32_t>(description.vertex_shader_source  .size()));
+  const auto fragment_shader = ::bgfx::copy(description.fragment_shader_source.data(), static_cast<std::uint32_t>(description.fragment_shader_source.size()));
   const auto vertex_handle   = createShader(vertex_shader  );
   const auto fragment_handle = createShader(fragment_shader);
   native_ = createProgram(vertex_handle, fragment_handle, true);

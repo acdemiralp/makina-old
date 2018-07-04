@@ -110,9 +110,9 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             if (!mutable_data.image_cache.count(pbr_material->albedo_image.get()))
             {
               data.textures->actual()->set_sub_image(0, 0, 0, 
-                mutable_data.image_offset, 
-                pbr_material->albedo_image->dimensions()[0], 
-                pbr_material->albedo_image->dimensions()[1], 
+                mutable_data.image_offset,
+                static_cast<GLsizei>(pbr_material->albedo_image->dimensions()[0]), 
+                static_cast<GLsizei>(pbr_material->albedo_image->dimensions()[1]), 
                 1, 
                 GL_BGRA, 
                 GL_UNSIGNED_BYTE, 
@@ -127,8 +127,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             {
               data.textures->actual()->set_sub_image(0, 0, 0, 
                 mutable_data.image_offset, 
-                pbr_material->metallicity_image->dimensions()[0], 
-                pbr_material->metallicity_image->dimensions()[1], 
+                static_cast<GLsizei>(pbr_material->metallicity_image->dimensions()[0]), 
+                static_cast<GLsizei>(pbr_material->metallicity_image->dimensions()[1]), 
                 1, 
                 GL_RED , 
                 GL_UNSIGNED_BYTE, 
@@ -143,8 +143,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             {
               data.textures->actual()->set_sub_image(0, 0, 0, 
                 mutable_data.image_offset, 
-                pbr_material->roughness_image->dimensions()[0], 
-                pbr_material->roughness_image->dimensions()[1], 
+                static_cast<GLsizei>(pbr_material->roughness_image->dimensions()[0]), 
+                static_cast<GLsizei>(pbr_material->roughness_image->dimensions()[1]), 
                 1, 
                 GL_RED , 
                 GL_UNSIGNED_BYTE, 
@@ -159,8 +159,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             {
               data.textures->actual()->set_sub_image(0, 0, 0, 
                 mutable_data.image_offset, 
-                pbr_material->normal_image->dimensions()[0], 
-                pbr_material->normal_image->dimensions()[1], 
+                static_cast<GLsizei>(pbr_material->normal_image->dimensions()[0]), 
+                static_cast<GLsizei>(pbr_material->normal_image->dimensions()[1]), 
                 1, 
                 GL_BGRA, 
                 GL_UNSIGNED_BYTE, 
@@ -175,8 +175,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             {
               data.textures->actual()->set_sub_image(0, 0, 0, 
                 mutable_data.image_offset, 
-                pbr_material->ambient_occlusion_image->dimensions()[0], 
-                pbr_material->ambient_occlusion_image->dimensions()[1], 
+                static_cast<GLsizei>(pbr_material->ambient_occlusion_image->dimensions()[0]), 
+                static_cast<GLsizei>(pbr_material->ambient_occlusion_image->dimensions()[1]), 
                 1, 
                 GL_BGRA, 
                 GL_UNSIGNED_BYTE, 
@@ -229,8 +229,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             if (!mutable_data.image_cache.count(phong_material->ambient_image.get()))
             {
               data.textures->actual()->set_sub_image(0, 0, 0, mutable_data.image_offset,
-                phong_material->ambient_image->dimensions()[0], 
-                phong_material->ambient_image->dimensions()[1], 
+                static_cast<GLsizei>(phong_material->ambient_image->dimensions()[0]), 
+                static_cast<GLsizei>(phong_material->ambient_image->dimensions()[1]), 
                 1,
                 GL_BGRA, 
                 GL_UNSIGNED_BYTE, 
@@ -244,8 +244,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             if (!mutable_data.image_cache.count(phong_material->diffuse_image.get()))
             {
               data.textures->actual()->set_sub_image(0, 0, 0, mutable_data.image_offset,
-                phong_material->diffuse_image->dimensions()[0], 
-                phong_material->diffuse_image->dimensions()[1], 
+                static_cast<GLsizei>(phong_material->diffuse_image->dimensions()[0]), 
+                static_cast<GLsizei>(phong_material->diffuse_image->dimensions()[1]), 
                 1,
                 GL_BGRA, 
                 GL_UNSIGNED_BYTE, 
@@ -259,8 +259,8 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             if (!mutable_data.image_cache.count(phong_material->specular_image.get()))
             {
               data.textures->actual()->set_sub_image(0, 0, 0, mutable_data.image_offset,
-                phong_material->specular_image->dimensions()[0], 
-                phong_material->specular_image->dimensions()[1], 
+                static_cast<GLsizei>(phong_material->specular_image->dimensions()[0]), 
+                static_cast<GLsizei>(phong_material->specular_image->dimensions()[1]), 
                 1,
                 GL_BGRA, 
                 GL_UNSIGNED_BYTE, 

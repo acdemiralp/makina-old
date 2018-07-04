@@ -37,7 +37,7 @@ void context::initialize  (const ::bgfx::RendererType::Enum renderer_type, di::w
 
   window->on_resize.connect([ ] (const std::array<std::size_t, 2>& size)
   {
-    ::bgfx::reset(size[0], size[1], BGFX_RESET_VSYNC);
+    ::bgfx::reset(static_cast<std::uint32_t>(size[0]), static_cast<std::uint32_t>(size[1]), BGFX_RESET_VSYNC);
   });
   ::bgfx::reset(window->size()[0], window->size()[1], BGFX_RESET_VSYNC);
   

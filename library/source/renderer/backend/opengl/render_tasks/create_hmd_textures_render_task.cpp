@@ -12,7 +12,7 @@ namespace opengl
 {
 fg::render_task<create_hmd_textures_task_data>* add_create_hmd_textures_render_task(renderer* framegraph, di::hmd* hmd)
 {
-  const std::array<GLsizei, 2> size {hmd->recommended_render_target_size()[0], hmd->recommended_render_target_size()[1]};
+  const std::array<GLsizei, 2> size {static_cast<GLsizei>(hmd->recommended_render_target_size()[0]), static_cast<GLsizei>(hmd->recommended_render_target_size()[1])};
   const auto left  = framegraph->add_retained_resource<framebuffer::description, framebuffer>("Left Eye Framebuffer" , framebuffer::description{size});
   const auto right = framegraph->add_retained_resource<framebuffer::description, framebuffer>("Right Eye Framebuffer", framebuffer::description{size});
 

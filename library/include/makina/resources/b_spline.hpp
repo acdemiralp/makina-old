@@ -2,6 +2,7 @@
 #define MAKINA_RESOURCES_B_SPLINE_HPP
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <tuple>
@@ -23,13 +24,13 @@ class MAKINA_EXPORT b_spline
 public:
   explicit b_spline(
     const std::vector<std::tuple<std::vector<double>, double>>& table       ,
-    const std::size_t                                           degree      = 1);
+    const std::uint32_t                                         degree      = 1);
   explicit b_spline(
     const std::function<double(std::vector<double>)>&           function    ,
     const std::vector<double>&                                  lower_bounds,
     const std::vector<double>&                                  upper_bounds,
     const std::vector<std::size_t>&                             samples     ,
-    const std::size_t                                           degree      = 1);
+    const std::uint32_t                                         degree      = 1);
   b_spline           (const b_spline&  that) = default;
   b_spline           (      b_spline&& temp) = default;
   virtual ~b_spline  ()                      = default;
@@ -71,13 +72,13 @@ public:
 protected:
   SPLINTER::BSpline from_table(
     const std::vector<std::tuple<std::vector<double>, double>>& table       ,
-    const std::size_t                                           degree      ) const;
+    const std::uint32_t                                         degree      ) const;
   SPLINTER::BSpline from_function(
     const std::function<double(std::vector<double>)>&           function    ,
     const std::vector<double>&                                  lower_bounds,
     const std::vector<double>&                                  upper_bounds,
     const std::vector<std::size_t>&                             samples     ,
-    const std::size_t                                           degree      ) const;
+    const std::uint32_t                                         degree      ) const;
 
   SPLINTER::BSpline native_;
 };

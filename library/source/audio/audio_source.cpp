@@ -32,7 +32,7 @@ float                audio_source::pitch       () const
 {
   return pitch_;
 }
-float                audio_source::priority    () const
+std::uint32_t        audio_source::priority    () const
 {
   return priority_;
 }
@@ -78,10 +78,10 @@ void                 audio_source::set_pitch   (const float                 pitc
   pitch_ = pitch;
   if (native_) native_->setPitch(pitch_);
 }
-void                 audio_source::set_priority(const float                 priority)
+void                 audio_source::set_priority(const std::uint32_t         priority)
 {
   priority_ = priority;
-  if (native_) native_->setPriority(priority_);
+  if (native_) native_->setPriority(static_cast<std::int32_t>(priority_));
 }
 void                 audio_source::set_volume  (const float                 volume  )
 {
@@ -107,7 +107,7 @@ void                 audio_source::play        ()
   native_->setMode            (muted_   );        
   native_->setPan             (pan_     );
   native_->setPitch           (pitch_   );
-  native_->setPriority        (priority_);
+  native_->setPriority        (static_cast<std::int32_t>(priority_));
   native_->setVolume          (volume_  );
   native_->set3DMinMaxDistance(range_[0], range_[1]);
   native_->setPaused          (paused_  );  

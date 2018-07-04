@@ -9,7 +9,7 @@ namespace opengl
 vertex_array::vertex_array(const description& description)
 {
   // Important: Vertex arrays must be realized after all of the referred buffers are realized.
-  for(std::size_t i = 0; i < description.attribute_bindings.size(); ++i)
+  for(GLuint i = 0; i < static_cast<GLuint>(description.attribute_bindings.size()); ++i)
   {
     auto& binding = description.attribute_bindings[i];
     set_vertex_buffer    (i, *binding.buffer->actual(), binding.offset, binding.stride != 0u ? binding.stride : binding.components * gl::type_size(binding.type));

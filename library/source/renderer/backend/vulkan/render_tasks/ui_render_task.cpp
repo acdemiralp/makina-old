@@ -16,7 +16,7 @@ void load_image(std::uint8_t* pixels, std::array<std::uint32_t, 2> dimensions, s
   auto command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
   command_buffer->begin               ();
   intermediate  ->update<std::uint8_t>(0, {dimensions[0] * dimensions[1] * 4u, pixels}, command_buffer);
-  command_buffer->copyBufferToImage   (intermediate, target, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 0), vk::Offset3D(0, 0, offset), vk::Extent3D(dimensions[0], dimensions[1], 1)));
+  command_buffer->copyBufferToImage   (intermediate, target, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 0), vk::Offset3D(0, 0, static_cast<std::int32_t>(offset)), vk::Extent3D(dimensions[0], dimensions[1], 1)));
   command_buffer->end                 ();
   vkhlf::submitAndWait                (vulkan::context().graphics_queue, command_buffer);
 }

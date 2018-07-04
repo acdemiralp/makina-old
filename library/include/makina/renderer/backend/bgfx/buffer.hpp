@@ -26,7 +26,7 @@ public:
     };
 
     type               type              ;
-    std::size_t        size              ;
+    std::uint32_t      size              ;
     ::bgfx::VertexDecl vertex_declaration;
   };
 

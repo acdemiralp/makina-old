@@ -60,7 +60,7 @@ fg::render_task<composite_task_data>* add_composite_render_task(renderer* frameg
       gl::set_depth_test_enabled    (true);
       gl::set_depth_function        (GL_LESS);
       gl::set_viewport              ({0, 0}, {data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height()});
-      gl::draw_elements             (GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT);
+      gl::draw_elements             (GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT);
 
       data.target      ->actual()->unbind();
       data.vertex_array->actual()->unbind();

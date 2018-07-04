@@ -11,7 +11,7 @@ inline std::vector<std::size_t> unravel_index    (std::size_t              index
 {
   std::vector<std::size_t> subscripts(dimensions.size(), 0);
   if (fortran_ordering)
-    for (std::int64_t i = 0; i < dimensions.size(); ++i)
+    for (std::size_t  i = 0; i < dimensions.size(); ++i)
     {
       subscripts[i] = index % dimensions[i];
       index         = index / dimensions[i];
@@ -31,7 +31,7 @@ inline std::size_t              ravel_multi_index(std::vector<std::size_t> multi
     for (std::int64_t i = dimensions.size() - 1; i >= 0; --i)
       index = index * dimensions[i] + multi_index[i];
   else
-    for (std::int64_t i = 0; i < dimensions.size(); ++i)
+    for (std::size_t  i = 0; i < dimensions.size(); ++i)
       index = index * dimensions[i] + multi_index[i];
   return index;
 }

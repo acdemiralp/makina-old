@@ -2,6 +2,7 @@
 #define MAKINA_AUDIO_AUDIO_SOURCE_HPP
 
 #include <array>
+#include <cstdint>
 
 #include <makina/audio/fmod_context.hpp>
 #include <makina/resources/audio_clip.hpp>
@@ -21,7 +22,7 @@ public:
   bool                 paused        () const;
   float                pan           () const;
   float                pitch         () const;
-  float                priority      () const;
+  std::uint32_t        priority      () const;
   float                volume        () const;
   std::array<float, 2> range         () const;
   
@@ -32,7 +33,7 @@ public:
   void                 set_paused    (bool                        paused  );
   void                 set_pan       (float                       pan     );
   void                 set_pitch     (float                       pitch   );
-  void                 set_priority  (float                       priority);
+  void                 set_priority  (std::uint32_t               priority);
   void                 set_volume    (float                       volume  );
   void                 set_range     (const std::array<float, 2>& range   );
 
@@ -50,7 +51,7 @@ protected:
   bool                 paused_   = false  ;
   float                pan_      = 0.0f   ;
   float                pitch_    = 1.0f   ;
-  float                priority_ = 0.5f   ;
+  std::uint32_t        priority_ = 0u     ;
   float                volume_   = 1.0f   ;
   std::array<float, 2> range_    = {0.1f, 1000.0f};
 

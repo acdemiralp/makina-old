@@ -52,8 +52,8 @@ fg::render_task<test_task_data>* add_test_render_task(renderer* framegraph)
       auto projection = camera->component<mak::projection>()->matrix();
       ::bgfx::setViewTransform(0, &view[0][0], &projection[0][0]);
       
-      auto vertices_memory = ::bgfx::copy(vertices.data(), vertices.size() * sizeof(vertex));
-      auto indices_memory  = ::bgfx::copy(indices .data(), indices .size() * sizeof(std::uint16_t));
+      auto vertices_memory = ::bgfx::copy(vertices.data(), static_cast<std::uint32_t>(vertices.size() * sizeof(vertex)));
+      auto indices_memory  = ::bgfx::copy(indices .data(), static_cast<std::uint32_t>(indices .size() * sizeof(std::uint16_t)));
       ::bgfx::updateDynamicVertexBuffer(data.vertices->actual()->native<::bgfx::DynamicVertexBufferHandle>(), 0, vertices_memory);
       ::bgfx::updateDynamicIndexBuffer (data.indices ->actual()->native<::bgfx::DynamicIndexBufferHandle >(), 0, indices_memory );
 

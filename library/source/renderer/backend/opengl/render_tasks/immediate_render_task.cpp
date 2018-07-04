@@ -166,7 +166,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
 
       auto& app_data = Im3d::GetAppData();
       app_data.m_deltaTime       = std::chrono::duration_cast<std::chrono::duration<float>>(framegraph->delta_cache()).count();
-      app_data.m_viewportSize    = Im3d::Vec2(data.target->actual()->color_texture()->width(), data.target->actual()->color_texture()->height());
+      app_data.m_viewportSize    = Im3d::Vec2(static_cast<float>(data.target->actual()->color_texture()->width()), static_cast<float>(data.target->actual()->color_texture()->height()));
       app_data.m_viewOrigin      = Im3d::Vec3(camera_position .x, camera_position .y, camera_position .z);
       app_data.m_viewDirection   = Im3d::Vec3(camera_direction.x, camera_direction.y, camera_direction.z);
       app_data.m_worldUp         = Im3d::Vec3(0.0f, 1.0f, 0.0f);
@@ -176,7 +176,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
       app_data.m_snapRotation    = 0.0f;
       app_data.m_snapScale       = 0.0f;
 
-      Im3d::Vec2 cursor(di::mouse::relative_position()[0], di::mouse::relative_position()[1]);
+      Im3d::Vec2 cursor(static_cast<float>(di::mouse::relative_position()[0]), static_cast<float>(di::mouse::relative_position()[1]));
       cursor   = cursor / app_data.m_viewportSize * Im3d::Vec2(2.0f) - Im3d::Vec2(1.0f);
       cursor.y = -cursor.y;
       
