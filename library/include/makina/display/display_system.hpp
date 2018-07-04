@@ -1,5 +1,5 @@
-#ifndef MAKINA_DISPLAY_DISPLAY_SYSTEM_HPP_
-#define MAKINA_DISPLAY_DISPLAY_SYSTEM_HPP_
+#ifndef MAKINA_DISPLAY_DISPLAY_SYSTEM_HPP
+#define MAKINA_DISPLAY_DISPLAY_SYSTEM_HPP
 
 #include <di/systems/display/display_system.hpp>
 #include <di/systems/display/opengl_window.hpp>

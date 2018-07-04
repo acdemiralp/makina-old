@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_LOGGER_HPP_
-#define MAKINA_CORE_LOGGER_HPP_
+#ifndef MAKINA_CORE_LOGGER_HPP
+#define MAKINA_CORE_LOGGER_HPP
 
 #include <memory>
 

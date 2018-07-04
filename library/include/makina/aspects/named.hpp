@@ -1,5 +1,5 @@
-#ifndef MAKINA_ASPECTS_NAMED_HPP_
-#define MAKINA_ASPECTS_NAMED_HPP_
+#ifndef MAKINA_ASPECTS_NAMED_HPP
+#define MAKINA_ASPECTS_NAMED_HPP
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_FLOW_NODE_HPP_
-#define MAKINA_CORE_FLOW_NODE_HPP_
+#ifndef MAKINA_CORE_FLOW_NODE_HPP
+#define MAKINA_CORE_FLOW_NODE_HPP
 
 #include <tbb/flow_graph.h>
 

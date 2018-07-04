@@ -15,21 +15,17 @@ fg::render_task<blit_task_data>* add_blit_render_task(renderer* framegraph, fram
     },
     [=] (const blit_task_data& data)
     {
-      auto source = data.source->actual();
-      auto target = data.target->actual();
-
-      target->blit(
-        *source, 
+      data.target->actual()->blit(
+        *data.source->actual(),
         0, 
         0, 
-        source->color_texture()->width (),
-        source->color_texture()->height(), 
+        data.source->actual()->color_texture()->width (),
+        data.source->actual()->color_texture()->height(),
         0, 
         0, 
-        target->color_texture()->width (),
-        target->color_texture()->height(), 
+        data.target->actual()->color_texture()->width (),
+        data.target->actual()->color_texture()->height(),
         GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-
       gl::print_error("Error in Blit Pass");
     });
 }

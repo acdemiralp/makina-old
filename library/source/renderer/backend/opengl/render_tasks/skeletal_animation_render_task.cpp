@@ -1,7 +1,6 @@
 #include <makina/renderer/backend/opengl/render_tasks/skeletal_animation_render_task.hpp>
 
 #include <gl/command_execution.hpp>
-#include <gl/compute.hpp>
 #include <gl/draw_commands.hpp>
 
 #include <makina/renderer/backend/glsl/skeletal_animation_compute_shader.hpp>

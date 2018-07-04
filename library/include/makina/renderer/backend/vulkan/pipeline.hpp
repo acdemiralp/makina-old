@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_VULKAN_PIPELINE_HPP_
-#define MAKINA_RENDERER_BACKEND_VULKAN_PIPELINE_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_VULKAN_PIPELINE_HPP
+#define MAKINA_RENDERER_BACKEND_VULKAN_PIPELINE_HPP
 
 #include <memory>
 #include <string>
@@ -7,7 +7,6 @@
 #include <fg/resource.hpp>
 #include <glm/vec3.hpp>
 #include <vkhlf/DescriptorSet.h>
-#include <vkhlf/DescriptorSetLayout.h>
 #include <vkhlf/Pipeline.h>
 
 #include <makina/renderer/backend/vulkan/context.hpp>

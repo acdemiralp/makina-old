@@ -1,5 +1,5 @@
-#ifndef MAKINA_UI_UI_SYSTEM_HPP_
-#define MAKINA_UI_UI_SYSTEM_HPP_
+#ifndef MAKINA_UI_UI_SYSTEM_HPP
+#define MAKINA_UI_UI_SYSTEM_HPP
 
 #include <array>
 

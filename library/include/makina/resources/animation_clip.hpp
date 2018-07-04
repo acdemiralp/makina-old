@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_ANIMATION_CLIP_HPP_
-#define MAKINA_RESOURCES_ANIMATION_CLIP_HPP_
+#ifndef MAKINA_RESOURCES_ANIMATION_CLIP_HPP
+#define MAKINA_RESOURCES_ANIMATION_CLIP_HPP
 
 #include <map>
 #include <string>
@@ -14,7 +14,7 @@
 
 namespace mak
 {
-struct MAKINA_EXPORT animation_clip : public named
+struct MAKINA_EXPORT animation_clip : named
 {
   enum class wrap_mode
   {

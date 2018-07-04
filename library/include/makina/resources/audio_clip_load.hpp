@@ -1,7 +1,6 @@
-#ifndef MAKINA_RESOURCES_AUDIO_CLIP_LOAD_HPP_
-#define MAKINA_RESOURCES_AUDIO_CLIP_LOAD_HPP_
+#ifndef MAKINA_RESOURCES_AUDIO_CLIP_LOAD_HPP
+#define MAKINA_RESOURCES_AUDIO_CLIP_LOAD_HPP
 
-#include <optional>
 #include <string>
 
 #include <ra/load.hpp>

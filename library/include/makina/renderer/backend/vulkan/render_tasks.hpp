@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_VULKAN_RENDER_TASKS_HPP_
-#define MAKINA_RENDERER_BACKEND_VULKAN_RENDER_TASKS_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_VULKAN_RENDER_TASKS_HPP
+#define MAKINA_RENDERER_BACKEND_VULKAN_RENDER_TASKS_HPP
 
 #include <makina/renderer/backend/vulkan/render_tasks/phong_shading_render_task.hpp>
 #include <makina/renderer/backend/vulkan/render_tasks/physically_based_shading_render_task.hpp>

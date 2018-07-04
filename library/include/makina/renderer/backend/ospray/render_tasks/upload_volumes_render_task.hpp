@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_OSPRAY_RENDER_TASKS_UPLOAD_VOLUMES_RENDER_TASK_HPP_
-#define MAKINA_RENDERER_BACKEND_OSPRAY_RENDER_TASKS_UPLOAD_VOLUMES_RENDER_TASK_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_OSPRAY_RENDER_TASKS_UPLOAD_VOLUMES_RENDER_TASK_HPP
+#define MAKINA_RENDERER_BACKEND_OSPRAY_RENDER_TASKS_UPLOAD_VOLUMES_RENDER_TASK_HPP
 
 #include <map>
 #include <memory>
@@ -29,7 +29,7 @@ struct MAKINA_EXPORT upload_volumes_task_data
   std::map<volume_render*, volume_data> cache;
 };
 
-MAKINA_EXPORT fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(renderer* renderer, bool only_raytracing = true);
+MAKINA_EXPORT fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(renderer* renderer);
 }
 }
 

@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_LIGHT_HPP_
-#define MAKINA_RENDERER_LIGHT_HPP_
+#ifndef MAKINA_RENDERER_LIGHT_HPP
+#define MAKINA_RENDERER_LIGHT_HPP
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_VULKAN_IMAGE_HPP_
-#define MAKINA_RENDERER_BACKEND_VULKAN_IMAGE_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_VULKAN_IMAGE_HPP
+#define MAKINA_RENDERER_BACKEND_VULKAN_IMAGE_HPP
 
 #include <cstdint>
 #include <memory>
@@ -7,7 +7,6 @@
 
 #include <fg/resource.hpp>
 #include <vkhlf/Image.h>
-#include <vkhlf/ImageView.h>
 
 #include <makina/renderer/backend/vulkan/context.hpp>
 #include <makina/export.hpp>

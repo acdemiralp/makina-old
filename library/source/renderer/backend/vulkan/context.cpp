@@ -6,7 +6,7 @@ namespace mak
 {
 namespace vulkan
 {
-_context::_context()
+context_t::context_t()
 {
   const auto               name       = typeid(*this).name();
   const auto               version    = VK_MAKE_VERSION(1, 0, 0);
@@ -91,7 +91,7 @@ _context::_context()
   command_pool              = logical_device ->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 }
 
-void _context::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
+void context_t::create_window_swapchains (const std::vector<di::vulkan_window*>& windows)
 {
   for (auto& window : windows)
   {
@@ -174,7 +174,7 @@ void _context::create_window_swapchains (const std::vector<di::vulkan_window*>& 
     window_swapchain.framebuffer = window_swapchain.swapchain->getFramebuffer();
   }
 }
-void _context::present_window_swapchains()
+void context_t::present_window_swapchains()
 {
   for (auto& window_swapchain : window_swapchains)
   {
@@ -183,9 +183,9 @@ void _context::present_window_swapchains()
   }
 }
 
-_context& context()
+context_t& context()
 {
-  static _context context;
+  static context_t context;
   return context;
 }
 }

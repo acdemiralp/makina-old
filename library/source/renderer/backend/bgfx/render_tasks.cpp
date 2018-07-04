@@ -13,8 +13,8 @@ void bgfx::make_default_framegraph(engine* engine, di::window* main_window)
 
   context::initialize(::bgfx::RendererType::OpenGL, main_window);
   
-  const auto renderer            = engine->get_system<mak::renderer>();
-  auto       test_render_task    = mak::bgfx::add_test_render_task   (renderer); 
-  auto       present_render_task = mak::bgfx::add_present_render_task(renderer);
+  const auto renderer = engine->get_system<mak::renderer>();
+  add_test_render_task   (renderer); 
+  add_present_render_task(renderer);
 }
 }

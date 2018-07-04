@@ -1,5 +1,5 @@
-#ifndef MAKINA_INPUT_INPUT_SYSTEM_HPP_
-#define MAKINA_INPUT_INPUT_SYSTEM_HPP_
+#ifndef MAKINA_INPUT_INPUT_SYSTEM_HPP
+#define MAKINA_INPUT_INPUT_SYSTEM_HPP
 
 #include <map>
 #include <vector>

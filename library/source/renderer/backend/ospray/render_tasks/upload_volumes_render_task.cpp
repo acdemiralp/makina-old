@@ -7,7 +7,7 @@ namespace mak
 {
 namespace ospray
 {
-fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(renderer* renderer, bool only_raytracing)
+fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(renderer* renderer)
 {
   auto render_task = renderer->add_render_task<upload_volumes_task_data>(
     "Upload Volumes Pass",
@@ -23,7 +23,6 @@ fg::render_task<upload_volumes_task_data>* add_upload_volumes_render_task(render
       for (auto entity : scene->entities<transform, volume_render>())
       {
         auto metadata      = entity->component<mak::metadata>     ();
-        auto transform     = entity->component<mak::transform>    ();
         auto volume_render = entity->component<mak::volume_render>();
 
         if (!metadata->active || mutable_data.cache.count(volume_render)) continue;

@@ -26,7 +26,6 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
       for (auto entity : scene->entities<transform, mesh_render>())
       {
         auto metadata    = entity->component<mak::metadata>   ();
-        auto transform   = entity->component<mak::transform>  ();
         auto mesh_render = entity->component<mak::mesh_render>();
 
         if (!metadata->active || mutable_data.cache.count(mesh_render)) continue;

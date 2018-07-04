@@ -4,12 +4,12 @@ namespace mak
 {
 namespace opengl
 {
-struct _camera
+struct glsl_camera
 {
   glm::mat4  view      ;
   glm::mat4  projection;
 };           
-struct _light
+struct glsl_light
 {            
   glm::uvec4 type      ; // y, z, w are unused.
   glm::vec4  color     ; // w is unused.
@@ -36,14 +36,14 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
     {      
       auto scene = renderer->scene_cache();
 
-      auto cameras = std::vector<_camera>();
+      auto cameras = std::vector<glsl_camera>();
       for (auto& entity : scene->entities<transform, projection>())
       {
         auto metadata   = entity->component<mak::metadata>  ();
         auto transform  = entity->component<mak::transform> ();
         auto projection = entity->component<mak::projection>();
         if (!metadata->active) continue;
-        cameras.push_back(_camera
+        cameras.push_back(glsl_camera
         {
           inverse(transform->matrix(true)),
           projection->matrix()
@@ -54,14 +54,14 @@ fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer
       data.cameras      ->actual()->set_sub_data(sizeof cameras_metadata, sizeof cameras[0] * cameras.size(), cameras.data()   );
       data.parameter_map->actual()->set         ("camera_count", cameras.size());
 
-      auto lights = std::vector<_light>();
+      auto lights = std::vector<glsl_light>();
       for (auto& entity : scene->entities<transform, light>())
       {
         auto metadata  = entity->component<mak::metadata> ();
         auto transform = entity->component<mak::transform>();
         auto light     = entity->component<mak::light>    ();
         if (!metadata->active) continue;
-        lights.push_back(_light
+        lights.push_back(glsl_light
         {
           glm::uvec4(light->type , 0, 0, 0),
           glm::vec4 (light->color, 0.0f),

@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_VULKAN_CONTEXT_HPP_
-#define MAKINA_RENDERER_BACKEND_VULKAN_CONTEXT_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_VULKAN_CONTEXT_HPP
+#define MAKINA_RENDERER_BACKEND_VULKAN_CONTEXT_HPP
 
 #include <memory>
 #include <vector>
@@ -22,14 +22,14 @@ namespace mak
 {
 namespace vulkan
 {
-struct MAKINA_EXPORT _context
+struct MAKINA_EXPORT context_t
 {
-  _context           ();
-  _context           (const _context&  that) = delete ;
-  _context           (      _context&& temp) = default;
-  virtual ~_context  ()                      = default;
-  _context& operator=(const _context&  that) = delete ;
-  _context& operator=(      _context&& temp) = default;
+  context_t           ();
+  context_t           (const context_t&  that) = delete ;
+  context_t           (      context_t&& temp) = default;
+  virtual ~context_t  ()                       = default;
+  context_t& operator=(const context_t&  that) = delete ;
+  context_t& operator=(      context_t&& temp) = default;
 
   void create_window_swapchains (const std::vector<di::vulkan_window*>& windows);
   void present_window_swapchains();
@@ -47,7 +47,7 @@ struct MAKINA_EXPORT _context
   std::vector<window_swapchain>                 window_swapchains            ;
 };
 
-MAKINA_EXPORT _context& context();
+MAKINA_EXPORT context_t& context();
 }
 }
 

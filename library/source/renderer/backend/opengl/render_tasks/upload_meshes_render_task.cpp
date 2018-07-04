@@ -12,11 +12,11 @@ namespace opengl
 fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer* framegraph)
 {
   // Shader types with std430 alignment.
-  struct _transform
+  struct glsl_transform
   {
     glm::mat4  model         ;
   };
-  struct _phong_material
+  struct glsl_phong_material
   {
     glm::uvec4 use_texture   ; // ambient - diffuse - specular - unused
     glm::vec4  ambient       ; // w is unused.
@@ -24,7 +24,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
     glm::vec4  specular      ; // w is shininess.
     glm::uvec4 texture_ids   ; // ambient - diffuse - specular - unused
   };
-  struct _physically_based_material
+  struct glsl_physically_based_material
   {
     glm::uvec4 use_texture   ; // albedo - metallicity - roughness - normal
     glm::uvec4 use_texture_2 ; // ambient occlusion - unused - unused - unused
@@ -33,7 +33,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
     glm::uvec4 textures_ids  ; // albedo - metallicity - roughness - normal
     glm::uvec4 textures_ids_2; // ambient occlusion - unused - unused - unused
   };
-  struct _rig
+  struct glsl_rig
   {
     glm::mat4  model         ;
     glm::mat4  offset        ;
@@ -83,10 +83,10 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
       auto  mesh_render_entities = scene->entities<transform, mesh_render>        ();
       auto  instance_attributes  = std::vector<glm::uvec2>                        ();
       auto  draw_calls           = std::vector<gl::draw_elements_indirect_command>();
-      auto  transforms           = std::vector<_transform>                        ();
-      auto  pbr_materials        = std::vector<_physically_based_material>        ();
-      auto  phong_materials      = std::vector<_phong_material>                   ();
-      auto  rigs                 = std::vector<_rig>                              ();
+      auto  transforms           = std::vector<glsl_transform>                    ();
+      auto  pbr_materials        = std::vector<glsl_physically_based_material>    ();
+      auto  phong_materials      = std::vector<glsl_phong_material>               ();
+      auto  rigs                 = std::vector<glsl_rig>                          ();
       
       for (auto i = 0; i < mesh_render_entities.size(); ++i)
       {
@@ -98,7 +98,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
         
         if (!metadata->active) continue;
 
-        transforms.push_back(_transform {transform->matrix(true)});
+        transforms.push_back(glsl_transform {transform->matrix(true)});
 
         auto texture_coordinate_scale = glm::vec3(1.0f);
         auto pbr_material             = dynamic_cast<mak::physically_based_material*>(mesh_render->material);
@@ -186,7 +186,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             ambient_occlusion_offset = mutable_data.image_cache[pbr_material->ambient_occlusion_image.get()];
           }
 
-          pbr_materials.push_back(_physically_based_material {
+          pbr_materials.push_back(glsl_physically_based_material {
             glm::uvec4 
             {
               static_cast<std::uint32_t>(albedo_offset     .has_value()),
@@ -270,7 +270,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             specular_offset = mutable_data.image_cache[phong_material->specular_image.get()];
           }
 
-          phong_materials.push_back(_phong_material {
+          phong_materials.push_back(glsl_phong_material {
             glm::uvec4 
             {
               static_cast<std::uint32_t>(ambient_offset .has_value()),
@@ -339,11 +339,11 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
           if (!mutable_data.rig_cache.count(animator))
           {
             auto& transform_bone_pairs = mutable_data.rig_cache[animator];
-            std::function<void(mak::transform*)> recursive_collect = [&] (mak::transform* transform)
+            std::function<void(mak::transform*)> recursive_collect = [&] (mak::transform* current)
             {
-              if (transform->metadata()->entity->has_components<mak::bone>())
-                transform_bone_pairs.push_back({transform, transform->metadata()->entity->component<mak::bone>()});
-              for (auto child : transform->children())
+              if (current->metadata()->entity->has_components<mak::bone>())
+                transform_bone_pairs.push_back({current, current->metadata()->entity->component<mak::bone>()});
+              for (auto child : current->children())
                 recursive_collect(child);
             };
             recursive_collect(animator->root_transform);
@@ -357,7 +357,7 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
             mutable_data.rig_offset += static_cast<GLuint>(transform_bone_pairs.size());
           }
           for (auto& transform_bone_pair : mutable_data.rig_cache[animator])
-            rigs.push_back(_rig{transform_bone_pair.first->matrix(true), transform_bone_pair.second->offset_matrix});
+            rigs.push_back(glsl_rig{transform_bone_pair.first->matrix(true), transform_bone_pair.second->offset_matrix});
         }
       }
 

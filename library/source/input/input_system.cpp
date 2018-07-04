@@ -28,8 +28,8 @@ void input_system::update (frame_timer::duration delta, scene* scene)
   auto entities = scene->entities<mak::controller, mak::transform>();
   for(auto& entity : entities)
   {
-    auto controller = entity->component<mak::controller>();
-    auto transform  = entity->component<mak::transform> ();
+    auto       controller = entity->component<mak::controller>();
+    const auto transform  = entity->component<mak::transform> ();
     if (std::find(controller_cache_.begin(), controller_cache_.end(), controller) == controller_cache_.end())
     {
       if(controller->on_key_press    ) on_key_press       .connect([=] (di::key                     key   ) { controller->on_key_press    (transform, key   ); });

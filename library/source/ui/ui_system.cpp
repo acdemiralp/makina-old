@@ -13,7 +13,7 @@ ui_system::ui_system (display_system* display_system, input_system* input_system
   if (!input_system_  ) throw std::runtime_error("UI system requires a valid input system!"  );
 }
 
-void ui_system::prepare(                             scene* scene)
+void ui_system::prepare(                                   scene* scene)
 {
   if (context_) ImGui::DestroyContext(context_);
   context_ = ImGui::CreateContext();
@@ -87,7 +87,7 @@ void ui_system::prepare(                             scene* scene)
   ImGui::StyleColorsDark();
   ImGui::NewFrame       ();
 }
-void ui_system::update (frame_timer::duration delta, scene* scene)
+void ui_system::update (const frame_timer::duration delta, scene* scene)
 {
   auto& io             = ImGui::GetIO();
   auto  mouse_position = di::mouse::relative_position();

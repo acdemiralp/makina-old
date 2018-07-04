@@ -1,7 +1,6 @@
 #include <makina/resources/audio_clip.hpp>
 
 #include <stdexcept>
-#include <utility>
 
 namespace mak
 {

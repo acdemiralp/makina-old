@@ -1,5 +1,5 @@
-#ifndef MAKINA_VR_VR_SYSTEM_HPP_
-#define MAKINA_VR_VR_SYSTEM_HPP_
+#ifndef MAKINA_VR_VR_SYSTEM_HPP
+#define MAKINA_VR_VR_SYSTEM_HPP
 
 #ifdef _WIN32
 #include <windows.h>

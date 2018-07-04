@@ -1,5 +1,5 @@
-#ifndef MAKINA_UTILITY_PERMUTE_FOR_HPP_
-#define MAKINA_UTILITY_PERMUTE_FOR_HPP_
+#ifndef MAKINA_UTILITY_PERMUTE_FOR_HPP
+#define MAKINA_UTILITY_PERMUTE_FOR_HPP
 
 #include <array>
 #include <cstddef>
@@ -10,7 +10,7 @@ namespace mak
 {
 // Permutes the loop for(auto i = start, i < end; i+= step) over all dimensions. 
 template<std::size_t dimensions>
-inline void permute_for(
+void permute_for(
   const std::function<void(const std::array<std::size_t, dimensions>&)>& function, 
   const std::array<std::size_t, dimensions>&                             start   ,
   const std::array<std::size_t, dimensions>&                             end     ,

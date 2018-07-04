@@ -11,7 +11,7 @@ namespace mak
 {
 namespace vulkan
 {
-void load_image(std::uint8_t* pixels, std::array<std::uint32_t, 2> dimensions, std::shared_ptr<vkhlf::Buffer> intermediate, std::shared_ptr<vkhlf::Image> target, std::size_t offset, const bool single_channel = false)
+void load_image(std::uint8_t* pixels, std::array<std::uint32_t, 2> dimensions, std::shared_ptr<vkhlf::Buffer> intermediate, const std::shared_ptr<vkhlf::Image> target, const std::size_t offset)
 {
   auto command_buffer = vulkan::context().command_pool->allocateCommandBuffer();
   command_buffer->begin               ();
@@ -77,7 +77,7 @@ fg::render_task<ui_task_data>* add_ui_render_task(renderer* framegraph, framebuf
           vkhlf::DescriptorImageInfo(*data.sampler->actual(), (*data.image->actual())->createImageView(vk::ImageViewType::e2DArray, vk::Format::eR8G8B8A8Unorm), vk::ImageLayout::eShaderReadOnlyOptimal), nullptr)
       }, {});
       
-      load_image(pixels, {std::uint32_t(width), std::uint32_t(height)}, *data.intermediates->actual(), *data.image->actual(), 0, false);
+      load_image(pixels, {std::uint32_t(width), std::uint32_t(height)}, *data.intermediates->actual(), *data.image->actual(), 0);
       io.Fonts->TexID = reinterpret_cast<void*>(std::intptr_t((*data.image->actual())->operator vk::Image().operator VkImage()));
 
       const auto projection = glm::ortho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, 0.0f, 1.0f);

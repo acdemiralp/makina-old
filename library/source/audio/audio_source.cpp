@@ -49,41 +49,41 @@ void                 audio_source::set_clip    (audio_clip*                 clip
 {
   clip_ = clip;
 }
-void                 audio_source::set_autoplay(bool                        autoplay)
+void                 audio_source::set_autoplay(const bool                  autoplay)
 {
   autoplay_ = autoplay;
 }
-void                 audio_source::set_looping (bool                        looping )
+void                 audio_source::set_looping (const bool                  looping )
 {
   looping_ = looping;
   if (native_) native_->setMode(looping_ ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
 }
-void                 audio_source::set_muted   (bool                        muted   )
+void                 audio_source::set_muted   (const bool                  muted   )
 {
   muted_ = muted;
   if (native_) native_->setMode(muted_);
 }
-void                 audio_source::set_paused  (bool                        paused  )
+void                 audio_source::set_paused  (const bool                  paused  )
 {
   paused_ = paused;
   if (native_) native_->setPaused(paused_);
 }
-void                 audio_source::set_pan     (float                       pan     )
+void                 audio_source::set_pan     (const float                 pan     )
 {
   pan_ = pan;
   if (native_) native_->setPan(pan_);
 }
-void                 audio_source::set_pitch   (float                       pitch   )
+void                 audio_source::set_pitch   (const float                 pitch   )
 {
   pitch_ = pitch;
   if (native_) native_->setPitch(pitch_);
 }
-void                 audio_source::set_priority(float                       priority)
+void                 audio_source::set_priority(const float                 priority)
 {
   priority_ = priority;
   if (native_) native_->setPriority(priority_);
 }
-void                 audio_source::set_volume  (float                       volume  )
+void                 audio_source::set_volume  (const float                 volume  )
 {
   volume_   = volume;
   if (native_) native_->setVolume(volume_);

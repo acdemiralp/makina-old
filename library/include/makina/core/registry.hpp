@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_REGISTRY_HPP_
-#define MAKINA_CORE_REGISTRY_HPP_
+#ifndef MAKINA_CORE_REGISTRY_HPP
+#define MAKINA_CORE_REGISTRY_HPP
 
 #include <memory>
 

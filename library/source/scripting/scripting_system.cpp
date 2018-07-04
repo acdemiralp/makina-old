@@ -6,7 +6,7 @@
 
 namespace mak
 {
-void scripting_system::prepare(scene* scene)
+void scripting_system::prepare(                                   scene* scene)
 {
   const auto entities = scene->entities<behaviors>();
   tbb::parallel_for(std::size_t(0), entities.size(), std::size_t(1), [=] (std::size_t i)
@@ -16,7 +16,7 @@ void scripting_system::prepare(scene* scene)
         behavior->on_prepare_(scene, entities[i]);
   });
 }
-void scripting_system::update (frame_timer::duration delta, scene* scene)
+void scripting_system::update (const frame_timer::duration delta, scene* scene)
 {
   const auto entities = scene->entities<behaviors>();
   tbb::parallel_for(std::size_t(0), entities.size(), std::size_t(1), [=] (std::size_t i)

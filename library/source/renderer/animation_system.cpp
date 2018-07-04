@@ -10,7 +10,7 @@ void animation_system::prepare(scene* scene)
 {
 
 }
-void animation_system::update(frame_timer::duration delta, scene* scene)
+void animation_system::update (const frame_timer::duration delta, scene* scene)
 {
   for(auto& entity : scene->entities<mak::animator>())
   {

@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_PHONG_MATERIAL_HPP_
-#define MAKINA_RESOURCES_PHONG_MATERIAL_HPP_
+#ifndef MAKINA_RESOURCES_PHONG_MATERIAL_HPP
+#define MAKINA_RESOURCES_PHONG_MATERIAL_HPP
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 
 namespace mak
 {
-struct MAKINA_EXPORT phong_material : public material
+struct MAKINA_EXPORT phong_material : material
 {
   phong_material           ()                            = default;
   phong_material           (const phong_material&  that) = delete ;

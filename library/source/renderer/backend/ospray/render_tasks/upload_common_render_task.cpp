@@ -9,7 +9,7 @@ namespace mak
 {
 namespace ospray
 {
-fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer* renderer, bool only_raytracing)
+fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer* renderer, const bool only_raytracing)
 {
   auto render_task = renderer->add_render_task<upload_common_task_data>(
     "Upload Common Data Pass",

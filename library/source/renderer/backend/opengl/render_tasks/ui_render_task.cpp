@@ -36,14 +36,13 @@ fg::render_task<ui_task_data>* add_ui_render_task (renderer* framegraph, framebu
     retained_indices
   });
 
-  auto& io = ImGui::GetIO();
   std::uint8_t* pixels;
   std::int32_t  width, height;
-  io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+  ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
   const auto retained_texture = framegraph->add_retained_resource<texture_description, gl::texture_2d>("UI Texture", texture_description {{static_cast<int>(width), static_cast<int>(height), 1}, GL_RGBA8});
   retained_texture->actual()->set_sub_image(0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-  io.Fonts->TexID = reinterpret_cast<void*>(retained_texture->actual()->id());
+  ImGui::GetIO().Fonts->TexID = reinterpret_cast<void*>(retained_texture->actual()->id());
 
   return framegraph->add_render_task<ui_task_data>(
     "UI Pass",

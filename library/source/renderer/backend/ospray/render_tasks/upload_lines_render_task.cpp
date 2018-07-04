@@ -26,7 +26,6 @@ fg::render_task<upload_lines_task_data>* add_upload_lines_render_task(renderer* 
       for (auto entity : scene->entities<transform, line_render>())
       {
         auto metadata    = entity->component<mak::metadata>   ();
-        auto transform   = entity->component<mak::transform>  ();
         auto line_render = entity->component<mak::line_render>();
 
         if (!metadata->active || mutable_data.cache.count(line_render)) continue;

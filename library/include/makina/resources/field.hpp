@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_FIELD_HPP_
-#define MAKINA_RESOURCES_FIELD_HPP_
+#ifndef MAKINA_RESOURCES_FIELD_HPP
+#define MAKINA_RESOURCES_FIELD_HPP
 
 #include <array>
 #include <cstddef>

@@ -1,5 +1,5 @@
-#ifndef MAKINA_API_HPP_
-#define MAKINA_API_HPP_
+#ifndef MAKINA_API_HPP
+#define MAKINA_API_HPP
 
 #ifdef _WIN32
 // Needs to be right here due to Windows antics.

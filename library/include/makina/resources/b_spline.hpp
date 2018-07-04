@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_B_SPLINE_HPP_
-#define MAKINA_RESOURCES_B_SPLINE_HPP_
+#ifndef MAKINA_RESOURCES_B_SPLINE_HPP
+#define MAKINA_RESOURCES_B_SPLINE_HPP
 
 #include <cstddef>
 #include <functional>

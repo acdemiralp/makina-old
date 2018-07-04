@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_MESH_HPP_
-#define MAKINA_RESOURCES_MESH_HPP_
+#ifndef MAKINA_RESOURCES_MESH_HPP
+#define MAKINA_RESOURCES_MESH_HPP
 
 #include <cstdint>
 #include <vector>

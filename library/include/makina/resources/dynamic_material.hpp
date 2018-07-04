@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_DYNAMIC_MATERIAL_HPP_
-#define MAKINA_RESOURCES_DYNAMIC_MATERIAL_HPP_
+#ifndef MAKINA_RESOURCES_DYNAMIC_MATERIAL_HPP
+#define MAKINA_RESOURCES_DYNAMIC_MATERIAL_HPP
 
 #include <any>
 #include <map>
@@ -9,7 +9,7 @@
 
 namespace mak
 {
-struct MAKINA_EXPORT dynamic_material : public material
+struct MAKINA_EXPORT dynamic_material : material
 {
   std::map<std::string, std::any> properties;
 };

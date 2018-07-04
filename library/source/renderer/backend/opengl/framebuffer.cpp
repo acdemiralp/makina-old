@@ -8,9 +8,8 @@ namespace opengl
 {
 framebuffer::framebuffer(di::window* window) : gl::framebuffer(0)
 {
-  auto size = window->size();
-  color_texture_.set_storage(1, GL_RGBA8            , size[0], size[1]);
-  depth_texture_.set_storage(1, GL_DEPTH_COMPONENT24, size[0], size[1]);
+  color_texture_.set_storage(1, GL_RGBA8            , window->size()[0], window->size()[1]);
+  depth_texture_.set_storage(1, GL_DEPTH_COMPONENT24, window->size()[0], window->size()[1]);
   window->on_resize.connect([&] (const std::array<std::size_t, 2>& size)
   {
     color_texture_ = gl::texture_2d();

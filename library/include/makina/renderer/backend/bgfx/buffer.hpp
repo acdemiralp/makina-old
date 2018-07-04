@@ -1,8 +1,7 @@
-#ifndef MAKINA_RENDERER_BACKEND_BGFX_BUFFER_HPP_
-#define MAKINA_RENDERER_BACKEND_BGFX_BUFFER_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_BGFX_BUFFER_HPP
+#define MAKINA_RENDERER_BACKEND_BGFX_BUFFER_HPP
 
 #include <memory>
-#include <string>
 #include <variant>
 
 #include <bgfx/bgfx.h>

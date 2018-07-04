@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_FILE_SYSTEM_HPP_
-#define MAKINA_CORE_FILE_SYSTEM_HPP_
+#ifndef MAKINA_CORE_FILE_SYSTEM_HPP
+#define MAKINA_CORE_FILE_SYSTEM_HPP
 
 #include <filesystem>
 #include <vector>

@@ -25,8 +25,7 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
       const auto scene = renderer->scene_cache();
       for (auto entity : scene->entities<transform, point_render>())
       {
-        auto metadata     = entity->component<mak::metadata>   ();
-        auto transform    = entity->component<mak::transform>   ();
+        auto metadata     = entity->component<mak::metadata>    ();
         auto point_render = entity->component<mak::point_render>();
 
         if (!metadata->active || mutable_data.cache.count(point_render)) continue;

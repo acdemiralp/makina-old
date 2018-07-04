@@ -3,7 +3,6 @@
 #include <makina/renderer/backend/glsl/test_fragment_shader.hpp>
 #include <makina/renderer/backend/glsl/test_vertex_shader.hpp>
 #include <makina/renderer/backend/vulkan/context.hpp>
-#include <makina/renderer/transform.hpp>
 #include <makina/resources/mesh.hpp>
 #include <makina/resources/phong_material.hpp>
 #include <makina/resources/physically_based_material.hpp>

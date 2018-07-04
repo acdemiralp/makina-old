@@ -13,17 +13,17 @@ namespace opengl
 fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer* framegraph)
 {
   // Shader types with std430 alignment.
-  struct _transform
+  struct glsl_transform
   {
     glm::mat4 model     ;
   };
-  struct _phong_material
+  struct glsl_phong_material
   {
     glm::vec4 ambient   ; // w is unused.
     glm::vec4 diffuse   ; // w is unused.
     glm::vec4 specular  ; // w is shininess.
   };
-  struct _physically_based_material
+  struct glsl_physically_based_material
   {
     glm::vec4 albedo    ; // w is unused.
     glm::vec4 properties; // metallicity - roughness - unused - unused
@@ -59,9 +59,9 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
       auto  point_render_entities = scene->entities<transform, point_render>     ();
       auto  instance_attributes   = std::vector<glm::uvec2>                      ();
       auto  draw_calls            = std::vector<gl::draw_arrays_indirect_command>();
-      auto  transforms            = std::vector<_transform>                      ();
-      auto  pbr_materials         = std::vector<_physically_based_material>      ();
-      auto  phong_materials       = std::vector<_phong_material>                 ();
+      auto  transforms            = std::vector<glsl_transform>                  ();
+      auto  pbr_materials         = std::vector<glsl_physically_based_material>  ();
+      auto  phong_materials       = std::vector<glsl_phong_material>             ();
       
       for (auto i = 0; i < point_render_entities.size(); ++i)
       {
@@ -72,16 +72,16 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
         
         if (!metadata->active) continue;
 
-        transforms.push_back(_transform {transform->matrix(true)});
+        transforms.push_back(glsl_transform {transform->matrix(true)});
 
         auto pbr_material   = dynamic_cast<mak::physically_based_material*>(point_render->material);
         if  (pbr_material)
-          pbr_materials  .push_back(_physically_based_material {
+          pbr_materials  .push_back(glsl_physically_based_material {
             glm::vec4 (pbr_material->albedo, 0.0f),
             glm::vec4 (pbr_material->metallicity, pbr_material->roughness, 0.0f, 0.0f)});
         auto phong_material = dynamic_cast<mak::phong_material*>           (point_render->material);
         if  (phong_material)
-          phong_materials.push_back(_phong_material {
+          phong_materials.push_back(glsl_phong_material {
             glm::vec4(phong_material->ambient , 0.0f),
             glm::vec4(phong_material->diffuse , 0.0f),
             glm::vec4(phong_material->specular, phong_material->shininess)});

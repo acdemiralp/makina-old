@@ -6,7 +6,7 @@ namespace mak
 {
 namespace bgfx
 {
-void context::initialize  (::bgfx::RendererType::Enum renderer_type, di::window* window)
+void context::initialize  (const ::bgfx::RendererType::Enum renderer_type, di::window* window)
 {
   if (!window)
     throw std::runtime_error("Failed to initialize bgfx: No window specified for setting platform data.");

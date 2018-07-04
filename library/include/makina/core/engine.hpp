@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_ENGINE_HPP_
-#define MAKINA_CORE_ENGINE_HPP_
+#ifndef MAKINA_CORE_ENGINE_HPP
+#define MAKINA_CORE_ENGINE_HPP
 
 #include <algorithm>
 #include <memory>

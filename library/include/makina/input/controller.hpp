@@ -1,5 +1,5 @@
-#ifndef MAKINA_INPUT_CONTROLLER_HPP_
-#define MAKINA_INPUT_CONTROLLER_HPP_
+#ifndef MAKINA_INPUT_CONTROLLER_HPP
+#define MAKINA_INPUT_CONTROLLER_HPP
 
 #include <array>
 #include <cstddef>

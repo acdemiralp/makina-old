@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_TRANSFORM_HPP_
-#define MAKINA_RENDERER_TRANSFORM_HPP_
+#ifndef MAKINA_RENDERER_TRANSFORM_HPP
+#define MAKINA_RENDERER_TRANSFORM_HPP
 
 #include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>

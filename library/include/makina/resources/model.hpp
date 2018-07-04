@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_MODEL_HPP_
-#define MAKINA_RESOURCES_MODEL_HPP_
+#ifndef MAKINA_RESOURCES_MODEL_HPP
+#define MAKINA_RESOURCES_MODEL_HPP
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 
 namespace mak
 {
-struct MAKINA_EXPORT model : public named, public ra::resource<model>
+struct MAKINA_EXPORT model : named, ra::resource<model>
 {
   struct description
   {

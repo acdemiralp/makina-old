@@ -12,7 +12,7 @@ namespace vulkan
 fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer* framegraph, framebuffer_resource* target, const upload_scene_task_data& scene_data)
 {
   // Shader vertex type.
-  struct _vertex
+  struct vertex
   {
     glm::vec3  position           ;
     glm::vec3  normal             ;
@@ -49,12 +49,12 @@ fg::render_task<phong_shading_task_data>* add_phong_shading_render_task(renderer
         vk::PrimitiveTopology::eTriangleList,
         context().window_swapchains[0].render_pass, // Applies to the first window swapchain.
         {
-          vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32A32Sfloat, offsetof(_vertex, position           )),
-          vk::VertexInputAttributeDescription(0, 1, vk::Format::eR32G32B32A32Sfloat, offsetof(_vertex, normal             )),
-          vk::VertexInputAttributeDescription(0, 2, vk::Format::eR32G32B32Sfloat   , offsetof(_vertex, texture_coordinates)),
-          vk::VertexInputAttributeDescription(0, 3, vk::Format::eR32G32Uint        , offsetof(_vertex, instance_attributes))
+          vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32B32A32Sfloat, offsetof(vertex, position           )),
+          vk::VertexInputAttributeDescription(0, 1, vk::Format::eR32G32B32A32Sfloat, offsetof(vertex, normal             )),
+          vk::VertexInputAttributeDescription(0, 2, vk::Format::eR32G32B32Sfloat   , offsetof(vertex, texture_coordinates)),
+          vk::VertexInputAttributeDescription(0, 3, vk::Format::eR32G32Uint        , offsetof(vertex, instance_attributes))
         },
-        sizeof _vertex,
+        sizeof vertex,
         { 
           context().logical_device->allocateDescriptorSet(context().descriptor_pool, descriptor_set_layout)
         },

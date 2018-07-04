@@ -1,5 +1,5 @@
-#ifndef MAKINA_AUDIO_AUDIO_SYSTEM_HPP_
-#define MAKINA_AUDIO_AUDIO_SYSTEM_HPP_
+#ifndef MAKINA_AUDIO_AUDIO_SYSTEM_HPP
+#define MAKINA_AUDIO_AUDIO_SYSTEM_HPP
 
 #include <makina/core/system.hpp>
 #include <makina/export.hpp>

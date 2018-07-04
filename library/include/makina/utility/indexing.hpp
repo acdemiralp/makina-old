@@ -1,5 +1,5 @@
-#ifndef MAKINA_UTILITY_INDEXING_HPP_
-#define MAKINA_UTILITY_INDEXING_HPP_
+#ifndef MAKINA_UTILITY_INDEXING_HPP
+#define MAKINA_UTILITY_INDEXING_HPP
 
 #include <cstdint>
 #include <cstddef>

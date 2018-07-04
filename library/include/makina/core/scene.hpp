@@ -1,8 +1,7 @@
-#ifndef MAKINA_CORE_SCENE_HPP_
-#define MAKINA_CORE_SCENE_HPP_
+#ifndef MAKINA_CORE_SCENE_HPP
+#define MAKINA_CORE_SCENE_HPP
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include <ec/entity.hpp>

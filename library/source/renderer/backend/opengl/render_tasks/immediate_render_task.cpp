@@ -89,8 +89,6 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
 
       data.draw_callback     = [&] (const Im3d::DrawList& draw_list)
       {
-        auto& app_data = Im3d::GetAppData();
-
         GLenum primitive_type;
         if      (draw_list.m_primType == Im3d::DrawPrimitive_Points) primitive_type = GL_POINTS   ;
         else if (draw_list.m_primType == Im3d::DrawPrimitive_Lines ) primitive_type = GL_LINES    ;
@@ -179,7 +177,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
       app_data.m_snapScale       = 0.0f;
 
       Im3d::Vec2 cursor(di::mouse::relative_position()[0], di::mouse::relative_position()[1]);
-      cursor   = 2.0f * cursor / app_data.m_viewportSize - 1.0f;
+      cursor   = cursor / app_data.m_viewportSize * Im3d::Vec2(2.0f) - Im3d::Vec2(1.0f);
       cursor.y = -cursor.y;
       
       Im3d::Vec3 ray_origin, ray_direction;

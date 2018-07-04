@@ -1,7 +1,5 @@
 #include <makina/renderer/backend/ospray/render_tasks.hpp>
 
-#include <memory>
-
 #include <ospray/ospray_cpp.h>
 
 #include <makina/core/engine.hpp>

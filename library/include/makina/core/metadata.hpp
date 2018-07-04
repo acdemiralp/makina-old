@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_METADATA_HPP_
-#define MAKINA_CORE_METADATA_HPP_
+#ifndef MAKINA_CORE_METADATA_HPP
+#define MAKINA_CORE_METADATA_HPP
 
 #include <algorithm>
 #include <string>

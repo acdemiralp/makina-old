@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_PHYSICALLY_BASED_MATERIAL_HPP_
-#define MAKINA_RESOURCES_PHYSICALLY_BASED_MATERIAL_HPP_
+#ifndef MAKINA_RESOURCES_PHYSICALLY_BASED_MATERIAL_HPP
+#define MAKINA_RESOURCES_PHYSICALLY_BASED_MATERIAL_HPP
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 
 namespace mak
 {
-struct MAKINA_EXPORT physically_based_material : public material
+struct MAKINA_EXPORT physically_based_material : material
 {
   physically_based_material           ()                                       = default;
   physically_based_material           (const physically_based_material&  that) = delete ;

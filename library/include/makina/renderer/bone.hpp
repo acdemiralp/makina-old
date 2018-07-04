@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BONE_HPP_
-#define MAKINA_RENDERER_BONE_HPP_
+#ifndef MAKINA_RENDERER_BONE_HPP
+#define MAKINA_RENDERER_BONE_HPP
 
 #include <cstdint>
 

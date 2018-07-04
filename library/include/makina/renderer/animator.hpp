@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_ANIMATOR_HPP_
-#define MAKINA_RENDERER_ANIMATOR_HPP_
+#ifndef MAKINA_RENDERER_ANIMATOR_HPP
+#define MAKINA_RENDERER_ANIMATOR_HPP
 
 #include <makina/core/frame_timer.hpp>
 #include <makina/resources/animation_clip.hpp>

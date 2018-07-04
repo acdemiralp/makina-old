@@ -1,5 +1,5 @@
-#ifndef MAKINA_RESOURCES_MODEL_LOAD_HPP_
-#define MAKINA_RESOURCES_MODEL_LOAD_HPP_
+#ifndef MAKINA_RESOURCES_MODEL_LOAD_HPP
+#define MAKINA_RESOURCES_MODEL_LOAD_HPP
 
 #include <filesystem>
 #include <fstream>
@@ -244,12 +244,12 @@ inline void ra::load(const mak::model::description& description, mak::model* mod
     }
     else // Meshes and bones cannot be on the same entity (as in Unity).
     {
-      auto _bone = std::find_if(bones.begin(), bones.end(), [&metadata] (const std::pair<std::string, mak::bone>& iteratee) { return iteratee.first == metadata->name; });
-      if  (_bone != bones.end())
+      auto input_bone = std::find_if(bones.begin(), bones.end(), [&metadata] (const std::pair<std::string, mak::bone>& iteratee) { return iteratee.first == metadata->name; });
+      if  (input_bone != bones.end())
       {
         auto bone           = entity->add_component<mak::bone>();
-        bone->index         = _bone->second.index;
-        bone->offset_matrix = _bone->second.offset_matrix;
+        bone->index         = input_bone->second.index;
+        bone->offset_matrix = input_bone->second.offset_matrix;
       }
     }
    

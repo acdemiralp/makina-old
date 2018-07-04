@@ -1,6 +1,5 @@
 #include <makina/vr/vr_system.hpp>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat3x4.hpp>
 #include <glm/mat4x4.hpp>
@@ -68,10 +67,10 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   material->albedo_image = std::make_unique<mak::image>(openvr_texture->data.data(), openvr_texture->size, fi::type::bitmap, 32, std::array<fi::color_mask, 3>{fi::color_mask::red, fi::color_mask::green, fi::color_mask::blue});
   material->albedo_image->to_32_bits();
 
-  auto entity           = scene->add_entity();
-  auto metadata         = entity->add_component<mak::metadata>   ();
-  auto transform        = entity->add_component<mak::transform>  (metadata);
-  auto mesh_render      = entity->add_component<mak::mesh_render>();
+  auto       entity           = scene->add_entity();
+  auto       metadata         = entity->add_component<mak::metadata>   ();
+  const auto transform        = entity->add_component<mak::transform>  (metadata);
+  const auto mesh_render      = entity->add_component<mak::mesh_render>();
   metadata   ->entity   = entity;
   metadata   ->name     = mesh->name();
   mesh_render->mesh     = mesh;
@@ -83,32 +82,32 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
 
     const auto hmd = dynamic_cast<di::hmd*>(tracking_device);
     {
-      auto eye               = scene->add_entity();
-      auto eye_metadata      = eye  ->add_component<mak::metadata>  ();
-      auto eye_transform     = eye  ->add_component<mak::transform> (eye_metadata);
-      auto eye_projection    = eye  ->add_component<mak::projection>();
-      auto rectangle         = hmd->projection_parameters(di::eye::left);
-      auto z_range           = std::array<float, 2>{0.1f, 10000.0f};
-      eye_metadata  ->entity = eye;
-      eye_metadata  ->name   = "HMD Left Camera";
+      auto       eye            = scene->add_entity();
+      auto       eye_metadata   = eye  ->add_component<mak::metadata>  ();
+      auto       eye_transform  = eye  ->add_component<mak::transform> (eye_metadata);
+      auto       eye_projection = eye  ->add_component<mak::projection>();
+      const auto rectangle      = hmd->projection_parameters(di::eye::left);
+      auto       z_range        = std::array<float, 2>{0.1f, 10000.0f};
+      eye_metadata  ->entity    = eye;
+      eye_metadata  ->name      = "HMD Left Camera";
       eye_metadata  ->tags.push_back("hmd_left_camera");
-      eye_transform ->set_parent (transform);
-      eye_transform ->set_matrix (convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::left )));
-      eye_projection->set_frustum({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, z_range[0] * rectangle.bottom, z_range[0] * rectangle.top}, z_range);
+      eye_transform ->set_parent    (transform);
+      eye_transform ->set_matrix    (convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::left )));
+      eye_projection->set_frustum   ({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, z_range[0] * rectangle.bottom, z_range[0] * rectangle.top}, z_range);
     }
     {
-      auto eye               = scene->add_entity();
-      auto eye_metadata      = eye  ->add_component<mak::metadata>  ();
-      auto eye_transform     = eye  ->add_component<mak::transform> (eye_metadata);
-      auto eye_projection    = eye  ->add_component<mak::projection>();
-      auto rectangle         = hmd->projection_parameters(di::eye::right);
-      auto z_range           = std::array<float, 2>{0.1f, 10000.0f};
-      eye_metadata  ->entity = eye;
-      eye_metadata  ->name   = "HMD Right Camera";
+      auto       eye            = scene->add_entity();
+      auto       eye_metadata   = eye  ->add_component<mak::metadata>  ();
+      auto       eye_transform  = eye  ->add_component<mak::transform> (eye_metadata);
+      auto       eye_projection = eye  ->add_component<mak::projection>();
+      const auto rectangle      = hmd->projection_parameters(di::eye::right);
+      auto       z_range        = std::array<float, 2>{0.1f, 10000.0f};
+      eye_metadata  ->entity    = eye;
+      eye_metadata  ->name      = "HMD Right Camera";
       eye_metadata  ->tags.push_back("hmd_right_camera");
-      eye_transform ->set_parent (transform);
-      eye_transform ->set_matrix (convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::right)));
-      eye_projection->set_frustum({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, z_range[0] * rectangle.bottom, z_range[0] * rectangle.top}, z_range);
+      eye_transform ->set_parent    (transform);
+      eye_transform ->set_matrix    (convert_to_glm_matrix (hmd->eye_to_head_transform(di::eye::right)));
+      eye_projection->set_frustum   ({-z_range[0] * rectangle.right, -z_range[0] * rectangle.left, z_range[0] * rectangle.bottom, z_range[0] * rectangle.top}, z_range);
     }
   }
   

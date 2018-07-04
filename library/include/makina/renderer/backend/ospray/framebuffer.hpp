@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_OSPRAY_FRAMEBUFFER_HPP_
-#define MAKINA_RENDERER_BACKEND_OSPRAY_FRAMEBUFFER_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_OSPRAY_FRAMEBUFFER_HPP
+#define MAKINA_RENDERER_BACKEND_OSPRAY_FRAMEBUFFER_HPP
 
 #include <cstdint>
 
@@ -12,7 +12,7 @@ namespace mak
 {
 namespace ospray
 {
-struct MAKINA_EXPORT framebuffer : public ::ospray::cpp::FrameBuffer
+struct MAKINA_EXPORT framebuffer : ::ospray::cpp::FrameBuffer
 {
   struct MAKINA_EXPORT description
   {

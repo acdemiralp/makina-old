@@ -1,5 +1,5 @@
-#ifndef MAKINA_CORE_SCENE_FWD_HPP_
-#define MAKINA_CORE_SCENE_FWD_HPP_
+#ifndef MAKINA_CORE_SCENE_FWD_HPP
+#define MAKINA_CORE_SCENE_FWD_HPP
 
 #include <memory>
 #include <vector>

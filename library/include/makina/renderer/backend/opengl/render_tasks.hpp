@@ -1,5 +1,5 @@
-#ifndef MAKINA_RENDERER_BACKEND_OPENGL_RENDER_TASKS_HPP_
-#define MAKINA_RENDERER_BACKEND_OPENGL_RENDER_TASKS_HPP_
+#ifndef MAKINA_RENDERER_BACKEND_OPENGL_RENDER_TASKS_HPP
+#define MAKINA_RENDERER_BACKEND_OPENGL_RENDER_TASKS_HPP
 
 #include <makina/renderer/backend/opengl/render_tasks/blit_render_task.hpp>
 #include <makina/renderer/backend/opengl/render_tasks/clear_render_task.hpp>
