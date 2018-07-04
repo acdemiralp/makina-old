@@ -115,7 +115,7 @@ std::unique_ptr<mesh>          b_spline::to_mesh                      (const std
         parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
       parameters.push_back(evaluate(parameters));
   
-      auto index = ravel_multi_index(indices, samples);    
+      auto index = static_cast<std::uint32_t>(ravel_multi_index(indices, samples));    
       std::copy_n(parameters.data(), std::min(std::int32_t(parameters.size()), 3), &mesh->vertices[index][0]);
       if (indices[0] > 0 && indices[1] > 0)
       {

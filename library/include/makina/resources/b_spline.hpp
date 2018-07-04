@@ -56,7 +56,7 @@ public:
         std::vector<double> parameters(indices.size(), 0.0);
         for (auto i = 0; i < parameters.size(); ++i)
           parameters[i] = lower_bounds[i] + step_sizes[i] * indices[i];
-        field->data(indices) = evaluate(parameters);
+        field->data(indices) = static_cast<type>(evaluate(parameters));
       },
       std::vector<std::size_t>(samples.size(), 0),
       samples,

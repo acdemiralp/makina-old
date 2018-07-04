@@ -41,8 +41,8 @@ fg::render_task<test_task_data>* add_test_render_task(renderer* framegraph)
         .add(::bgfx::Attrib::Color0  , 4, ::bgfx::AttribType::Uint8, true)
         .end();
 
-      data.vertices = builder.create<buffer_resource> ("BGFX Test Vertices", buffer::description{buffer::description::type::vertex, vertices.size() * sizeof(vertex), vertex_declaration});
-      data.indices  = builder.create<buffer_resource> ("BGFX Test Indices" , buffer::description{buffer::description::type::index , indices .size() * sizeof(std::uint16_t)});
+      data.vertices = builder.create<buffer_resource> ("BGFX Test Vertices", buffer::description{buffer::description::type::vertex, static_cast<std::uint32_t>(vertices.size() * sizeof(vertex)), vertex_declaration});
+      data.indices  = builder.create<buffer_resource> ("BGFX Test Indices" , buffer::description{buffer::description::type::index , static_cast<std::uint32_t>(indices .size() * sizeof(std::uint16_t))});
       data.program  = builder.create<program_resource>("BGFX Test Program" , program::description{shaderc::test_vertex_shader, shaderc::test_fragment_shader});
     },
     [=] (const test_task_data& data)

@@ -9,6 +9,11 @@ set                   (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 include               (set_max_warning_level)
 set_max_warning_level ()
+if   (MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4275")
+else ()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-4251 -Wno-4275")
+endif()
 
 ##################################################    Options     ##################################################
 option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
@@ -83,12 +88,17 @@ if   (OPTIX_FOUND)
 endif()
 
 list  (APPEND PROJECT_COMPILE_DEFINITIONS -DNOMINMAX -DGLM_FORCE_LEFT_HANDED -DGLM_FORCE_DEPTH_ZERO_TO_ONE)
+
 if    (WIN32)
   list(APPEND PROJECT_COMPILE_DEFINITIONS -DVK_USE_PLATFORM_WIN32_KHR)
 elseif(APPLE)
   list(APPEND PROJECT_COMPILE_DEFINITIONS -DVK_USE_PLATFORM_WIN32_KHR)
 elseif(UNIX )
   list(APPEND PROJECT_COMPILE_DEFINITIONS -DVK_USE_PLATFORM_XLIB_KHR)
+endif ()
+
+if    (BUILD_SHARED_LIBS)
+list  (APPEND PROJECT_COMPILE_DEFINITIONS -DH5_BUILT_AS_DYNAMIC_LIB)
 endif ()
 
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)

@@ -39,7 +39,7 @@ void vertex_array::bind  () const
 {
   gl::vertex_array::bind  ();
   for (std::size_t i = 0; i < shader_storage_buffers_.size(); ++i)
-    shader_storage_buffers_[i]->actual()->bind_base  (GL_SHADER_STORAGE_BUFFER, i);
+    shader_storage_buffers_[i]->actual()->bind_base  (GL_SHADER_STORAGE_BUFFER, static_cast<GLuint>(i));
   if (draw_indirect_buffer_)
       draw_indirect_buffer_->actual()->bind  (GL_DRAW_INDIRECT_BUFFER);
 }
@@ -48,7 +48,7 @@ void vertex_array::unbind() const
   if (draw_indirect_buffer_)
       draw_indirect_buffer_->actual()->unbind(GL_DRAW_INDIRECT_BUFFER);
   for (std::size_t i = 0; i < shader_storage_buffers_.size(); ++i)
-    shader_storage_buffers_[i]->actual()->unbind_base(GL_SHADER_STORAGE_BUFFER, i);
+    shader_storage_buffers_[i]->actual()->unbind_base(GL_SHADER_STORAGE_BUFFER, static_cast<GLuint>(i));
   gl::vertex_array::unbind();
 }
 }
