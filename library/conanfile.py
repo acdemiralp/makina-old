@@ -44,6 +44,9 @@ class MakinaConan(ConanFile):
     options         = {"shared": [True, False]} 
     default_options = "shared=True"
     
+    def configure(self):
+       self.options["gl"].shared = False
+
     def imports(self):
        self.copy("*.dylib*", dst="", src="lib")
        self.copy("*.dll"   , dst="", src="bin")
