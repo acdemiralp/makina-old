@@ -63,6 +63,7 @@
 #include <makina/scripting/scripting_system.hpp>
 #include <makina/ui/imgui_context.hpp>
 #include <makina/ui/ui_system.hpp>
+#include <makina/utility/coordinate_conversion.hpp>
 #include <makina/utility/enable_dedicated_gpu.hpp>
 #include <makina/utility/indexing.hpp>
 #include <makina/utility/permute_for.hpp>
