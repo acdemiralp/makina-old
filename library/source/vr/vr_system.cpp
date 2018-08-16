@@ -35,7 +35,7 @@ glm::mat4  convert_to_glm_matrix       (const std::array<float, 12>& matrix)
 }
 
 template <di::tracking_device_type type>
-transform* create_tracking_device_entity(di::tracking_device<type>* tracking_device, model* model, scene* scene)
+entity* create_tracking_device_entity(di::tracking_device<type>* tracking_device, model* model, scene* scene, entity* platform)
 {
   const auto openvr_model   = tracking_device->model();
   if (!openvr_model) 
@@ -73,6 +73,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
   const auto mesh_render      = entity->add_component<mak::mesh_render>();
   metadata   ->entity   = entity;
   metadata   ->name     = mesh->name();
+  transform  ->set_parent(platform->component<mak::transform>());
   mesh_render->mesh     = mesh;
   mesh_render->material = material;
 
@@ -111,7 +112,7 @@ transform* create_tracking_device_entity(di::tracking_device<type>* tracking_dev
     }
   }
   
-  return transform;
+  return entity;
 }
 }
 
@@ -120,41 +121,75 @@ vr_system::vr_system(const di::tracking_mode tracking_mode) : di::vr_system(trac
 
 }
 
+entity*                                                vr_system::platform                          () const
+{
+  return platform_;
+}
+const std::map<di::hmd*                    , entity*>& vr_system::hmd_entity_map                    () const
+{
+  return hmd_entity_map_;
+}
+const std::map<di::vr_controller*          , entity*>& vr_system::controller_entity_map             () const
+{
+  return controller_entity_map_;
+}
+const std::map<di::tracking_reference*     , entity*>& vr_system::tracking_reference_entity_map     () const
+{
+  return tracking_reference_entity_map_;
+}
+const std::map<di::display_redirect*       , entity*>& vr_system::display_redirect_entity_map       () const
+{
+  return display_redirect_entity_map_;
+}
+const std::map<di::generic_tracking_device*, entity*>& vr_system::generic_tracking_device_entity_map() const
+{
+  return generic_tracking_device_entity_map_;
+}
+
 void vr_system::prepare(                             scene* scene)
 {
   auto& models = mak::registry->get<mak::model>().storage();
   auto& model  = models.emplace_back();
+  
+  if (platform_) 
+    scene->remove_entity(platform_);
 
-  hmd_transform_map_                    .clear();
-  controller_transform_map_             .clear();
-  tracking_reference_transform_map_     .clear();
-  display_redirect_transform_map_       .clear();
-  generic_tracking_device_transform_map_.clear();
+  hmd_entity_map_                    .clear();
+  controller_entity_map_             .clear();
+  tracking_reference_entity_map_     .clear();
+  display_redirect_entity_map_       .clear();
+  generic_tracking_device_entity_map_.clear();
+  
+  platform_            = scene->add_entity();
+  auto       metadata  = platform_->add_component<mak::metadata> ();
+  const auto transform = platform_->add_component<mak::transform>(metadata);
+  metadata->entity     = platform_;
+  metadata->name       = "platform";
 
   for (auto device : hmds                    ())
-    hmd_transform_map_                    [device] = detail::create_tracking_device_entity(device, &model, scene);
+    hmd_entity_map_                    [device] = detail::create_tracking_device_entity(device, &model, scene, platform_);
   for (auto device : controllers             ())
-    controller_transform_map_             [device] = detail::create_tracking_device_entity(device, &model, scene);
+    controller_entity_map_             [device] = detail::create_tracking_device_entity(device, &model, scene, platform_);
   for (auto device : tracking_references     ())
-    tracking_reference_transform_map_     [device] = detail::create_tracking_device_entity(device, &model, scene);
+    tracking_reference_entity_map_     [device] = detail::create_tracking_device_entity(device, &model, scene, platform_);
   for (auto device : display_redirects       ())
-    display_redirect_transform_map_       [device] = detail::create_tracking_device_entity(device, &model, scene);
+    display_redirect_entity_map_       [device] = detail::create_tracking_device_entity(device, &model, scene, platform_);
   for (auto device : generic_tracking_devices())
-    generic_tracking_device_transform_map_[device] = detail::create_tracking_device_entity(device, &model, scene);
+    generic_tracking_device_entity_map_[device] = detail::create_tracking_device_entity(device, &model, scene, platform_);
 }
 void vr_system::update (frame_timer::duration delta, scene* scene)
 {
   tick();
   
-  for (auto& device : hmd_transform_map_)
-    device.second->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix), true);
-  for (auto& device : controller_transform_map_)
-    device.second->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix), true);
-  for (auto& device : tracking_reference_transform_map_)
-    device.second->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix), true);
-  for (auto& device : display_redirect_transform_map_)
-    device.second->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix), true);
-  for (auto& device : generic_tracking_device_transform_map_)
-    device.second->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix), true);
+  for (auto& device : hmd_entity_map_)
+    device.second->component<transform>()->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix));
+  for (auto& device : controller_entity_map_)
+    device.second->component<transform>()->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix));
+  for (auto& device : tracking_reference_entity_map_)
+    device.second->component<transform>()->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix));
+  for (auto& device : display_redirect_entity_map_)
+    device.second->component<transform>()->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix));
+  for (auto& device : generic_tracking_device_entity_map_)
+    device.second->component<transform>()->set_matrix(detail::convert_to_glm_matrix(device.first->pose()->absolute_matrix));
 }
 }

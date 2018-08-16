@@ -24,16 +24,24 @@ public:
   virtual ~vr_system  ()                       = default;
   vr_system& operator=(const vr_system&  that) = delete ;
   vr_system& operator=(      vr_system&& temp) = default;
+  
+  entity*                                                platform                          () const;
+  const std::map<di::hmd*                    , entity*>& hmd_entity_map                    () const;
+  const std::map<di::vr_controller*          , entity*>& controller_entity_map             () const;
+  const std::map<di::tracking_reference*     , entity*>& tracking_reference_entity_map     () const;
+  const std::map<di::display_redirect*       , entity*>& display_redirect_entity_map       () const;
+  const std::map<di::generic_tracking_device*, entity*>& generic_tracking_device_entity_map() const;
 
 protected:
   void prepare(                             scene* scene) override;
   void update (frame_timer::duration delta, scene* scene) override;
   
-  std::map<di::hmd*                    , transform*> hmd_transform_map_                    ;
-  std::map<di::vr_controller*          , transform*> controller_transform_map_             ;
-  std::map<di::tracking_reference*     , transform*> tracking_reference_transform_map_     ;
-  std::map<di::display_redirect*       , transform*> display_redirect_transform_map_       ;
-  std::map<di::generic_tracking_device*, transform*> generic_tracking_device_transform_map_;
+  entity*                                         platform_                          = nullptr;                                      
+  std::map<di::hmd*                    , entity*> hmd_entity_map_                    ;
+  std::map<di::vr_controller*          , entity*> controller_entity_map_             ;
+  std::map<di::tracking_reference*     , entity*> tracking_reference_entity_map_     ;
+  std::map<di::display_redirect*       , entity*> display_redirect_entity_map_       ;
+  std::map<di::generic_tracking_device*, entity*> generic_tracking_device_entity_map_;
 };
 }
 
