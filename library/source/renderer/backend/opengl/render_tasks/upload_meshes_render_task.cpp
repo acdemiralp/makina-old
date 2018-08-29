@@ -41,14 +41,14 @@ fg::render_task<upload_meshes_task_data>* add_upload_meshes_render_task(renderer
 
   const glm::uvec3 texture_size {2048, 2048, 32};
   
-  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Vertices"           , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Normals"            , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Colors"             , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Texture Coordinates", buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_bone_ids            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Bone Ids"           , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_bone_weights        = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Bone Weights"       , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Instance Attributes", buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Indices"            , buffer_description{GLsizeiptr(512e+6)});
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Vertices"           , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Normals"            , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Colors"             , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_texture_coordinates = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Texture Coordinates", buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_bone_ids            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Bone Ids"           , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_bone_weights        = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Bone Weights"       , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Instance Attributes", buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_indices             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Indices"            , buffer_description{GLsizeiptr(128e+6)});
   const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Draw Calls"         , buffer_description{GLsizeiptr(16e+6 )});
   const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Transforms"         , buffer_description{GLsizeiptr(16e+6 )});
   const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Mesh Materials"          , buffer_description{GLsizeiptr(16e+6 )});

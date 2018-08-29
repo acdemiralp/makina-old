@@ -29,10 +29,10 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
     glm::vec4 properties; // metallicity - roughness - unused - unused
   };
 
-  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Vertices"           , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Normals"            , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Colors"             , buffer_description{GLsizeiptr(512e+6)});
-  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Instance Attributes", buffer_description{GLsizeiptr(512e+6)});
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Vertices"           , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Normals"            , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Colors"             , buffer_description{GLsizeiptr(128e+6)});
+  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Instance Attributes", buffer_description{GLsizeiptr(128e+6)});
   const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Draw Calls"         , buffer_description{GLsizeiptr(16e+6 )});
   const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Transforms"         , buffer_description{GLsizeiptr(16e+6 )});
   const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Materials"          , buffer_description{GLsizeiptr(16e+6 )});
