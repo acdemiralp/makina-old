@@ -15,7 +15,7 @@ template <typename type, std::size_t dimensions>
 struct field : named, ra::resource<field<type, dimensions>>
 {
   template<typename position_type>
-  std::array<std::size_t, dimensions> locate(const position_type& position)
+  std::array<std::size_t, dimensions> locate(const position_type& position) const
   {
     std::array<std::size_t, dimensions> index;
     for (auto i = 0; i < dimensions; ++i)
@@ -23,7 +23,7 @@ struct field : named, ra::resource<field<type, dimensions>>
     return index;
   }
   template<typename position_type>
-  const type&                         get   (const position_type& position)
+  const type&                         get   (const position_type& position) const
   {
     return data(locate<position_type>(position));
   }
