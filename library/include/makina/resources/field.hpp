@@ -23,6 +23,11 @@ struct field : named, ra::resource<field<type, dimensions>>
     return index;
   }
   template<typename position_type>
+        type&                         get   (const position_type& position)
+  {
+    return data(locate<position_type>(position));
+  }
+  template<typename position_type>
   const type&                         get   (const position_type& position) const
   {
     return data(locate<position_type>(position));
