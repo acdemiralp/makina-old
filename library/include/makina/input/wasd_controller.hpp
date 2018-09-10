@@ -2,10 +2,11 @@
 #define MAKINA_INPUT_WASD_CONTROLLER_HPP
 
 #include <makina/input/controller.hpp>
+#include <makina/export.hpp>
 
 namespace mak
 {
-controller make_wasd_controller(const float move_sensitivity = 1.0f, const float look_sensitivity = 0.25f);
+MAKINA_EXPORT controller make_wasd_controller(const float move_sensitivity = 1.0f, const float look_sensitivity = 0.25f);
 }
 
 #endif
