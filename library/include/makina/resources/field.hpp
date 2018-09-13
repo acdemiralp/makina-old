@@ -15,20 +15,31 @@ template <typename type, std::size_t dimensions>
 struct field : named, ra::resource<field<type, dimensions>>
 {
   template<typename position_type>
-  std::array<std::size_t, dimensions> locate(const position_type& position) const
+  bool                                is_within(const position_type& position) const
+  {
+    for (auto i = 0; i < dimensions; ++i)
+    {
+      const auto index = position[i] / spacing[i];
+      if (0 > index || index >= data.shape()[i])
+        return false;
+    }
+    return true;
+  }
+  template<typename position_type>
+  std::array<std::size_t, dimensions> locate   (const position_type& position) const
   {
     std::array<std::size_t, dimensions> index;
     for (auto i = 0; i < dimensions; ++i)
       index[i] = position[i] / spacing[i];
     return index;
   }
-  template<typename position_type>
-        type&                         get   (const position_type& position)
+  template<typename position_type>             
+        type&                         get      (const position_type& position)
   {
     return data(locate<position_type>(position));
   }
-  template<typename position_type>
-  const type&                         get   (const position_type& position) const
+  template<typename position_type>             
+  const type&                         get      (const position_type& position) const
   {
     return data(locate<position_type>(position));
   }
