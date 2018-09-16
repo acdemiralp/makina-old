@@ -11,7 +11,6 @@ std::string immediate_point_vertex_shader = R"(
 
 #else
 #extension GL_ARB_explicit_attrib_location : enable
-#extension GL_KHR_vulkan_glsl : enable
 #endif
 
 const float antialiasing = 2.0f;

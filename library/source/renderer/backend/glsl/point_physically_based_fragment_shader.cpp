@@ -12,7 +12,6 @@ std::string point_physically_based_fragment_shader = R"(
 #else
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_bindless_texture : enable
-#extension GL_KHR_vulkan_glsl : enable
 layout (bindless_sampler) uniform;
 #endif
 

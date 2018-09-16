@@ -11,7 +11,6 @@ std::string point_phong_fragment_shader = R"(
 
 #else
 #extension GL_ARB_explicit_attrib_location : enable
-#extension GL_KHR_vulkan_glsl : enable
 #endif
 
 const uint  light_type_ambient     = 0;

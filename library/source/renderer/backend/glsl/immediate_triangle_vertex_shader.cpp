@@ -11,7 +11,6 @@ std::string immediate_triangle_vertex_shader = R"(
 
 #else
 #extension GL_ARB_explicit_attrib_location : enable
-#extension GL_KHR_vulkan_glsl : enable
 #endif
 
 struct _camera

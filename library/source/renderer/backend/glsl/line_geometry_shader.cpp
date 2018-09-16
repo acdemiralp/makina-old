@@ -11,7 +11,6 @@ std::string line_geometry_shader = R"(
 
 #else
 #extension GL_ARB_explicit_attrib_location : enable
-#extension GL_KHR_vulkan_glsl : enable
 #endif
 
 layout(lines) in;
