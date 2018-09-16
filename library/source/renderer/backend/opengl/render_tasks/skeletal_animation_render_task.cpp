@@ -51,10 +51,14 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       auto vertex_count = data.parameter_map->actual()->get<GLuint>("vertex_count");
       data.transformed_vertices->actual()->copy_sub_data(*data.vertices->actual(), 0, 0, vertex_count * sizeof glm::vec4);
       data.transformed_normals ->actual()->copy_sub_data(*data.normals ->actual(), 0, 0, vertex_count * sizeof glm::vec4);
-      
+
+#if glDispatchComputeGroupSizeARB != 0
       glDispatchComputeGroupSizeARB(vertex_count, 1, 1, 1, 1, 1);
+#else
+      glDispatchCompute(vertex_count, 1, 1);
+#endif
       gl::memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-      
+
       data.vertex_array->actual()->unbind();
       data.program     ->actual()->unuse ();
 

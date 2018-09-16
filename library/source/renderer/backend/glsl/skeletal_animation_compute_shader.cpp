@@ -10,8 +10,11 @@ std::string skeletal_animation_compute_shader = R"(
 #ifdef VULKAN
 
 #else
+
+#ifdef GL_ARB_compute_variable_group_size
 #extension GL_ARB_compute_variable_group_size : enable
-#extension GL_KHR_vulkan_glsl : enable
+#endif
+
 #endif
 
 struct _rig
@@ -42,7 +45,11 @@ layout(std430, set = 0, binding = 4) readonly buffer rig
   _rig  rigs[];
 };
 
-layout(local_size_variable) in;
+#ifdef GL_ARB_compute_variable_group_size
+layout (local_size_variable) in;
+#else
+layout (local_size_x = 1, local_size_y = 1) in;
+#endif
 
 void main()
 {
