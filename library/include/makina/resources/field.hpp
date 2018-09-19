@@ -19,7 +19,7 @@ struct field : named, ra::resource<field<type, dimensions>>
   {
     for (auto i = 0; i < dimensions; ++i)
     {
-      const auto index = position[i] / spacing[i];
+      const auto index = (position[i] + (cells ? 0 : spacing[i] / 2)) / spacing[i];
       if (0 > index || index >= data.shape()[i])
         return false;
     }
@@ -30,9 +30,10 @@ struct field : named, ra::resource<field<type, dimensions>>
   {
     std::array<std::size_t, dimensions> index;
     for (auto i = 0; i < dimensions; ++i)
-      index[i] = position[i] / spacing[i];
+      index[i] = std::floor((position[i] + (cells ? 0 : spacing[i] / 2)) / spacing[i]);
     return index;
   }
+
   template<typename position_type>             
         type&                         get      (const position_type& position)
   {
@@ -44,8 +45,9 @@ struct field : named, ra::resource<field<type, dimensions>>
     return data(locate<position_type>(position));
   }
 
-  boost::multi_array<type , dimensions> data   ;
-  std::array        <float, dimensions> spacing;
+  boost::multi_array<type , dimensions> data    ;
+  std::array        <float, dimensions> spacing ;
+  bool                                  cells   = false; // Data on the cell or points?
 };
 }
 
