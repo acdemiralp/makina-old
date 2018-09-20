@@ -8,6 +8,7 @@
 #include <ra/resource.hpp>
 
 #include <makina/aspects/named.hpp>
+#include <makina/utility/permute_for.hpp>
 
 namespace mak
 {
@@ -19,7 +20,7 @@ struct field : named, ra::resource<field<type, dimensions>>
   {
     for (auto i = 0; i < dimensions; ++i)
     {
-      const auto index = (position[i] + (cells ? 0 : spacing[i] / 2)) / spacing[i];
+      const auto index = (position[i] + (cells ? 0 : (spacing[i] / 2))) / spacing[i];
       if (0 > index || index >= data.shape()[i])
         return false;
     }
@@ -30,7 +31,7 @@ struct field : named, ra::resource<field<type, dimensions>>
   {
     std::array<std::size_t, dimensions> index;
     for (auto i = 0; i < dimensions; ++i)
-      index[i] = std::floor((position[i] + (cells ? 0 : spacing[i] / 2)) / spacing[i]);
+      index[i] = std::floor((position[i] + (cells ? 0 : (spacing[i] / 2))) / spacing[i]);
     return index;
   }
 
@@ -46,30 +47,37 @@ struct field : named, ra::resource<field<type, dimensions>>
   }
 
   template <typename position_type, typename weight_type = float>
-  type                                interpolate(const position_type& position, const std::function<type(const type&, const type&, weight_type)>& function) const
+  type                                interpolate(const position_type& position, const std::function<type(const type&, const type&, weight_type)>& function = [ ] (const type& a, const type& b, weight_type w) { return (1 - w) * a + w * b; }) const
   {
-    type result;
-
-    const auto index = locate<position_type>(position[i] + (cells_ ? -spacing[i] / 2 : 0));
-
-    std::vector<type> intermediates; // Initially the intermediates are the 2^dimensions data points. Fill.
+    std::array<std::size_t, dimensions> start_index, end_index, increment;
     for (auto i = 0; i < dimensions; ++i)
     {
-      std::vector<type> next_intermediates(std::pow(2, dimensions - i - 1));
-
-      // const auto a             = data(index);
-      // const auto b             = data(index + 1);
-      // const auto position_a    = 0.0f;
-      // const auto position_b    = 0.0f;
-      // const auto dist_to_a     = (position_a - position).norm();
-      // const auto dist_to_b     = (position_b - position).norm();
-      // const auto weight        = dist_to_a / (dist_to_a + dist_to_b);
-      // result[i]                = (1 - weight) * a + weight * b;
-
-      intermediates = next_intermediates;
+      start_index[i] = std::floor((position[i] - (cells ? (spacing[i] / 2) : 0)) / spacing[i]);
+      end_index  [i] = start_index[i] + 2;
+      increment  [i] = 1;
     }
 
-    return result;
+    std::vector<type> intermediates;
+    intermediates.reserve(std::pow(2, dimensions));
+    permute_for<dimensions>(
+      [&] (const std::array<std::size_t, dimensions>& iteratee)
+      {
+        intermediates.push_back(data(iteratee));
+      }, 
+      start_index, 
+      end_index  , 
+      increment  );
+
+    for (std::ptrdiff_t i = dimensions - 1; i >= 0; --i)
+    {
+      const auto weight = std::fmod(position[i], spacing[i]) / spacing[i];
+
+      std::vector<type> next_intermediates;
+      for (auto j = 0; j < std::pow(2, i); ++j)
+        next_intermediates.push_back(function(intermediates[2 * j], intermediates[2 * j + 1], weight));
+      intermediates = next_intermediates;
+    }
+    return intermediates[0];
   }
 
   boost::multi_array<type , dimensions> data    ;
