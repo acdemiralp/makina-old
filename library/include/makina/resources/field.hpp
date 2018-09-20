@@ -8,6 +8,7 @@
 #include <ra/resource.hpp>
 
 #include <makina/aspects/named.hpp>
+#include <makina/utility/interpolation.hpp>
 #include <makina/utility/permute_for.hpp>
 
 namespace mak
@@ -47,26 +48,19 @@ struct field : named, ra::resource<field<type, dimensions>>
   }
 
   template <typename position_type, typename weight_type = float>
-  type                                interpolate(const position_type& position, const std::function<type(const type&, const type&, weight_type)>& function = [ ] (const type& a, const type& b, weight_type w) { return (1 - w) * a + w * b; }) const
+  type                                interpolate(const position_type& position, std::function<type(const type&, const type&, weight_type)> function = lerp<position_type, weight_type>) const
   {
     std::array<std::size_t, dimensions> start_index, end_index, increment;
     for (auto i = 0; i < dimensions; ++i)
     {
-      start_index[i] = std::floor((position[i] - (cells ? (spacing[i] / 2) : 0)) / spacing[i]);
+      start_index[i] = std::floor(position[i] / spacing[i]);
       end_index  [i] = start_index[i] + 2;
       increment  [i] = 1;
     }
 
     std::vector<type> intermediates;
     intermediates.reserve(std::pow(2, dimensions));
-    permute_for<dimensions>(
-      [&] (const std::array<std::size_t, dimensions>& iteratee)
-      {
-        intermediates.push_back(data(iteratee));
-      }, 
-      start_index, 
-      end_index  , 
-      increment  );
+    permute_for<dimensions>([&] (const std::array<std::size_t, dimensions>& iteratee) { intermediates.push_back(data(iteratee)); }, start_index, end_index, increment);
 
     for (std::ptrdiff_t i = dimensions - 1; i >= 0; --i)
     {
@@ -77,6 +71,7 @@ struct field : named, ra::resource<field<type, dimensions>>
         next_intermediates.push_back(function(intermediates[2 * j], intermediates[2 * j + 1], weight));
       intermediates = next_intermediates;
     }
+
     return intermediates[0];
   }
 
