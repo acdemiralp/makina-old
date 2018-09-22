@@ -33,7 +33,8 @@ class engine;
 
 namespace opengl
 {
-MAKINA_EXPORT void make_default_framegraph(engine* engine, di::window* main_window);
+MAKINA_EXPORT void make_default_framegraph       (engine* engine, di::window* main_window);
+MAKINA_EXPORT void make_immediate_only_framegraph(engine* engine, di::window* main_window);
 }
 }
 
