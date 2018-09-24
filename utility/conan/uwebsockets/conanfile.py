@@ -9,14 +9,14 @@ class Project(ConanFile):
     version         = "0.14.8"                
     url             = "https://github.com/uNetworking/uWebSockets"
     cmake_name      = "uWS_cmake"
-    cmake_version   = "1.1.0"
+    cmake_version   = "1.2.0"
     cmake_url       = "https://github.com/acdemiralp/uWS_cmake"
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
     requires        = (("OpenSSL/1.1.0g@conan/stable"),
                        ("zlib/1.2.8@conan/stable"    ))
     options         = {"shared": [True, False], "use_asio": [True, False], "use_libuv": [True, False]} 
-    default_options = "shared=False", "use_asio=True", "use_libuv=False"
+    default_options = "shared=False", "use_asio=False", "use_libuv=True"
 
     def imports(self):
         self.copy("*.dylib*", dst="", src="lib")
