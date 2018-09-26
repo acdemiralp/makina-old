@@ -12,8 +12,8 @@ namespace opengl
 {
 fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_task(renderer* framegraph, const upload_meshes_task_data& mesh_data)
 {
-  const auto retained_vertices = framegraph->add_retained_resource<buffer_description                        , gl::buffer>("Skeletal Animation Vertices", buffer_description{configuration::instance().get<GLsizeiptr>("rendering.skeletal_animation_render_task.vertex_buffer_size", 256e+6)});
-  const auto retained_normals  = framegraph->add_retained_resource<buffer_description                        , gl::buffer>("Skeletal Animation Normals" , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.skeletal_animation_render_task.normal_buffer_size", 256e+6)});
+  const auto retained_vertices = framegraph->add_retained_resource<buffer_description                        , gl::buffer>("Skeletal Animation Vertices", buffer_description{configuration::instance().get<GLsizeiptr>("rendering.skeletal_animation_render_task.vertex_buffer_size", 128e+6)});
+  const auto retained_normals  = framegraph->add_retained_resource<buffer_description                        , gl::buffer>("Skeletal Animation Normals" , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.skeletal_animation_render_task.normal_buffer_size", 128e+6)});
   const auto retained_program  = framegraph->add_retained_resource<compute_program_resource::description_type, program>   ("Skeletal Animation Program" , program::compute_description
   {
     glsl::skeletal_animation_compute_shader

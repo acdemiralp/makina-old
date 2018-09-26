@@ -10,7 +10,7 @@ namespace mak
 {
 configuration::configuration (std::string filepath) : filepath_(std::move(filepath))
 {
-  if (!std::experimental::filesystem::exists(filepath)) return;
+  if (!std::experimental::filesystem::exists(filepath_)) return;
   std::ifstream stream(filepath_);
   stream >> json_;
 }

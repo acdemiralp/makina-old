@@ -21,7 +21,7 @@ public:
   template<typename type>
   type get(const std::string& key, const type default_value = type())
   {
-    if (!json_.count(key)) json_[key] = default_value;
+    if (json_.find(key) == json_.end()) json_[key] = default_value;
     return json_[key].get<type>();
   }
   template<typename type>
