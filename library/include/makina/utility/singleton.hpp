@@ -19,7 +19,7 @@ public:
   template <typename... argument_types>
   static derived& instance(argument_types&&... arguments)
   {
-    static derived instance(std::forward<argument_types>(arguments...));
+    static derived instance(std::forward<argument_types>(arguments)...);
     return instance;
   }
 };
