@@ -4,6 +4,7 @@
 #include <gl/per_fragment_ops.hpp>
 #include <gl/viewport.hpp>
 
+#include <makina/core/configuration.hpp>
 #include <makina/renderer/backend/glsl/composite_vertex_shader.hpp>
 #include <makina/renderer/backend/glsl/composite_fragment_shader.hpp>
 
@@ -13,8 +14,8 @@ namespace opengl
 {
 fg::render_task<composite_task_data>* add_composite_render_task(renderer* framegraph, framebuffer_resource* source, framebuffer_resource* target)
 {
-  const auto retained_vertices = framegraph->add_retained_resource<buffer_description, gl::buffer>("Composite Vertices", buffer_description{GLsizeiptr(1e+6)});
-  const auto retained_indices  = framegraph->add_retained_resource<buffer_description, gl::buffer>("Composite Indices" , buffer_description{GLsizeiptr(1e+6)});
+  const auto retained_vertices = framegraph->add_retained_resource<buffer_description, gl::buffer>("Composite Vertices", buffer_description{configuration::instance().get<GLsizeiptr>("rendering.composite_render_task.vertex_buffer_size", 1e+6)});
+  const auto retained_indices  = framegraph->add_retained_resource<buffer_description, gl::buffer>("Composite Indices" , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.composite_render_task.index_buffer_size" , 1e+6)});
   const auto retained_program  = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Composite Program", program::graphics_description
   {
     glsl::composite_vertex_shader,

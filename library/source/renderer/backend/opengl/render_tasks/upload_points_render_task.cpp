@@ -1,5 +1,6 @@
 #include <makina/renderer/backend/opengl/render_tasks/upload_points_render_task.hpp>
 
+#include <makina/core/configuration.hpp>
 #include <makina/renderer/point_render.hpp>
 #include <makina/renderer/transform.hpp>
 #include <makina/resources/point_cloud.hpp>
@@ -29,13 +30,13 @@ fg::render_task<upload_points_task_data>* add_upload_points_render_task(renderer
     glm::vec4 properties; // metallicity - roughness - unused - unused
   };
 
-  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Vertices"           , buffer_description{GLsizeiptr(128e+6)});
-  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Normals"            , buffer_description{GLsizeiptr(128e+6)});
-  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Colors"             , buffer_description{GLsizeiptr(128e+6)});
-  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Instance Attributes", buffer_description{GLsizeiptr(128e+6)});
-  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Draw Calls"         , buffer_description{GLsizeiptr(16e+6 )});
-  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Transforms"         , buffer_description{GLsizeiptr(16e+6 )});
-  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Materials"          , buffer_description{GLsizeiptr(16e+6 )});
+  const auto retained_vertices            = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Vertices"           , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.vertex_buffer_size"            , 128e+6)});
+  const auto retained_normals             = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Normals"            , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.normal_buffer_size"            , 128e+6)});
+  const auto retained_colors              = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Colors"             , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.color_buffer_size"             , 128e+6)});
+  const auto retained_instance_attributes = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Instance Attributes", buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.instance_attribute_buffer_size", 128e+6)});
+  const auto retained_draw_calls          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Draw Calls"         , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.draw_call_buffer_size"         , 16e+6 )});
+  const auto retained_transforms          = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Transforms"         , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.transform_buffer_size"         , 16e+6 )});
+  const auto retained_materials           = framegraph->add_retained_resource<buffer_description, gl::buffer>           ("Point Materials"          , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_points_render_task.material_buffer_size"          , 16e+6 )});
   const auto retained_parameter_map       = framegraph->add_retained_resource<parameter_map::description, parameter_map>("Point Parameter Map"      , parameter_map::description());
 
   return framegraph->add_render_task<upload_points_task_data>(

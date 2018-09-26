@@ -1,5 +1,7 @@
 #include <makina/renderer/backend/opengl/render_tasks/upload_common_render_task.hpp>
 
+#include <makina/core/configuration.hpp>
+
 namespace mak
 {
 namespace opengl
@@ -20,8 +22,8 @@ struct glsl_light
 
 fg::render_task<upload_common_task_data>* add_upload_common_render_task(renderer* renderer)
 {
-  const auto retained_cameras       = renderer->add_retained_resource<buffer_description, gl::buffer>           ("Scene Cameras"      , buffer_description{GLsizeiptr(16e+6)});
-  const auto retained_lights        = renderer->add_retained_resource<buffer_description, gl::buffer>           ("Scene Lights"       , buffer_description{GLsizeiptr(16e+6)});
+  const auto retained_cameras       = renderer->add_retained_resource<buffer_description, gl::buffer>           ("Scene Cameras"      , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_common_render_task.camera_buffer_size", 16e+6)});
+  const auto retained_lights        = renderer->add_retained_resource<buffer_description, gl::buffer>           ("Scene Lights"       , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.upload_common_render_task.light_buffer_size" , 16e+6)});
   const auto retained_parameter_map = renderer->add_retained_resource<parameter_map::description, parameter_map>("Scene Parameter Map", parameter_map::description());
 
   return renderer->add_render_task<upload_common_task_data>(

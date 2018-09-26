@@ -8,6 +8,7 @@
 #include <im3d.h>
 #include <im3d_math.h>
 
+#include <makina/core/configuration.hpp>
 #include <makina/core/logger.hpp>
 #include <makina/renderer/backend/glsl/immediate_line_fragment_shader.hpp>
 #include <makina/renderer/backend/glsl/immediate_line_geometry_shader.hpp>
@@ -28,7 +29,7 @@ fg::render_task<immediate_task_data>* add_immediate_render_task (
   const upload_common_task_data& common_data , 
   const std::string&             camera_tag  )
 {
-  const auto retained_attributes        = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Vertices"         , buffer_description{GLsizeiptr(256e+6) });
+  const auto retained_attributes        = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Vertices"         , buffer_description{configuration::instance().get<GLsizeiptr>("rendering.immediate_render_task.attribute_buffer_size", 256e+6)});
   const auto retained_viewport          = framegraph->add_retained_resource<buffer_description, gl::buffer>                      ("Immediate Viewport"         , buffer_description{sizeof(glm::vec2)});
   const auto retained_points_program    = framegraph->add_retained_resource<graphics_program_resource::description_type, program>("Immediate Points Program"   , program::graphics_description
   {                                                                                                                                                            
