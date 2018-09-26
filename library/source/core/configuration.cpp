@@ -1,5 +1,6 @@
 #include <makina/core/configuration.hpp>
 
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <string>
@@ -9,6 +10,7 @@ namespace mak
 {
 configuration::configuration (std::string filepath) : filepath_(std::move(filepath))
 {
+  if (!std::experimental::filesystem::exists(filepath)) return;
   std::ifstream stream(filepath_);
   stream >> json_;
 }
