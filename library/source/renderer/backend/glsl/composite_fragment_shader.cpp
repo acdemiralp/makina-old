@@ -17,8 +17,8 @@ layout (bindless_sampler) uniform;
 
 const float alpha_threshold = 0.01f;
 
-layout(set = 0, binding = 0) uniform sampler2D source_color;
-layout(set = 0, binding = 1) uniform sampler2D source_depth;
+layout(binding = 0) uniform sampler2D source_color;
+layout(binding = 1) uniform sampler2D source_depth;
 
 layout(location = 0) in  vec2 texture_coordinate;
 layout(location = 0) out vec4 output_color;

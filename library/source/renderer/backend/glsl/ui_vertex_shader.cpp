@@ -13,7 +13,7 @@ std::string ui_vertex_shader = R"(
 #extension GL_ARB_explicit_attrib_location : enable
 #endif
 
-layout(std430, set = 0, binding = 0) readonly buffer _projection
+layout(std430, binding = 0) readonly buffer _projection
 {
   mat4 projection;
 };

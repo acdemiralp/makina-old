@@ -16,7 +16,7 @@ std::string line_geometry_shader = R"(
 layout(lines) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-layout(std430, set = 0, binding = 4) readonly buffer _viewport
+layout(std430, binding = 4) readonly buffer _viewport
 {
   vec2 viewport;
 };

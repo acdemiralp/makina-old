@@ -25,12 +25,12 @@ struct _camera
   mat4 projection;
 };
 
-layout(std430, set = 0, binding = 0) readonly buffer transform
+layout(std430, binding = 0) readonly buffer transform
 {
   uvec4      transforms_metadata; // x size
   _transform transforms[];
 };
-layout(std430, set = 0, binding = 2) readonly buffer camera
+layout(std430, binding = 2) readonly buffer camera
 {
   uvec4      cameras_metadata; // x size, y index
   _camera    cameras   [];

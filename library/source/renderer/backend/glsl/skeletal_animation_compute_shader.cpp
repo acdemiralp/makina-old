@@ -23,23 +23,23 @@ struct _rig
   mat4 offset;
 };
 
-layout(std430, set = 0, binding = 0)          buffer vertex
+layout(std430, binding = 0)          buffer vertex
 {
   vec4  vertices[];
 };
-layout(std430, set = 0, binding = 1)          buffer normal
+layout(std430, binding = 1)          buffer normal
 {
   vec4  normals[];
 };
-layout(std430, set = 0, binding = 2) readonly buffer bone_id
+layout(std430, binding = 2) readonly buffer bone_id
 {
   uvec4 bone_ids[];
 };
-layout(std430, set = 0, binding = 3) readonly buffer bone_weight
+layout(std430, binding = 3) readonly buffer bone_weight
 {
   vec4  bone_weights[];
 };
-layout(std430, set = 0, binding = 4) readonly buffer rig
+layout(std430, binding = 4) readonly buffer rig
 {
   uvec4 rigs_metadata; // x size
   _rig  rigs[];

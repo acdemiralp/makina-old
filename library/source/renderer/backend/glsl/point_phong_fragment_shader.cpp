@@ -44,17 +44,17 @@ struct _light
   vec4      direction       ; // w is unused.
 };
 
-layout(std430, set = 0, binding = 1) readonly buffer material
+layout(std430, binding = 1) readonly buffer material
 {
   uvec4     materials_metadata; // x size
   _material materials[]       ;
 };
-layout(std430, set = 0, binding = 2) readonly buffer camera
+layout(std430, binding = 2) readonly buffer camera
 {
   uvec4     cameras_metadata  ; // x size, y index
   _camera   cameras[]         ;
 };
-layout(std430, set = 0, binding = 3) readonly buffer light
+layout(std430, binding = 3) readonly buffer light
 {
   uvec4     lights_metadata   ; // x size
   _light    lights[]          ;

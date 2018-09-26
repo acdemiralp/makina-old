@@ -15,7 +15,7 @@ std::string ui_fragment_shader = R"(
 layout (bindless_sampler) uniform;
 #endif
 
-layout(set = 0, binding = 1) uniform sampler2D ui_texture;
+layout(binding = 1) uniform sampler2D ui_texture;
 
 layout(location = 0) in vs_output_type 
 {
