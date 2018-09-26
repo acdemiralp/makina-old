@@ -54,13 +54,13 @@ std::unique_ptr<engine> make_default_engine()
     transform ->set_translation(glm::vec3(0.0f, 1.0f, -10.0f));
     projection->set_perspective(60.0f, 4.0f / 3.0f, {0.3f, 1000.0f});
     
-    input_system->on_key_press.connect([engine_ptr = engine.get()] (di::key key)
+    input_system->on_key_press.connect([=] (di::key key)
     {
       if (key.code == di::key_code::left_alt || key.code == di::key_code::right_alt)
       {
         di::mouse::set_visible ( di::mouse::relative());
         di::mouse::set_relative(!di::mouse::relative());
-        engine_ptr->scene()->entities<mak::controller>()[0]->component<mak::metadata>()->active = di::mouse::relative();
+        metadata->active = di::mouse::relative();
       }
     });
     di::mouse::set_visible (false);
