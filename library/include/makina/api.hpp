@@ -27,6 +27,8 @@
 #include <makina/input/controller.hpp>
 #include <makina/input/input_system.hpp>
 #include <makina/input/wasd_controller.hpp>
+#include <makina/network/websocket_client.hpp>
+#include <makina/network/websocket_server.hpp>
 #include <makina/physics/mesh_collider.hpp>
 #include <makina/physics/physics_system.hpp>
 #include <makina/physics/rigidbody.hpp>
