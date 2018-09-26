@@ -52,11 +52,7 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
       data.transformed_vertices->actual()->copy_sub_data(*data.vertices->actual(), 0, 0, vertex_count * sizeof glm::vec4);
       data.transformed_normals ->actual()->copy_sub_data(*data.normals ->actual(), 0, 0, vertex_count * sizeof glm::vec4);
 
-#if glDispatchComputeGroupSizeARB != 0
-      glDispatchComputeGroupSizeARB(vertex_count, 1, 1, 1, 1, 1);
-#else
-      glDispatchCompute(vertex_count, 1, 1);
-#endif
+      glDispatchComputeGroupSizeARB ? glDispatchComputeGroupSizeARB(vertex_count, 1, 1, 1, 1, 1) : glDispatchCompute(vertex_count, 1, 1);
       gl::memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
       data.vertex_array->actual()->unbind();
@@ -64,6 +60,6 @@ fg::render_task<skeletal_animation_task_data>* add_skeletal_animation_render_tas
 
       gl::print_error("Error in Skeletal Animation Pass");
     });
-}
-}
-}
+    }
+    }
+    }
