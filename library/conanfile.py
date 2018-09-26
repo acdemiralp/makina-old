@@ -12,12 +12,12 @@ class MakinaConan(ConanFile):
     generators      = "cmake"
     requires        = (("assimp/4.1.0@RWTH-VR/thirdparty"       ),
                        ("bgfx/master@acdemiralp/makina"         ),
-                       ("boost/1.66.0@conan/stable"             ),
+                       ("boost/1.67.0@conan/stable"             ),
                        ("bm/1.0.1@acdemiralp/makina"            ),
                        ("bullet/2.87@bincrafters/stable"        ),
                        ("catch2/2.2.0@bincrafters/stable"       ),
                        ("cppzmq/4.2.2@bincrafters/stable"       ),
-                       ("di/1.3.1@acdemiralp/makina"            ),
+                       ("di/1.3.0@acdemiralp/makina"            ),
                        ("ec/1.3.0@acdemiralp/makina"            ),
                        ("eigen/3.3.4@conan/stable"              ),
                        ("fg/1.1.0@acdemiralp/makina"            ),
@@ -46,11 +46,13 @@ class MakinaConan(ConanFile):
     default_options = "shared=True"
     
     def configure(self):
-       self.options["gl"].shared = False
+        self.options["boost"].header_only = False
+        self.options["gl"   ].shared      = False
+        self.options["rttr" ].shared      = False
 
     def imports(self):
-       self.copy("*.dylib*", dst="", src="lib")
-       self.copy("*.dll"   , dst="", src="bin")
+        self.copy("*.dylib*", dst="", src="lib")
+        self.copy("*.dll"   , dst="", src="bin")
        
     def source(self):
         zip_name = "v%s.zip" % self.version
