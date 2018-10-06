@@ -48,7 +48,7 @@ struct field : named, ra::resource<field<type, dimensions>>
   }
 
   template <typename position_type, typename weight_type = float>
-  type                                interpolate(const position_type& position, std::function<type(const type&, const type&, weight_type)> function = lerp<position_type, weight_type>) const
+  type                                interpolate(const position_type& position, std::function<type(const type&, const type&, weight_type)> function = lerp<type, weight_type>) const
   {
     std::array<std::size_t, dimensions> start_index, end_index, increment;
     for (auto i = 0; i < dimensions; ++i)
