@@ -8,6 +8,7 @@
 #include <ra/resource.hpp>
 
 #include <makina/aspects/named.hpp>
+#include <makina/core/logger.hpp>
 #include <makina/utility/interpolation.hpp>
 #include <makina/utility/permute_for.hpp>
 
@@ -50,6 +51,8 @@ struct field : named, ra::resource<field<type, dimensions>>
   template <typename position_type, typename weight_type = float>
   type                                interpolate(const position_type& position, std::function<type(const type&, const type&, weight_type)> function = lerp<type, weight_type>) const
   {
+    if (cells) logger->warn("Interpolation is not well-defined for point-in-cell data.");
+
     std::array<std::size_t, dimensions> start_index, end_index, increment;
     for (auto i = 0; i < dimensions; ++i)
     {
