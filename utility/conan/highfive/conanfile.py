@@ -5,7 +5,7 @@ import os
 class HighFiveConan(ConanFile):
     name        = "HighFive"
     description = "Header-only C++ HDF5 interface."
-    version     = "1.5"
+    version     = "2.0"
     url         = "https://github.com/BlueBrain/HighFive"
     license     = "MIT"
 
